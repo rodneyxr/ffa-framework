@@ -13,7 +13,7 @@ public class FileName {
 		setParentDir(parentDir);
 		setFileType(fileType);
 	}
-
+	
 	public String getFileName() {
 		return fileName;
 	}

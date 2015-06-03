@@ -32,7 +32,7 @@ public class Compiler {
 
 		Directory root = new Directory("root", 0);
 		// while we have more commands to read
-		while (scanner.hasNext()) {
+//		while (scanner.hasNext()) {
 			// parse line to command object
 			Command cmd = new Command(scanner.nextLine());
 			System.out.printf("cmd %d: %d\n", line, cmd.getSize());
@@ -52,15 +52,15 @@ public class Compiler {
 			}
 
 			line++;
-		}
+			root.printDirectories(0);
+//		}
 	}
 
 	private void handleCP(Directory dir, Command cmd) {
 		// TODO: assert commands are legal
 		String arg1 = cmd.getArg(1);
-		Directory src = new Directory(arg1, 0);
 		String[] tokens = arg1.split("/");
-
+		dir.createStructure(tokens,0);
 	}
 
 }

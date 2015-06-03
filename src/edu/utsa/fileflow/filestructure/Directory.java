@@ -2,6 +2,8 @@ package edu.utsa.fileflow.filestructure;
 
 import java.util.ArrayList;
 
+import edu.utsa.fileflow.compiler.Command;
+
 public class Directory {
 
 	private String dirName;
@@ -26,7 +28,8 @@ public class Directory {
 	 * @param newDir
 	 */
 	public void addDirectoryToList(Directory dir){
-		dirList.add(dir);
+		System.out.println("Adding "+dir.dirName+" to "+dirName);
+		this.dirList.add(dir);
 	}
 
 	/**
@@ -53,7 +56,36 @@ public class Directory {
 		fileList.remove(file);
 	}
 	
-	public boolean checkIfDirectoryExists(String dirname){
+	
+	public void createStructure(String[] tokens, int nextIndex) {
+		
+		if(!checkIfDirectoryExists(tokens[nextIndex])){
+			//create directory
+			Directory newDir = new Directory(tokens[nextIndex],0);
+			this.addDirectoryToList(newDir);
+			if(nextIndex < tokens.length-1){
+				int newIndex = nextIndex+1;
+				newDir.createStructure(tokens, newIndex);
+			}
+		}
+		
+	}
+	
+	public void printDirectories(int tabCount){
+		String tabs = "";
+		for(int i = 0; i < tabCount; i++)
+			tabs+="\t";
+		
+		System.out.println(dirName);
+		
+		for(Directory dir : dirList){
+			System.out.print(dir.dirName);
+			dir.printDirectories(tabCount++);
+		}
+		System.out.print("\n");
+	}
+	
+	private boolean checkIfDirectoryExists(String dirname){
 		for(Directory dir : dirList){
 			if(dir.dirName.equals(dirname))
 				return true;
@@ -61,14 +93,14 @@ public class Directory {
 		return false;
 	}
 	
-	public boolean checkIfFileExists(String filename){
+	private boolean checkIfFileExists(String filename){
 		for(FileName file : fileList){
 			if(file.getFileName().equals(filename))
 				return true;
 		}
 		return false;
 	}
-	
+
 	/*
 	 *  Getters and Setters for global class variables
 	 */
@@ -103,4 +135,6 @@ public class Directory {
 	public void setFileList(ArrayList<FileName> fileList) {
 		this.fileList = fileList;
 	}
+
+
 }
