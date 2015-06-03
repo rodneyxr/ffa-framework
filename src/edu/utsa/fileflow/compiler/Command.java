@@ -8,6 +8,7 @@ public class Command {
 	private String command;
 	private ArrayList<String> args;
 
+	//TODO: add command type
 	public Command(String command) {
 		this.command = command;
 		tokenize();
