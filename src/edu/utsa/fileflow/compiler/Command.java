@@ -5,10 +5,10 @@ import java.util.Arrays;
 
 public class Command {
 
+	private CommandType type;
 	private String command;
 	private ArrayList<String> args;
 
-	//TODO: add command type
 	public Command(String command) {
 		this.command = command;
 		tokenize();
@@ -26,9 +26,14 @@ public class Command {
 		return args.size();
 	}
 	
+	public CommandType getType() {
+		return type;
+	}
+	
 	private void tokenize() {
 		String[] argList = command.split("\\s+");
 		args = new ArrayList<String>(Arrays.asList(argList));
+		type = CommandType.valueOf(argList[0]);
 	}
-
+	
 }
