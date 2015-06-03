@@ -51,8 +51,8 @@ public class Compiler {
 	private void handleCP(Directory dir, Command cmd) {
 		// TODO: assert commands are legal
 		String arg1 = cmd.getArg(1);
-		Directory src = new Directory(arg1, 0);
 		String[] tokens = arg1.split("/");
+		dir.createStructure(tokens,0);
 		
 	}
 
