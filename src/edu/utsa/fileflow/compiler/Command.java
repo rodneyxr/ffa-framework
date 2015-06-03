@@ -33,7 +33,7 @@ public class Command {
 	private void tokenize() {
 		String[] argList = command.split("\\s+");
 		args = new ArrayList<String>(Arrays.asList(argList));
-		type = CommandType.valueOf(argList[0]);
+		type = CommandType.TypeFromString(argList[0]);
 	}
 	
 }
