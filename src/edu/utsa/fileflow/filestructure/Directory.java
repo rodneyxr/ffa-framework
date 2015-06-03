@@ -1,6 +1,7 @@
 package edu.utsa.fileflow.filestructure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import edu.utsa.fileflow.compiler.Command;
 
@@ -58,8 +59,9 @@ public class Directory {
 	
 	
 	public void createStructure(String[] tokens, int nextIndex) {
-		
-		if(!checkIfDirectoryExists(tokens[nextIndex])){
+		System.out.println(Arrays.toString(tokens));
+		Directory nextDir = checkIfDirectoryExists(tokens[nextIndex]);
+		if(nextDir == null){
 			//create directory
 			Directory newDir = new Directory(tokens[nextIndex],0);
 			this.addDirectoryToList(newDir);
@@ -67,30 +69,31 @@ public class Directory {
 				int newIndex = nextIndex+1;
 				newDir.createStructure(tokens, newIndex);
 			}
+		}else{
+			if(nextIndex < tokens.length-1){
+				int newIndex = nextIndex+1;
+				nextDir.createStructure(tokens, newIndex);
+			}
 		}
 		
 	}
 	
 	public void printDirectories(int tabCount){
-		String tabs = "";
+		String tabs = "|";
 		for(int i = 0; i < tabCount; i++)
-			tabs+="\t";
-		
-		System.out.println(dirName);
-		
+			tabs+="--";
 		for(Directory dir : dirList){
-			System.out.print(dir.dirName);
+			System.out.println(tabs+"--"+dir.dirName);
 			dir.printDirectories(tabCount++);
 		}
-		System.out.print("\n");
 	}
 	
-	private boolean checkIfDirectoryExists(String dirname){
+	private Directory checkIfDirectoryExists(String dirname){
 		for(Directory dir : dirList){
 			if(dir.dirName.equals(dirname))
-				return true;
+				return dir;
 		}
-		return false;
+		return null;
 	}
 	
 	private boolean checkIfFileExists(String filename){

@@ -1,3 +1,7 @@
 cp src work
 cp work src/main
-cp src/x work/x
+cp work/build
+cp work/build/compile
+cp work/x
+cp new
+cp new/y
