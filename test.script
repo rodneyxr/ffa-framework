@@ -1,0 +1,3 @@
+cp src work
+cp work src/main
+rm bin/main/x
