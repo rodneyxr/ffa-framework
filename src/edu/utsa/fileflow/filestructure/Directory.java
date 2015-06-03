@@ -53,6 +53,22 @@ public class Directory {
 		fileList.remove(file);
 	}
 	
+	public boolean checkIfDirectoryExists(String dirname){
+		for(Directory dir : dirList){
+			if(dir.dirName.equals(dirname))
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean checkIfFileExists(String filename){
+		for(FileName file : fileList){
+			if(file.getFileName().equals(filename))
+				return true;
+		}
+		return false;
+	}
+	
 	/*
 	 *  Getters and Setters for global class variables
 	 */
