@@ -30,7 +30,7 @@ public class Compiler {
 		
 		Directory root = new Directory("root", 0);
 		// while we have more commands to read
-		while (scanner.hasNext()) {
+//		while (scanner.hasNext()) {
 			// parse line to command object
 			Command cmd = new Command(scanner.nextLine());
 			
@@ -45,7 +45,8 @@ public class Compiler {
 			
 			System.out.printf("cmd %d: %d\n", line, cmd.getSize());
 			line++;
-		}
+			root.printDirectories(0);
+//		}
 	}
 	
 	private void handleCP(Directory dir, Command cmd) {

@@ -28,7 +28,8 @@ public class Directory {
 	 * @param newDir
 	 */
 	public void addDirectoryToList(Directory dir){
-		dirList.add(dir);
+		System.out.println("Adding "+dir.dirName+" to "+dirName);
+		this.dirList.add(dir);
 	}
 
 	/**
@@ -62,10 +63,26 @@ public class Directory {
 			//create directory
 			Directory newDir = new Directory(tokens[nextIndex],0);
 			this.addDirectoryToList(newDir);
-			if(nextIndex < tokens.length)
-				newDir.createStructure(tokens, nextIndex++);
+			if(nextIndex < tokens.length-1){
+				int newIndex = nextIndex+1;
+				newDir.createStructure(tokens, newIndex);
+			}
 		}
 		
+	}
+	
+	public void printDirectories(int tabCount){
+		String tabs = "";
+		for(int i = 0; i < tabCount; i++)
+			tabs+="\t";
+		
+		System.out.println(dirName);
+		
+		for(Directory dir : dirList){
+			System.out.print(dir.dirName);
+			dir.printDirectories(tabCount++);
+		}
+		System.out.print("\n");
 	}
 	
 	private boolean checkIfDirectoryExists(String dirname){
