@@ -1,7 +1,3 @@
 cp src work
 cp work src/main
-cp work/build
-cp work/build/compile
-cp work/x
-cp new
-cp new/y
+rm compile/main/x
