@@ -1,9 +1,6 @@
 package edu.utsa.fileflow.filestructure;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import edu.utsa.fileflow.compiler.Command;
 
 public class Directory {
 
@@ -11,13 +8,16 @@ public class Directory {
 	private int dirLevel;
 	private ArrayList<Directory> dirList;
 	private ArrayList<FileName> fileList;
-	
+
 	/**
 	 * This constructor will instantiate a new Directory object.
-	 * @param name - name of the directory 
-	 * @param level - level of the directory relative to 'root'
+	 * 
+	 * @param name
+	 *            - name of the directory
+	 * @param level
+	 *            - level of the directory relative to 'root'
 	 */
-	public Directory(String name, int level){
+	public Directory(String name, int level) {
 		setDirName(name);
 		setDirLevel(level);
 		dirList = new ArrayList<Directory>();
@@ -26,86 +26,90 @@ public class Directory {
 
 	/**
 	 * Adds a new directory to the end of the dirList array list.
+	 * 
 	 * @param newDir
 	 */
-	public void addDirectoryToList(Directory dir){
-		System.out.println("Adding "+dir.dirName+" to "+dirName);
+	public void addDirectoryToList(Directory dir) {
+		// System.out.println("Directory: " + "Adding " + dir.dirName + " to " +
+		// dirName); // DEBUG
 		this.dirList.add(dir);
 	}
 
 	/**
 	 * Removes a directory from the dirList array list.
+	 * 
 	 * @param dir
 	 */
-	public void removeDirectoryFromList(Directory dir){
+	public void removeDirectoryFromList(Directory dir) {
 		dirList.remove(dir);
 	}
-	
+
 	/**
 	 * Adds a file to the end of the fileList array list.
+	 * 
 	 * @param file
 	 */
-	public void addFileToList(FileName file){
+	public void addFileToList(FileName file) {
 		fileList.add(file);
 	}
-	
+
 	/**
 	 * Removes a file from the fileList array list.
+	 * 
 	 * @param file
 	 */
-	public void removeFileFromList(FileName file){
+	public void removeFileFromList(FileName file) {
 		fileList.remove(file);
 	}
-	
-	
+
 	public void createStructure(String[] tokens, int nextIndex) {
-		System.out.println(Arrays.toString(tokens));
+		// System.out.println("Directory: " + Arrays.toString(tokens)); // DEBUG
 		Directory nextDir = checkIfDirectoryExists(tokens[nextIndex]);
-		if(nextDir == null){
-			//create directory
-			Directory newDir = new Directory(tokens[nextIndex],0);
+		if (nextDir == null) {
+			// create directory
+			Directory newDir = new Directory(tokens[nextIndex], 0);
 			this.addDirectoryToList(newDir);
-			if(nextIndex < tokens.length-1){
-				int newIndex = nextIndex+1;
+			if (nextIndex < tokens.length - 1) {
+				int newIndex = nextIndex + 1;
 				newDir.createStructure(tokens, newIndex);
 			}
-		}else{
-			if(nextIndex < tokens.length-1){
-				int newIndex = nextIndex+1;
+		} else {
+			if (nextIndex < tokens.length - 1) {
+				int newIndex = nextIndex + 1;
 				nextDir.createStructure(tokens, newIndex);
 			}
 		}
-		
+
 	}
-	
-	public void printDirectories(int tabCount){
+
+	public void printDirectories(int tabCount) {
 		String tabs = "|";
-		for(int i = 0; i < tabCount; i++)
-			tabs+="--";
-		for(Directory dir : dirList){
-			System.out.println(tabs+"--"+dir.dirName);
+		for (int i = 0; i < tabCount; i++)
+			tabs += "--";
+		for (Directory dir : dirList) {
+			System.out.println(tabs + "--" + dir.dirName);
 			dir.printDirectories(tabCount++);
 		}
 	}
-	
-	private Directory checkIfDirectoryExists(String dirname){
-		for(Directory dir : dirList){
-			if(dir.dirName.equals(dirname))
+
+	private Directory checkIfDirectoryExists(String dirname) {
+		for (Directory dir : dirList) {
+			if (dir.dirName.equals(dirname))
 				return dir;
 		}
 		return null;
 	}
-	
-	private boolean checkIfFileExists(String filename){
-		for(FileName file : fileList){
-			if(file.getFileName().equals(filename))
+
+	private boolean checkIfFileExists(String filename) {
+		for (FileName file : fileList) {
+			if (file.getFileName().equals(filename))
 				return true;
 		}
 		return false;
 	}
 
 	/*
-	 *  Getters and Setters for global class variables
+	 * Getters and Setters for global class variables
 	 */
 	public String getDirName() {
 		return dirName;
@@ -138,6 +142,5 @@ public class Directory {
 	public void setFileList(ArrayList<FileName> fileList) {
 		this.fileList = fileList;
 	}
-
 
 }

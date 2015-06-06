@@ -11,58 +11,55 @@ public class Compiler {
 	private Scanner scanner;
 
 	/**
-	 * initializes the parser object
+	 * Initializes the parser object by creating a scanner to read the script.
 	 * 
-	 * @param script
-	 *            - file name of the script to open for reading
+	 * @param file
+	 *            the script to compile
 	 */
-	public Compiler(String script) {
-		try {
-			this.scanner = new Scanner(new File(script));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
+	public Compiler(File file) throws FileNotFoundException {
+		this.scanner = new Scanner(file);
 	}
 
 	/**
 	 * Parses the test script and will return a Directory Structure Object
 	 */
 	public void compile() {
-		int line = 0;
-
 		Directory root = new Directory("root", 0);
 		// while we have more commands to read
 		while (scanner.hasNext()) {
 			// parse line to command object
 			Command cmd = new Command(scanner.nextLine());
-			System.out.printf("cmd %d: %d\n", line, cmd.getSize());
 
 			switch (cmd.getType()) {
 			case COPY:
-				handleCP(root, cmd);
+				handleCopy(root, cmd);
 				break;
 			case DELETE:
 				break;
 			case MOVE:
+				handleMove(root, cmd);
 				break;
 			case NEW:
 				break;
 			default:
 				break;
 			}
-
-			line++;
 		}
 		System.out.println(PrintDirectoryTree.printDirectoryTree(root));
-		
+
 	}
 
-	private void handleCP(Directory dir, Command cmd) {
+	private void handleCopy(Directory dir, Command cmd) {
 		// TODO: assert commands are legal
 		String arg1 = cmd.getArg(1);
 		String[] tokens = arg1.split("/");
-		dir.createStructure(tokens,0);
+		dir.createStructure(tokens, 0);
 	}
 
+	private void handleMove(Directory dir, Command cmd) {
+		// TODO: assert command is legal
+		String arg1 = cmd.getArg(1);
+		
+	}
+	
 }
