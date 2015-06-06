@@ -1,6 +1,8 @@
 package edu.utsa.fileflow.utilities;
 
-import edu.utsa.fileflow.filestructure.Directory;
+import java.util.HashMap;
+
+import edu.utsa.fileflow.filestructure.FileStruct;
 
 public class PrintDirectoryTree {
 
@@ -11,44 +13,36 @@ public class PrintDirectoryTree {
 	 *            must be a folder.
 	 * @return
 	 */
-	public static String printDirectoryTree(Directory root) {
+	public static String printDirectoryTree(FileStruct root) {
 
-	    int indent = 0;
-	    StringBuilder sb = new StringBuilder();
-	    printDirectoryTree(root, indent, sb);
-	    return sb.toString();
+		int indent = 0;
+		StringBuilder sb = new StringBuilder();
+		printDirectoryTree(root, indent, sb);
+		return sb.toString();
 	}
 
-	private static void printDirectoryTree(Directory dir, int indent,
-	        StringBuilder sb) {
+	private static void printDirectoryTree(FileStruct dir, int indent, StringBuilder sb) {
 
-	    sb.append(getIndentString(indent));
-	    sb.append("+--");
-	    sb.append(dir.getDirName());
-	    sb.append("");
-	    sb.append("\n");
-	    for (Directory d : dir.getDirList()) {
-//	        if (file.isDirectory()) {
-	            printDirectoryTree(d, indent + 1, sb);
-//	        } else {
-//	            printFile(file, indent + 1, sb);
-//	        }
-	    }
+		sb.append(getIndentString(indent));
+		sb.append("+--");
+		sb.append(dir.getName());
+		sb.append("");
+		sb.append("\n");
+		for (HashMap.Entry<String, FileStruct> entry : dir.getDirList().entrySet()) {
+			// if (file.isDirectory()) {
+			printDirectoryTree(entry.getValue(), indent + 1, sb);
+			// } else {
+			// printFile(file, indent + 1, sb);
+			// }
+		}
 
 	}
-
-//	private static void printFile(Directory file, int indent, StringBuilder sb) {
-//	    sb.append(getIndentString(indent));
-//	    sb.append("+--");
-//	    sb.append(file.getName());
-//	    sb.append("\n");
-//	}
 
 	private static String getIndentString(int indent) {
-	    StringBuilder sb = new StringBuilder();
-	    for (int i = 0; i < indent; i++) {
-	        sb.append("|  ");
-	    }
-	    return sb.toString();
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < indent; i++) {
+			sb.append("|  ");
+		}
+		return sb.toString();
 	}
 }

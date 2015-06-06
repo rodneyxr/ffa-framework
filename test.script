@@ -1,3 +1,4 @@
+# simple test script for file flow analysis
 cp src work
 cp work src/main
 rm compile/main/x

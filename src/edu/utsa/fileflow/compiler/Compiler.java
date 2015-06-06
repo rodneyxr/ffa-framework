@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import edu.utsa.fileflow.filestructure.Directory;
+import edu.utsa.fileflow.filestructure.FileStruct;
 import edu.utsa.fileflow.utilities.PrintDirectoryTree;
 
 public class Compiler {
@@ -23,13 +23,16 @@ public class Compiler {
 	/**
 	 * Parses the test script and will return a Directory Structure Object
 	 */
-	public void compile() {
-		Directory root = new Directory("root", 0);
+	// TODO: add support for comments
+	public FileStruct compile() {
+		FileStruct root = new FileStruct("root");
 		// while we have more commands to read
 		while (scanner.hasNext()) {
 			// parse line to command object
-			Command cmd = new Command(scanner.nextLine());
-
+			String line = scanner.nextLine();
+			if (line.startsWith("#")) continue;
+			Command cmd = new Command((line.split("#"))[0]);
+			
 			switch (cmd.getType()) {
 			case COPY:
 				handleCopy(root, cmd);
@@ -45,21 +48,20 @@ public class Compiler {
 				break;
 			}
 		}
-		System.out.println(PrintDirectoryTree.printDirectoryTree(root));
-
+		
+		return root;
 	}
 
-	private void handleCopy(Directory dir, Command cmd) {
+	private void handleCopy(FileStruct fs, Command cmd) {
 		// TODO: assert commands are legal
 		String arg1 = cmd.getArg(1);
-		String[] tokens = arg1.split("/");
-		dir.createStructure(tokens, 0);
+		fs.insert(arg1);
 	}
 
-	private void handleMove(Directory dir, Command cmd) {
+	private void handleMove(FileStruct fs, Command cmd) {
 		// TODO: assert command is legal
 		String arg1 = cmd.getArg(1);
-		
+
 	}
-	
+
 }

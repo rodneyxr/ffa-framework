@@ -4,10 +4,10 @@ public class FileName {
 
 	private String fileName;
 	private int fileLevel;
-	private Directory parentDir;
+	private FileStruct parentDir;
 	private FileType fileType;
 	
-	public FileName(String fileName, int fileLevel, Directory parentDir, FileType fileType){
+	public FileName(String fileName, int fileLevel, FileStruct parentDir, FileType fileType){
 		setFileName(fileName);
 		setFileLevel(fileLevel);
 		setParentDir(parentDir);
@@ -30,11 +30,11 @@ public class FileName {
 		this.fileLevel = fileLevel;
 	}
 
-	public Directory getParentDir() {
+	public FileStruct getParentDir() {
 		return parentDir;
 	}
 
-	public void setParentDir(Directory parentDir) {
+	public void setParentDir(FileStruct parentDir) {
 		this.parentDir = parentDir;
 	}
 
