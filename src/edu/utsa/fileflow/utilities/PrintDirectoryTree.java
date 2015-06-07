@@ -14,21 +14,18 @@ public class PrintDirectoryTree {
 	 * @return
 	 */
 	public static String printDirectoryTree(FileStruct root) {
-
-		int indent = 0;
 		StringBuilder sb = new StringBuilder();
-		printDirectoryTree(root, indent, sb);
+		printDirectoryTree(root, 0, sb);
 		return sb.toString();
 	}
 
 	private static void printDirectoryTree(FileStruct dir, int indent, StringBuilder sb) {
-
 		sb.append(getIndentString(indent));
 		sb.append("+--");
 		sb.append(dir.getName());
 		sb.append("");
 		sb.append("\n");
-		for (HashMap.Entry<String, FileStruct> entry : dir.getDirList().entrySet()) {
+		for (HashMap.Entry<String, FileStruct> entry : dir.getFiles().entrySet()) {
 			// if (file.isDirectory()) {
 			printDirectoryTree(entry.getValue(), indent + 1, sb);
 			// } else {

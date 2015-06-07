@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class FileStruct {
 
 	private String name;
-	private HashMap<String, FileStruct> files;
+	private final HashMap<String, FileStruct> files;
 
 	/**
 	 * This constructor will instantiate a new Directory object.
@@ -16,27 +16,19 @@ public class FileStruct {
 	 *            - level of the directory relative to 'root'
 	 */
 	public FileStruct(String name) {
-		setName(name);
+		this.name = name;
 		files = new HashMap<String, FileStruct>();
 	}
 
 	/**
-	 * Adds a new directory to the end of the dirList array list.
+	 * Adds a file structure to the map of files.
 	 * 
-	 * @param newDir
+	 * @param fs
+	 *            the file structure to add
 	 */
-	public void insert(FileStruct dir) {
+	public void insert(FileStruct fs) {
 		// Main.logger.log("Directory: " + "Adding " + dir.name + " to " + name); // DEBUG
-		this.files.put(dir.name, dir);
-	}
-
-	/**
-	 * Removes a directory from the dirList array list.
-	 * 
-	 * @param dir
-	 */
-	public void remove(FileStruct dir) {
-		files.remove(dir.name);
+		this.files.put(fs.name, fs);
 	}
 
 	public void insert(String filePath) {
@@ -44,31 +36,30 @@ public class FileStruct {
 		createStructure(tokens, 0);
 	}
 
-	public void print(int tabCount) {
-		StringBuilder tabs = new StringBuilder("|");
-		for (int i = 0; i < tabCount; i++)
-			tabs.append("--");
-		for (HashMap.Entry<String, FileStruct> dir : files.entrySet()) {
-			System.out.println(tabs + "--" + dir.getValue().name);
-			dir.getValue().print(tabCount++);
-		}
+	/**
+	 * Removes a directory from the dirList array list.
+	 * 
+	 * @param dir
+	 */
+	public void remove(FileStruct fs) {
+		files.remove(fs.name);
 	}
 
 	private void createStructure(String[] tokens, int nextIndex) {
 		// Main.logger.log("Directory: " + Arrays.toString(tokens)); // DEBUG
-		FileStruct nextDir = files.get(tokens[nextIndex]);
-		if (nextDir == null) {
+		FileStruct nextFS = files.get(tokens[nextIndex]);
+		if (nextFS == null) {
 			// create directory
-			FileStruct newDir = new FileStruct(tokens[nextIndex]);
-			this.insert(newDir);
+			FileStruct newFS = new FileStruct(tokens[nextIndex]);
+			this.insert(newFS);
 			if (nextIndex < tokens.length - 1) {
 				int newIndex = nextIndex + 1;
-				newDir.createStructure(tokens, newIndex);
+				newFS.createStructure(tokens, newIndex);
 			}
 		} else {
 			if (nextIndex < tokens.length - 1) {
 				int newIndex = nextIndex + 1;
-				nextDir.createStructure(tokens, newIndex);
+				nextFS.createStructure(tokens, newIndex);
 			}
 		}
 	}
@@ -80,11 +71,7 @@ public class FileStruct {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public HashMap<String, FileStruct> getDirList() {
+	public HashMap<String, FileStruct> getFiles() {
 		return files;
 	}
 

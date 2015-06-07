@@ -61,7 +61,8 @@ public class Compiler {
 	private void handleMove(FileStruct fs, Command cmd) {
 		// TODO: assert command is legal
 		String arg1 = cmd.getArg(1);
-
+		// first argument must exist, so we add it to precondition file structure
+		fs.insert(arg1);
 	}
 
 }
