@@ -38,6 +38,7 @@ public class Compiler {
 				handleCopy(root, cmd);
 				break;
 			case DELETE:
+				handleDelete(root, cmd);
 				break;
 			case MOVE:
 				handleMove(root, cmd);
@@ -55,10 +56,18 @@ public class Compiler {
 	private void handleCopy(FileStruct fs, Command cmd) {
 		// TODO: assert commands are legal
 		String arg1 = cmd.getArg(1);
+		// first argument must exist, so we add it to precondition file structure
 		fs.insert(arg1);
 	}
 
 	private void handleMove(FileStruct fs, Command cmd) {
+		// TODO: assert command is legal
+		String arg1 = cmd.getArg(1);
+		// first argument must exist, so we add it to precondition file structure
+		fs.insert(arg1);
+	}
+	
+	private void handleDelete(FileStruct fs, Command cmd) {
 		// TODO: assert command is legal
 		String arg1 = cmd.getArg(1);
 		// first argument must exist, so we add it to precondition file structure
