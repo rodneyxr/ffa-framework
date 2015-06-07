@@ -15,24 +15,22 @@ public class Command {
 	private ArrayList<String> args;
 
 	/**
-	 * Takes a command and breaks it up so that the arguments can be easily
-	 * accessed. The command is also given a command type when tokenize() is
-	 * called.
+	 * Takes a command and breaks it up so that the arguments can be easily accessed. The command is also given a
+	 * command type when tokenize() is called.
 	 * 
 	 * @param command
 	 *            the command string to be broken up into arguments
 	 */
-	public Command(String command) {
-		this.command = command;
+	public Command(String command) throws InvalidCommandException {
+		setCommand(command);
 		tokenize();
-		type = CommandType.TypeFromString(args.get(0));
+		type = CommandType.typeFromString(args.get(0));
 	}
 
 	/**
 	 * 
 	 * @param n
-	 *            the nth argument of the command (0 being the name of the
-	 *            command)
+	 *            the nth argument of the command (0 being the name of the command)
 	 * @return the nth argument
 	 */
 	public String getArg(int n) {
@@ -43,6 +41,12 @@ public class Command {
 		return command;
 	}
 
+	private void setCommand(String command) throws InvalidCommandException {
+		if (command == null)
+			throw new InvalidCommandException("null command");
+		this.command = command;
+	}
+
 	public int getSize() {
 		return args.size();
 	}
@@ -51,8 +55,10 @@ public class Command {
 		return type;
 	}
 
-	private void tokenize() {
+	private void tokenize() throws InvalidCommandException {
 		String[] argList = command.split("\\s+");
+		if (argList.length == 0)
+			throw new InvalidCommandException("empty command");
 		args = new ArrayList<String>(Arrays.asList(argList));
 	}
 

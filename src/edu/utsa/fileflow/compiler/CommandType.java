@@ -1,7 +1,17 @@
 package edu.utsa.fileflow.compiler;
 
+import java.util.HashMap;
+
 public enum CommandType {
 	NEW("new"), COPY("cp"), MOVE("mv"), DELETE("rm");
+
+	// this HashMap will provide a fast lookup time for the typeFromString() method
+	private static final HashMap<String, CommandType> CMD_MAP;
+	static {
+		CMD_MAP = new HashMap<String, CommandType>();
+		for (CommandType type : CommandType.values())
+			CMD_MAP.put(type.name, type);
+	}
 
 	String name;
 
@@ -13,11 +23,10 @@ public enum CommandType {
 		return name;
 	}
 
-	public static CommandType TypeFromString(String name) {
-		for (CommandType type : CommandType.values()) {
-			if (type.getName().equals(name))
-				return type;
-		}
-		return null;
+	public static CommandType typeFromString(String name) throws InvalidCommandException {
+		CommandType type = CMD_MAP.get(name);
+		if (type == null)
+			throw new InvalidCommandException("Unknown command '" + name + "'");
+		return type;
 	}
 }

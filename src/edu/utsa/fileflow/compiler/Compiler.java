@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import edu.utsa.fileflow.filestructure.FileStruct;
-import edu.utsa.fileflow.utilities.PrintDirectoryTree;
 
 public class Compiler {
 	private Scanner scanner;
@@ -23,15 +22,26 @@ public class Compiler {
 	/**
 	 * Parses the test script and will return a Directory Structure Object
 	 */
-	// TODO: add support for comments
 	public FileStruct compile() {
 		FileStruct root = new FileStruct("root");
 		// while we have more commands to read
 		while (scanner.hasNext()) {
 			// parse line to command object
 			String line = scanner.nextLine();
+			
+			// skip line if it is a comment
+			line = line.trim();
 			if (line.startsWith("#")) continue;
-			Command cmd = new Command((line.split("#"))[0]);
+			line = line.split("#")[0];
+			if (line == null || line.length() == 0) continue;
+			
+			Command cmd = null;
+			try {
+				cmd = new Command(line);
+			} catch (InvalidCommandException ice) {
+				System.err.println(ice.getMessage());
+				continue;
+			}
 			
 			switch (cmd.getType()) {
 			case COPY:
@@ -46,6 +56,7 @@ public class Compiler {
 			case NEW:
 				break;
 			default:
+				System.err.println("Compiler: Unknown command '"+ cmd.getArg(0) +"'");
 				break;
 			}
 		}
@@ -66,7 +77,7 @@ public class Compiler {
 		// first argument must exist, so we add it to precondition file structure
 		fs.insert(arg1);
 	}
-	
+
 	private void handleDelete(FileStruct fs, Command cmd) {
 		// TODO: assert command is legal
 		String arg1 = cmd.getArg(1);
