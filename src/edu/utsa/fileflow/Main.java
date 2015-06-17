@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import edu.utsa.fileflow.compiler.Compiler;
+import edu.utsa.fileflow.compiler.CompilerException;
 import edu.utsa.fileflow.filestructure.FileStruct;
 import edu.utsa.fileflow.utilities.LuckyLogger;
 import edu.utsa.fileflow.utilities.PrintDirectoryTree;
@@ -28,7 +29,14 @@ public class Main {
 			System.exit(1);
 		}
 
-		FileStruct preCondition = compiler.compile();
+		FileStruct preCondition = null;
+		try {
+			preCondition = compiler.compile();
+		} catch (CompilerException ce) {
+			Main.logger.log(ce.getMessage());
+			System.exit(-1);
+		}
+
 		System.out.println(PrintDirectoryTree.printDirectoryTree(preCondition));
 
 	}

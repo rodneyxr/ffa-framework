@@ -22,19 +22,21 @@ public class Compiler {
 	/**
 	 * Parses the test script and will return a Directory Structure Object
 	 */
-	public FileStruct compile() {
+	public FileStruct compile() throws CompilerException {
 		FileStruct root = new FileStruct("root");
 		// while we have more commands to read
 		while (scanner.hasNext()) {
 			// parse line to command object
 			String line = scanner.nextLine();
-			
+
 			// skip line if it is a comment
 			line = line.trim();
-			if (line.startsWith("#")) continue;
+			if (line.startsWith("#"))
+				continue;
 			line = line.split("#")[0];
-			if (line == null || line.length() == 0) continue;
-			
+			if (line == null || line.length() == 0)
+				continue;
+
 			Command cmd = null;
 			try {
 				cmd = new Command(line);
@@ -42,7 +44,7 @@ public class Compiler {
 				System.err.println(ice.getMessage());
 				continue;
 			}
-			
+
 			switch (cmd.getType()) {
 			case COPY:
 				handleCopy(root, cmd);
@@ -56,19 +58,24 @@ public class Compiler {
 			case NEW:
 				break;
 			default:
-				System.err.println("Compiler: Unknown command '"+ cmd.getArg(0) +"'");
+				System.err.println("Compiler: Unknown command '" + cmd.getArg(0) + "'");
 				break;
 			}
 		}
-		
+
 		return root;
 	}
 
-	private void handleCopy(FileStruct fs, Command cmd) {
+	private void handleCopy(FileStruct fs, Command cmd) throws CompilerException {
 		// TODO: assert commands are legal
 		String arg1 = cmd.getArg(1);
 		// first argument must exist, so we add it to precondition file structure
 		fs.insert(arg1);
+
+		String arg2 = cmd.getArg(2);
+		if (fs.pathExists(arg2))
+			throw new CompilerException(String.format("second argument exists for '%s'", cmd.getCommand()));
+
 	}
 
 	private void handleMove(FileStruct fs, Command cmd) {

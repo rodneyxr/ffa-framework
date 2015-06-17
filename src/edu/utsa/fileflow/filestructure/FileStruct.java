@@ -64,6 +64,17 @@ public class FileStruct {
 		}
 	}
 
+	public boolean pathExists(String filePath) {
+		String[] tokens = filePath.split("/");
+		FileStruct next = this;
+		for (String token : tokens) {
+			next = next.files.get(token);
+			if (next == null)
+				return false;
+		}
+		return true;
+	}
+
 	/*
 	 * Getters and Setters for global class variables
 	 */
