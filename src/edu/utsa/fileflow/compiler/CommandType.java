@@ -13,7 +13,7 @@ public enum CommandType {
 			CMD_MAP.put(type.name, type);
 	}
 
-	String name;
+	private String name;
 
 	CommandType(String name) {
 		this.name = name;

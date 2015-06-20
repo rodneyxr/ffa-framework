@@ -1,7 +1,6 @@
 package edu.utsa.fileflow;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 import edu.utsa.fileflow.compiler.Compiler;
 import edu.utsa.fileflow.compiler.CompilerException;
@@ -20,20 +19,13 @@ public class Main {
 
 		// create a file for the script to compile
 		File file = new File("test.script");
-		Compiler compiler = null;
-
-		try {
-			compiler = new Compiler(file);
-		} catch (FileNotFoundException e) {
-			System.err.println(e.getMessage());
-			System.exit(1);
-		}
+		Compiler compiler = new Compiler();
 
 		FileStruct preCondition = null;
 		try {
-			preCondition = compiler.compile();
+			preCondition = compiler.compile(file);
 		} catch (CompilerException ce) {
-			Main.logger.log(ce.getMessage());
+			System.err.println(ce.getMessage());
 			System.exit(-1);
 		}
 

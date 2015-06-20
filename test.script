@@ -1,5 +1,6 @@
 # simple test script for file flow analysis
 cp src work
+new test
 #cp work src/main
 #mv src/data work/data
 #rm compile/main/x
