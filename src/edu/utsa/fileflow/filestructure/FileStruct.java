@@ -44,6 +44,23 @@ public class FileStruct {
 	public void remove(FileStruct fs) {
 		files.remove(fs.name);
 	}
+	
+	public void remove(String filePath) {
+		String[] tokens = filePath.split("/");
+		if (tokens.length == 1) {
+			remove(files.get(tokens[0]));
+			return;
+		}
+		FileStruct next = this, prev;
+		for (int i=0, size= tokens.length; i<size;i++) {
+			String token = tokens[i];
+			prev = next;
+			next = next.files.get(token);
+			if (next.files.get(tokens[i+1]) == null){
+				prev.remove(next.name);
+			}
+		}
+	}
 
 	private void createStructure(String[] tokens, int nextIndex) {
 		// Main.logger.log("Directory: " + Arrays.toString(tokens)); // DEBUG
@@ -74,6 +91,17 @@ public class FileStruct {
 		}
 		return true;
 	}
+	
+	public boolean pathExists(String[] filePath) {
+		FileStruct next = this;
+		for (int i=0, size = filePath.length-1; i < size;i++) {
+			next = next.files.get(filePath[i]);
+			if (next == null)
+				return false;
+		}
+		return true;
+	}
+	
 
 	/*
 	 * Getters and Setters for global class variables

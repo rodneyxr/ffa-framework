@@ -29,7 +29,12 @@ public class Main {
 			System.exit(-1);
 		}
 
+		System.out.println("Pre-condition Filestructure");
 		System.out.println(PrintDirectoryTree.printDirectoryTree(preCondition));
+		
+		System.out.println("\nPost-condition Filestructure");
+		System.out.println(PrintDirectoryTree.printDirectoryTree(compiler.getPost()));
+
 
 	}
 
