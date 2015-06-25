@@ -1,3 +1,7 @@
 # simple test script for file flow analysis
 cp home/bin/x.txt x.txt
-
+mv home/bin/x.txt home/x.txt
+cp home/bin/x.txt dir1/x.txt # the previous command should make this one invalid
+# but it is valid because our code assumes this is a precondition
+rm dir1
+cp home/bin/x.txt dir1/x.txt

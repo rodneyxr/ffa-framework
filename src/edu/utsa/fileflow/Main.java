@@ -6,7 +6,6 @@ import edu.utsa.fileflow.compiler.Compiler;
 import edu.utsa.fileflow.compiler.CompilerException;
 import edu.utsa.fileflow.filestructure.FileStruct;
 import edu.utsa.fileflow.utilities.LuckyLogger;
-import edu.utsa.fileflow.utilities.PrintDirectoryTree;
 
 public class Main {
 
@@ -15,7 +14,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		logger.setEnabled(DEBUG);
-		Main.logger.log("Hello, World! Welcome to File Flow Analysis!");
+		// Main.logger.log("Hello, World! Welcome to File Flow Analysis!");
 
 		// create a file for the script to compile
 		File file = new File("test.script");
@@ -30,11 +29,10 @@ public class Main {
 		}
 
 		System.out.println("Pre-condition Filestructure");
-		System.out.println(PrintDirectoryTree.printDirectoryTree(preCondition));
-		
-		System.out.println("\nPost-condition Filestructure");
-		System.out.println(PrintDirectoryTree.printDirectoryTree(compiler.getPost()));
+		System.out.println(preCondition);
 
+		System.out.println("\nPost-condition Filestructure");
+		System.out.println(compiler.getPost());
 
 	}
 

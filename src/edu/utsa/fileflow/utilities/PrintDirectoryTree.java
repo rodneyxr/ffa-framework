@@ -26,11 +26,7 @@ public class PrintDirectoryTree {
 		sb.append("");
 		sb.append("\n");
 		for (HashMap.Entry<String, FileStruct> entry : dir.getFiles().entrySet()) {
-			// if (file.isDirectory()) {
 			printDirectoryTree(entry.getValue(), indent + 1, sb);
-			// } else {
-			// printFile(file, indent + 1, sb);
-			// }
 		}
 
 	}

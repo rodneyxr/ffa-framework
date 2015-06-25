@@ -2,22 +2,24 @@ package edu.utsa.fileflow.filestructure;
 
 import java.util.HashMap;
 
+import edu.utsa.fileflow.utilities.PrintDirectoryTree;
+
 public class FileStruct {
 
 	private String name;
+	private FileStruct parent;
 	private final HashMap<String, FileStruct> files;
 
 	/**
-	 * This constructor will instantiate a new Directory object.
+	 * This constructor will instantiate the new FileStruct object.
 	 * 
 	 * @param name
-	 *            - name of the directory
-	 * @param level
-	 *            - level of the directory relative to 'root'
+	 *            name of the directory
 	 */
 	public FileStruct(String name) {
 		this.name = name;
-		files = new HashMap<String, FileStruct>();
+		this.parent = null;
+		this.files = new HashMap<String, FileStruct>();
 	}
 
 	/**
@@ -26,82 +28,84 @@ public class FileStruct {
 	 * @param fs
 	 *            the file structure to add
 	 */
-	public void insert(FileStruct fs) {
-		// Main.logger.log("Directory: " + "Adding " + dir.name + " to " + name); // DEBUG
-		this.files.put(fs.name, fs);
-	}
-
-	public void insert(String filePath) {
-		String[] tokens = filePath.split("/");
-		createStructure(tokens, 0);
+	public FileStruct insert(FileStruct fs) {
+		fs.parent = this;
+		return files.put(fs.name, fs);
 	}
 
 	/**
-	 * Removes a directory from the dirList array list.
+	 * Inserts the filePath into the file structure. If the directories do not exist, then it will create them.
 	 * 
-	 * @param dir
+	 * @param filePath
+	 *            the file path to insert into the file structure
 	 */
-	public void remove(FileStruct fs) {
-		files.remove(fs.name);
+	public FileStruct insert(FilePath filePath) {
+		String[] tokens = filePath.getTokens();
+		FileStruct next = this;
+		for (String token : tokens) {
+			next.insert(new FileStruct(token));
+			next = next.files.get(token);
+		}
+		return next;
 	}
 	
-	public void remove(String filePath) {
-		String[] tokens = filePath.split("/");
-		if (tokens.length == 1) {
-			remove(files.get(tokens[0]));
-			return;
-		}
-		FileStruct next = this, prev;
-		for (int i=0, size= tokens.length; i<size;i++) {
-			String token = tokens[i];
-			prev = next;
-			next = next.files.get(token);
-			if (next.files.get(tokens[i+1]) == null){
-				prev.remove(next.name);
-			}
-		}
+	public FileStruct insert(FileStruct fs, FilePath filePath) {
+		FileStruct nodeToInsertAt = insert(filePath.getPathToFile());
+		fs.name = filePath.getFileName();
+		return nodeToInsertAt.insert(fs);
 	}
 
-	private void createStructure(String[] tokens, int nextIndex) {
-		// Main.logger.log("Directory: " + Arrays.toString(tokens)); // DEBUG
-		FileStruct nextFS = files.get(tokens[nextIndex]);
-		if (nextFS == null) {
-			// create directory
-			FileStruct newFS = new FileStruct(tokens[nextIndex]);
-			this.insert(newFS);
-			if (nextIndex < tokens.length - 1) {
-				int newIndex = nextIndex + 1;
-				newFS.createStructure(tokens, newIndex);
-			}
-		} else {
-			if (nextIndex < tokens.length - 1) {
-				int newIndex = nextIndex + 1;
-				nextFS.createStructure(tokens, newIndex);
-			}
-		}
+	/**
+	 * Removes a FileStruct from its children
+	 *
+	 * @param fs
+	 *            FileStruct to remove
+	 */
+	private FileStruct remove(FileStruct fs) {
+		return files.remove(fs.name);
 	}
 
-	public boolean pathExists(String filePath) {
-		String[] tokens = filePath.split("/");
+	/**
+	 * 
+	 * @param filePath
+	 *            path to the file to be removed
+	 * @return the FileStruct that was removed
+	 */
+	public FileStruct remove(FilePath filePath) {
+		FileStruct fileToRemove = getFileStruct(filePath);
+		if (fileToRemove == null) {
+			return null;
+		}
+		// FIXME: test if parent is null
+		return fileToRemove.parent.remove(fileToRemove);
+	}
+
+	/**
+	 * 
+	 * @param filePath
+	 *            path to the target FileStruct to be returned
+	 * @return the FileStruct specified by the filePath
+	 */
+	public FileStruct getFileStruct(FilePath filePath) {
+		String[] tokens = filePath.getTokens();
 		FileStruct next = this;
 		for (String token : tokens) {
 			next = next.files.get(token);
 			if (next == null)
-				return false;
+				return null;
 		}
-		return true;
+		return next;
 	}
-	
-	public boolean pathExists(String[] filePath) {
-		FileStruct next = this;
-		for (int i=0, size = filePath.length-1; i < size;i++) {
-			next = next.files.get(filePath[i]);
-			if (next == null)
-				return false;
-		}
-		return true;
+
+	/**
+	 * Checks if a file exists given the path to that file
+	 * 
+	 * @param filePath
+	 * @return true if the file exists
+	 */
+	public boolean pathExists(FilePath filePath) {
+		return getFileStruct(filePath) != null;
 	}
-	
 
 	/*
 	 * Getters and Setters for global class variables
@@ -112,6 +116,20 @@ public class FileStruct {
 
 	public HashMap<String, FileStruct> getFiles() {
 		return files;
+	}
+
+	@Override
+	public FileStruct clone() {
+		FileStruct clone = new FileStruct(name);
+		for (HashMap.Entry<String, FileStruct> entry : files.entrySet()) {
+			clone.insert(entry.getValue().clone());
+		}
+		return clone;
+	}
+	
+	@Override
+	public String toString() {
+		return PrintDirectoryTree.printDirectoryTree(this);
 	}
 
 }

@@ -4,25 +4,26 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
+import edu.utsa.fileflow.filestructure.FilePath;
 import edu.utsa.fileflow.filestructure.FileStruct;
 
 public class Compiler {
-	/**
-	 * TODO: need a way to assert that files do not exist as required by the precondition.
-	 * 
-	 * 1. A possible way to do this would be to create a File Structure that will keep track of files that should not
-	 * exist.
-	 * 
-	 * 2. Another way would be to implement a way to do this directly into the precondition file structure (requires
-	 * modification to the FileStruct class).
-	 * 
-	 * 3. Create a Condition class that has multiple file structure objects that will serve different purposes. i.e. one
-	 * file structure dictating what should exist and the other dictating what should not exist.
-	 */
-	
+
+	// TODO: need a way to assert that files do not exist as required by the precondition.
+	// 1. A possible way to do this would be to create a File Structure that will keep track of files that should not
+	// exist.
+	// 2. Another way would be to implement a way to do this directly into the precondition file structure (requires
+	// modification to the FileStruct class).
+	// 3. Create a Condition class that has multiple file structure objects that will serve different purposes. i.e. one
+	// file structure dictating what should exist and the other dictating what should not exist.
+	//
+	// FIXME: the previous command should make this one invalid but it is valid because our code assumes this is a
+	// precondition
+	// mv home/bin/x.txt home/x.txt
+	// cp home/bin/x.txt dir1/x.txt
+
 	private FileStruct pre;
 	private FileStruct post;
-
 
 	/**
 	 * Parses the test script and will return a Directory Structure Object
@@ -93,54 +94,63 @@ public class Compiler {
 
 	private void handleCopy(FileStruct pre, FileStruct post, Command cmd) throws CompilerException {
 		// TODO: assert commands are legal
-		// first argument must exist, so we add it to precondition file structure
-		String arg1 = cmd.getArg(1);
-		// check if exists in post
-		if(!post.pathExists(arg1)){
+
+		// source must exist, so we add it to precondition file structure only if its not in the post
+		FilePath arg1 = new FilePath(cmd.getArg(1));
+		if (!post.pathExists(arg1)) {
 			pre.insert(arg1);
 			post.insert(arg1);
 		}
+
 		// the second argument should not exist, so if it does throw an exception
-		String arg2 = cmd.getArg(2);
-		String[] filepath = arg2.split("/");
-		
-		if (!pre.pathExists(filepath)) {
-			throw new CompilerException(String.format(" '%s' No such file or directory.", arg2));
+		FilePath arg2 = new FilePath(cmd.getArg(2));
+
+		if (!pre.pathExists(arg2.getPathToFile())) {
+			// cp home/bin/x.txt dir1/x.txt
+			// add path to dir1 to precondition
+			pre.insert(arg2.getPathToFile());
+			// throw new CompilerException(String.format("'%s' No such file or directory.", arg2.getPathToFile()));
 		}
-		
 		if (pre.pathExists(arg2)) {
-			throw new CompilerException(String.format("'%s' File or directory already exists.", cmd.getCommand()));
+			throw new CompilerException(String.format("'%s': File or directory already exists in pre-condition.\n%s", cmd.getCommand(), pre));
 		}
-		post.insert(arg2);
-		
+		if (post.pathExists(arg2)) {
+			throw new CompilerException(String.format("'%s': File or directory already exists in post-condition.\n%s", cmd.getCommand(), post));
+		}
+
+		// insert clone of the path to the new path
+		post.insert(post.getFileStruct(arg1).clone(), arg2);
 	}
 
-	private void handleMove(FileStruct pre, FileStruct post, Command cmd) throws CompilerException{
+	private void handleMove(FileStruct pre, FileStruct post, Command cmd) throws CompilerException {
 		// TODO: assert commands are legal
 		// first argument must exist, so we add it to precondition file
 		// structure
-		String arg1 = cmd.getArg(1);
-		if(!post.pathExists(arg1)){
+		FilePath arg1 = new FilePath(cmd.getArg(1));
+		if (!post.pathExists(arg1)) {
 			pre.insert(arg1);
 			post.insert(arg1);
-		}		
+		}
 		// the second argument should not exist, so if it does throw an
 		// exception
-		String arg2 = cmd.getArg(2);
-		String[] filepath = arg2.split("/");
-		if (!pre.pathExists(filepath)) {
-			throw new CompilerException(String.format(" '%s' No such file or directory.", arg2));
+		FilePath arg2 = new FilePath(cmd.getArg(2));
+
+		if (!pre.pathExists(arg2.getPathToFile())) {
+			// TODO: cp home/bin/x.txt dir1/x.txt
+			// need to add dir1 to precondition
+			pre.insert(arg2);
+			post.insert(arg2);
+			// throw new CompilerException(String.format(" '%s' No such file or directory.", arg2.getPathToFile()));
 		}
 		if (pre.pathExists(arg2)) {
-			throw new CompilerException(String.format("'%s' File or directory already exists.", cmd.getCommand()));
+			throw new CompilerException(String.format("'%s': File or directory already exists.", cmd.getCommand()));
 		}
-		// TODO:  cp home/bin/x.txt dir1/x.txt
-		// need to add dir1 to precondition
 
-		post.insert(arg2);
+		// insert clone of arg1 to the new path
+		post.insert(post.getFileStruct(arg1).clone(), arg2);
 		// delete arg1 from file structure
 		post.remove(arg1);
-		
+
 	}
 
 	private void handleDelete(FileStruct pre, FileStruct post, Command cmd) throws CompilerException {
@@ -150,13 +160,17 @@ public class Compiler {
 		}
 
 		// first argument must exist so add it to precondition file structure if it isn't in post
-		String arg1 = cmd.getArg(1);
+		FilePath arg1 = new FilePath(cmd.getArg(1));
 
 		// TODO: check if arg1 exists in post
 		// if it exists in post then it doesn't need to be in precondition
 		// because it was already created by another command
-
-		pre.insert(arg1);
+		if (!post.pathExists(arg1)) {
+			pre.insert(arg1);
+			post.insert(arg1);
+		} else {
+			post.remove(arg1);
+		}
 	}
 
 	private void handleNew(FileStruct pre, FileStruct post, Command cmd) throws CompilerException {
@@ -169,7 +183,6 @@ public class Compiler {
 		// String arg1 = cmd.getArg(1);
 		// TODO: assert arg1 does not exist
 	}
-
 
 	public FileStruct getPost() {
 		return post;
