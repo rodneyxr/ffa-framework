@@ -43,8 +43,8 @@ public class Command {
 
 	private void setCommand(String command) throws InvalidCommandException {
 		if (command == null)
-			throw new InvalidCommandException("null command");
-		this.command = command;
+			throw new InvalidCommandException("null command string");
+		this.command = command.trim();
 	}
 
 	public int getSize() {
@@ -60,6 +60,11 @@ public class Command {
 		if (argList.length == 0)
 			throw new InvalidCommandException("empty command");
 		args = new ArrayList<String>(Arrays.asList(argList));
+	}
+	
+	@Override
+	public String toString() {
+		return command;
 	}
 
 }

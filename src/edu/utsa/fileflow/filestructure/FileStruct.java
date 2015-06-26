@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import edu.utsa.fileflow.utilities.PrintDirectoryTree;
 
-public class FileStruct {
+public class FileStruct implements Cloneable {
 
 	private String name;
 	private FileStruct parent;
@@ -48,7 +48,7 @@ public class FileStruct {
 		}
 		return next;
 	}
-	
+
 	public FileStruct insert(FileStruct fs, FilePath filePath) {
 		FileStruct nodeToInsertAt = insert(filePath.getPathToFile());
 		fs.name = filePath.getFileName();
@@ -126,7 +126,7 @@ public class FileStruct {
 		}
 		return clone;
 	}
-	
+
 	@Override
 	public String toString() {
 		return PrintDirectoryTree.printDirectoryTree(this);
