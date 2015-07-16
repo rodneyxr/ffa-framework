@@ -1,10 +1,10 @@
-# new file1 causes the rm file1 to not assume file1 exists thus not adding it to precondition
-new file1
-rm file1
+mv dir1/file0/file1 file2
+rm dir1/file2
 
-new file1
-rm file1
+#new file1
+#rm file1
 
-# this command works now but should not work because file1 should not exist or be assumed to exist
-# it works because we aren't asserting that file1 does not exist when we execute the first command
-rm file1
+#new file1
+#rm file1
+
+#rm file1

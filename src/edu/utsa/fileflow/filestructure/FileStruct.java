@@ -132,4 +132,13 @@ public class FileStruct implements Cloneable {
 		return PrintDirectoryTree.printDirectoryTree(this);
 	}
 
+	public boolean assertNotExists(FilePath arg1) {
+		if(files.get(arg1) != null){
+			System.out.println("file 1 exists");
+			return false;
+		}
+		System.out.println("file 1 does not exist");
+		return true;
+	}
+
 }

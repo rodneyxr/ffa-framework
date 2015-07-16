@@ -107,6 +107,9 @@ public class Main {
 
 		System.out.println("Pre-condition Filestructure");
 		System.out.println(preCondition);
+		
+		System.out.println("~Pre-condition Filestructure");
+		System.out.println(compiler.getAntiPre());
 
 		System.out.println("\nPost-condition Filestructure");
 		System.out.println(compiler.getPost());

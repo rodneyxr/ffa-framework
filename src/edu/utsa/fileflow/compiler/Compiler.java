@@ -10,15 +10,11 @@ import edu.utsa.fileflow.filestructure.FileStruct;
 
 public class Compiler {
 
-	// TODO: need a way to assert that files do not exist as required by the precondition.
-	// 1. A possible way to do this would be to create a File Structure that will keep track of files that should not
-	// exist.
-	// 2. Another way would be to implement a way to do this directly into the precondition file structure (requires
-	// modification to the FileStruct class).
-	// 3. Create a Condition class that has multiple file structure objects that will serve different purposes. i.e. one
-	// file structure dictating what should exist and the other dictating what should not exist.
-
+	// existing precondition file structure
 	private FileStruct pre;
+	// cannot exist precondition file structure
+	private FileStruct $pre;
+	// postcondition file structure (what the structure will look like after)
 	private FileStruct post;
 
 	/**
@@ -39,6 +35,7 @@ public class Compiler {
 
 		// instantiate the precondition file structure
 		pre = new FileStruct("root");
+		$pre = new FileStruct("root");
 
 		// instantiate the postcondition file structure
 		// current structure while we execute commands
@@ -82,7 +79,7 @@ public class Compiler {
 				scanner.close();
 				throw new CompilerException("Unknown command: '" + cmd.getArg(0) + "'");
 			}
-		}
+		} 
 
 		scanner.close();
 		return pre;
@@ -96,9 +93,14 @@ public class Compiler {
 	 * @param filePath
 	 * @return true if we CAN assume that filePath existed before we ran the script
 	 */
-	private boolean assume(FilePath filePath) {
+	private boolean assume(FilePath filePath/*, boolean exists*/) {
 		boolean inPre = pre.pathExists(filePath);
+		boolean $inPre = $pre.pathExists(filePath);
 		boolean inPost = post.pathExists(filePath);
+//		if ($inPre) {
+//			Main.logger.log("%s cannot be assumed", filePath);
+//			return false;
+//		}
 		if (inPre) {
 			// if path in precondition but not in the post then it was deleted/moved at some point
 			// because it was already used as a precondition and was added to the postcondition at
@@ -112,10 +114,15 @@ public class Compiler {
 			// do nothing because is not a precondition but still a valid argument
 			// else if it does not exists in either then it becomes a precondition
 			if (!inPost) {
+				if ($inPre) {
+					Main.logger.log("%s cannot be assumed", filePath);
+					return false;
+				}
 				pre.insert(filePath);
 				post.insert(filePath);
 			}
 		}
+		
 		return true;
 	}
 
@@ -190,6 +197,14 @@ public class Compiler {
 		if (!assume(arg1)) {
 			throw new CompilerException(String.format("'%s': File does not exist", cmd));
 		}
+//		if (post.pathExists(arg1) || $pre.pathExists(arg1)) {
+//			Main.logger.log("%s cannot be assumed", arg1);
+//			throw new CompilerException(String.format("'%s': File does not exist and cannot be assumed", cmd));
+//		}
+//		if (!post.pathExists(arg1) && $pre.pathExists(arg1)) {
+//			throw new CompilerException(String.format("'%s': File does not exist and cannot be assumed", cmd));
+//		}
+		
 		post.remove(arg1);
 	}
 
@@ -204,14 +219,21 @@ public class Compiler {
 		if (post.pathExists(arg1)) {
 			throw new CompilerException(String.format("'%s': File or directory already exists in post-condition.\n%s", cmd, post));
 		}
+
+		// assert it doesn't exist in precondition
+		if (!$pre.pathExists(arg1) && !pre.pathExists(arg1)) {
+			$pre.insert(arg1);
+		}
 		
-		// TODO: need to assert it doesn't exist in precondition
-		// pre.assertNotExists(arg1);
 		post.insert(arg1);
 	}
 
 	public FileStruct getPost() {
 		return post;
+	}
+	
+	public FileStruct getAntiPre() {
+		return $pre;
 	}
 
 }
