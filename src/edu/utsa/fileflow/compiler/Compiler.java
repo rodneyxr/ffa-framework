@@ -97,10 +97,7 @@ public class Compiler {
 		boolean inPre = pre.pathExists(filePath);
 		boolean $inPre = $pre.pathExists(filePath);
 		boolean inPost = post.pathExists(filePath);
-//		if ($inPre) {
-//			Main.logger.log("%s cannot be assumed", filePath);
-//			return false;
-//		}
+		
 		if (inPre) {
 			// if path in precondition but not in the post then it was deleted/moved at some point
 			// because it was already used as a precondition and was added to the postcondition at
@@ -197,13 +194,6 @@ public class Compiler {
 		if (!assume(arg1)) {
 			throw new CompilerException(String.format("'%s': File does not exist", cmd));
 		}
-//		if (post.pathExists(arg1) || $pre.pathExists(arg1)) {
-//			Main.logger.log("%s cannot be assumed", arg1);
-//			throw new CompilerException(String.format("'%s': File does not exist and cannot be assumed", cmd));
-//		}
-//		if (!post.pathExists(arg1) && $pre.pathExists(arg1)) {
-//			throw new CompilerException(String.format("'%s': File does not exist and cannot be assumed", cmd));
-//		}
 		
 		post.remove(arg1);
 	}
