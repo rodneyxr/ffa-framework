@@ -7,7 +7,7 @@ import edu.utsa.fileflow.utilities.PrintDirectoryTree;
 public class FileStruct implements Cloneable {
 
 	private String name;
-	private FileStruct parent;
+	public FileStruct parent;
 	private final HashMap<String, FileStruct> files;
 
 	/**
@@ -30,7 +30,8 @@ public class FileStruct implements Cloneable {
 	 */
 	public FileStruct insert(FileStruct fs) {
 		fs.parent = this;
-		return files.put(fs.name, fs);
+		FileStruct node = files.put(fs.name, fs);
+		return node;
 	}
 
 	/**
@@ -38,19 +39,37 @@ public class FileStruct implements Cloneable {
 	 * 
 	 * @param filePath
 	 *            the file path to insert into the file structure
+	 * @return the lowest level FileStruct
 	 */
 	public FileStruct insert(FilePath filePath) {
 		String[] tokens = filePath.getTokens();
 		FileStruct next = this;
+		FileStruct peek = this;
+		// traverse through the file path until we find a directory that does not exist
+		int i = 0;
 		for (String token : tokens) {
-			next.insert(new FileStruct(token));
-			next = next.files.get(token);
+			peek = peek.files.get(token);
+			if (peek == null) {
+				break;
+			}
+			next = peek;
+			i += 1;
 		}
+		
+		if (tokens.length > 0 && next.name.equals(tokens[tokens.length - 1])) {
+			return next;
+		} else {
+			for (; i < tokens.length; i++) {
+				next.insert(new FileStruct(tokens[i]));
+				next = next.files.get(tokens[i]);
+			}
+		}
+		
 		return next;
 	}
 
 	public FileStruct insert(FileStruct fs, FilePath filePath) {
-		FileStruct nodeToInsertAt = insert(filePath.getPathToFile());
+		FileStruct nodeToInsertAt = insert(filePath.getPathToFile());//insert(filePath.getPathToFile());
 		fs.name = filePath.getFileName();
 		return nodeToInsertAt.insert(fs);
 	}

@@ -1,10 +1,6 @@
-mv dir1/file0/file1 file2
-rm dir1/file2
+cp home/bin/x.txt x.txt
+mv home/bin/dir1/x.txt home/x.txt
 
-#new file1
-#rm file1
-
-#new file1
-#rm file1
-
-#rm file1
+#cp home/bin/x.txt dir1/x.txt
+#rm dir1
+#cp home/bin/x.txt dir1/x.txt

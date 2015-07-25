@@ -174,10 +174,13 @@ public class Compiler {
 		}
 
 		// insert clone of arg1 to the new path
-		post.insert(post.getFileStruct(arg1).clone(), arg2);
+		FileStruct clone = post.getFileStruct(arg1).clone();
+		Main.logger.log(clone);
+		
+		post.insert(clone, arg2);
+		
 		// delete arg1 from file structure
 		post.remove(arg1);
-
 	}
 
 	private void handleDelete(Command cmd) throws CompilerException {
