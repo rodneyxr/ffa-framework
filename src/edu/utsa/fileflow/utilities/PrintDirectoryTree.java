@@ -23,9 +23,9 @@ public class PrintDirectoryTree {
 		sb.append(getIndentString(indent));
 		sb.append("+--");
 		sb.append(dir.getName());
-		sb.append("");
 		sb.append("\n");
 		for (HashMap.Entry<String, FileStruct> entry : dir.getFiles().entrySet()) {
+			if (entry.getKey().equals("..") | entry.getKey().equals(".")) continue;
 			printDirectoryTree(entry.getValue(), indent + 1, sb);
 		}
 

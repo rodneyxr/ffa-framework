@@ -7,7 +7,6 @@ import edu.utsa.fileflow.utilities.PrintDirectoryTree;
 public class FileStruct implements Cloneable {
 
 	private String name;
-	public FileStruct parent;
 	private final HashMap<String, FileStruct> files;
 
 	/**
@@ -18,8 +17,9 @@ public class FileStruct implements Cloneable {
 	 */
 	public FileStruct(String name) {
 		this.name = name;
-		this.parent = null;
 		this.files = new HashMap<String, FileStruct>();
+		files.put(".", this);
+		setParent(null);
 	}
 
 	/**
@@ -29,13 +29,14 @@ public class FileStruct implements Cloneable {
 	 *            the file structure to add
 	 */
 	public FileStruct insert(FileStruct fs) {
-		fs.parent = this;
+		fs.setParent(this);
 		FileStruct node = files.put(fs.name, fs);
 		return node;
 	}
 
 	/**
-	 * Inserts the filePath into the file structure. If the directories do not exist, then it will create them.
+	 * Inserts the filePath into the file structure. If the directories do not
+	 * exist, then it will create them.
 	 * 
 	 * @param filePath
 	 *            the file path to insert into the file structure
@@ -45,7 +46,8 @@ public class FileStruct implements Cloneable {
 		String[] tokens = filePath.getTokens();
 		FileStruct next = this;
 		FileStruct peek = this;
-		// traverse through the file path until we find a directory that does not exist
+		// traverse through the file path until we find a directory that does
+		// not exist
 		int i = 0;
 		for (String token : tokens) {
 			peek = peek.files.get(token);
@@ -55,7 +57,7 @@ public class FileStruct implements Cloneable {
 			next = peek;
 			i += 1;
 		}
-		
+
 		if (tokens.length > 0 && next.name.equals(tokens[tokens.length - 1])) {
 			return next;
 		} else {
@@ -64,12 +66,12 @@ public class FileStruct implements Cloneable {
 				next = next.files.get(tokens[i]);
 			}
 		}
-		
+
 		return next;
 	}
 
 	public FileStruct insert(FileStruct fs, FilePath filePath) {
-		FileStruct nodeToInsertAt = insert(filePath.getPathToFile());//insert(filePath.getPathToFile());
+		FileStruct nodeToInsertAt = insert(filePath.getPathToFile());
 		fs.name = filePath.getFileName();
 		return nodeToInsertAt.insert(fs);
 	}
@@ -96,7 +98,7 @@ public class FileStruct implements Cloneable {
 			return null;
 		}
 		// FIXME: test if parent is null
-		return fileToRemove.parent.remove(fileToRemove);
+		return fileToRemove.getParent().remove(fileToRemove);
 	}
 
 	/**
@@ -137,10 +139,24 @@ public class FileStruct implements Cloneable {
 		return files;
 	}
 
+	private void setParent(FileStruct fs) {
+		files.put("..", fs);
+	}
+
+	private FileStruct getParent() {
+		return files.get("..");
+	}
+
+	public boolean exists(FilePath fs) {
+		return (files.get(fs) == null);
+	}
+
 	@Override
 	public FileStruct clone() {
 		FileStruct clone = new FileStruct(name);
 		for (HashMap.Entry<String, FileStruct> entry : files.entrySet()) {
+			if (entry.getKey().equals("..") | entry.getKey().equals("."))
+				continue;
 			clone.insert(entry.getValue().clone());
 		}
 		return clone;
@@ -149,15 +165,6 @@ public class FileStruct implements Cloneable {
 	@Override
 	public String toString() {
 		return PrintDirectoryTree.printDirectoryTree(this);
-	}
-
-	public boolean assertNotExists(FilePath arg1) {
-		if(files.get(arg1) != null){
-			System.out.println("file 1 exists");
-			return false;
-		}
-		System.out.println("file 1 does not exist");
-		return true;
 	}
 
 }
