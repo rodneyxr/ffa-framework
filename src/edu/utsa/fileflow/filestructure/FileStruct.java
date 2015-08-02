@@ -46,8 +46,7 @@ public class FileStruct implements Cloneable {
 		String[] tokens = filePath.getTokens();
 		FileStruct next = this;
 		FileStruct peek = this;
-		// traverse through the file path until we find a directory that does
-		// not exist
+		// traverse through the file path until we find a directory that does not exist
 		int i = 0;
 		for (String token : tokens) {
 			peek = peek.files.get(token);
@@ -145,10 +144,6 @@ public class FileStruct implements Cloneable {
 
 	private FileStruct getParent() {
 		return files.get("..");
-	}
-
-	public boolean exists(FilePath fs) {
-		return (files.get(fs) == null);
 	}
 
 	@Override

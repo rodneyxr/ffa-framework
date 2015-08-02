@@ -10,21 +10,21 @@ import edu.utsa.fileflow.filestructure.FileStruct;
 
 public class Compiler {
 
-	// existing precondition file structure
-	private FileStruct pre;
-	// cannot exist precondition file structure
-	private FileStruct $pre;
-	// postcondition file structure (what the structure will look like after)
-	private FileStruct post;
+	// precondition (what the structure must look like before)
+	private Condition pre;
+
+	// postcondition (what the structure will look like after)
+	private Condition post;
 
 	/**
 	 * Parses the test script and will return a Directory Structure Object
 	 * 
 	 * @param file
-	 * @return Precondition file structure
+	 *            The file to compile the conditions from.
+	 * @return The precondition
 	 * @throws CompilerException
 	 */
-	public FileStruct compile(File file) throws CompilerException {
+	public Condition compile(File file) throws CompilerException {
 		// open the file for reading
 		Scanner scanner = null;
 		try {
@@ -34,12 +34,10 @@ public class Compiler {
 		}
 
 		// instantiate the precondition file structure
-		pre = new FileStruct("root");
-		$pre = new FileStruct("root");
+		pre = new Condition();
 
-		// instantiate the postcondition file structure
-		// current structure while we execute commands
-		post = new FileStruct("root");
+		// instantiate the postcondition (current structure while we execute commands)
+		post = new Condition();
 
 		// while we have more commands to read
 		while (scanner.hasNext()) {
@@ -79,29 +77,28 @@ public class Compiler {
 				scanner.close();
 				throw new CompilerException("Unknown command: '" + cmd.getArg(0) + "'");
 			}
-		} 
+		}
 
 		scanner.close();
 		return pre;
 	}
 
 	/**
-	 * Assumes that a file path exists in the precondition. In the special case that it does not exist in either the
-	 * precondition or the postcondition the file path will be added to both because we will assume that path exists
-	 * before the script was executed.
+	 * Assumes that a file path exists in the precondition. In the special case that it does not exist in either the precondition or the postcondition the file path will be added
+	 * to both because we will assume that path exists before the script was executed.
 	 * 
-	 * @param filePath
-	 * @return true if we CAN assume that filePath existed before we ran the script
+	 * @param filePath The file path we want to assume exists.
+	 * @return True if we CAN assume that filePath existed before we ran the script.
 	 */
-	private boolean assume(FilePath filePath/*, boolean exists*/) {
-		boolean inPre = pre.pathExists(filePath);
-		boolean $inPre = $pre.pathExists(filePath);
-		boolean inPost = post.pathExists(filePath);
-		
+	private boolean assume(FilePath filePath) {
+		boolean inPre = pre.exists(filePath);
+		boolean $inPre = !pre.canExist(filePath); // negate because it can exist then it is in pre
+		boolean inPost = post.exists(filePath);
+
 		if (inPre) {
 			// if path in precondition but not in the post then it was deleted/moved at some point
 			// because it was already used as a precondition and was added to the postcondition at
-			// the same time. So if it is no longer in the post condition then it is doesn't not exist.
+			// the same time. So if it is no longer in the post condition then it does not exist.
 			if (!inPost) {
 				Main.logger.log("%s does not exist", filePath);
 				return false;// throw new CompilerException(String.format("%s does not exist", filePath));
@@ -115,11 +112,11 @@ public class Compiler {
 					Main.logger.log("%s cannot be assumed", filePath);
 					return false;
 				}
-				pre.insert(filePath);
-				post.insert(filePath);
+				pre.insert(filePath, true);
+				post.insert(filePath, true);
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -142,12 +139,14 @@ public class Compiler {
 			throw new CompilerException(String.format("'%s': path to arg2 does not exist", cmd));
 		}
 
-		if (post.pathExists(arg2)) {
+		if (post.exists(arg2)) {
 			throw new CompilerException(String.format("'%s': File or directory already exists in post-condition.\n%s", cmd, post));
 		}
 
 		// insert clone of the path to the new path
-		post.insert(post.getFileStruct(arg1).clone(), arg2);
+		FileStruct efs = post.getFileStruct(true);
+		efs.insert(efs.getFileStruct(arg1).clone(), arg2);
+
 	}
 
 	private void handleMove(Command cmd) throws CompilerException {
@@ -169,18 +168,16 @@ public class Compiler {
 			throw new CompilerException(String.format("'%s': path to arg2 does not exist", cmd));
 		}
 
-		if (post.pathExists(arg2)) {
+		if (post.exists(arg2)) {
 			throw new CompilerException(String.format("'%s': File or directory already exists in post-condition.\n%s", cmd, post));
 		}
 
 		// insert clone of arg1 to the new path
-		FileStruct clone = post.getFileStruct(arg1).clone();
-		Main.logger.log(clone);
-		
-		post.insert(clone, arg2);
-		
+		FileStruct efs = post.getFileStruct(true);
+		efs.insert(efs.getFileStruct(arg1).clone(), arg2);
+
 		// delete arg1 from file structure
-		post.remove(arg1);
+		post.remove(arg1, true);
 	}
 
 	private void handleDelete(Command cmd) throws CompilerException {
@@ -197,8 +194,8 @@ public class Compiler {
 		if (!assume(arg1)) {
 			throw new CompilerException(String.format("'%s': File does not exist", cmd));
 		}
-		
-		post.remove(arg1);
+
+		post.remove(arg1, true);
 	}
 
 	private void handleNew(Command cmd) throws CompilerException {
@@ -209,24 +206,20 @@ public class Compiler {
 
 		// arg1 should not exist in either pre or post
 		FilePath arg1 = new FilePath(cmd.getArg(1));
-		if (post.pathExists(arg1)) {
+		if (post.exists(arg1)) {
 			throw new CompilerException(String.format("'%s': File or directory already exists in post-condition.\n%s", cmd, post));
 		}
 
 		// assert it doesn't exist in precondition
-		if (!$pre.pathExists(arg1) && !pre.pathExists(arg1)) {
-			$pre.insert(arg1);
+		if (pre.canExist(arg1) && pre.exists(arg1)) {
+			pre.insert(arg1, false);
 		}
-		
-		post.insert(arg1);
+
+		post.insert(arg1, true);
 	}
 
-	public FileStruct getPost() {
+	public Condition getPostCondition() {
 		return post;
-	}
-	
-	public FileStruct getAntiPre() {
-		return $pre;
 	}
 
 }
