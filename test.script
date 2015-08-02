@@ -1,6 +1,0 @@
-cp home/bin/x.txt x.txt
-mv home/bin/x.txt home/dir1_cpy
-
-#cp home/bin/x.txt dir1/x.txt
-#rm dir1
-#cp home/bin/x.txt dir1/x.txt

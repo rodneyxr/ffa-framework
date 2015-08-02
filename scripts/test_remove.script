@@ -1,0 +1,10 @@
+# new file1 causes the rm file1 to not assume file1 exists thus adding it to non-existing precondition
+new file1 # if this command is uncommented the next command will cause file1 to be added to existing precondition
+rm file1
+
+new file1
+rm file1
+
+# this command works now but should not work because file1 should not exist or be assumed to exist
+# it works because we aren't asserting that file1 cannot exist when we execute the last command
+rm file1

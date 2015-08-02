@@ -1,7 +1,6 @@
 package edu.utsa.fileflow;
 
 import java.io.File;
-import java.util.Scanner;
 
 import edu.utsa.fileflow.compiler.Compiler;
 import edu.utsa.fileflow.compiler.CompilerException;
@@ -24,7 +23,7 @@ public class Main {
 		logger.setEnabled(DEBUG);
 
 		// create a file for the script to compile
-		File file = new File("test.script");
+		File file = new File("scripts/test_remove.script");
 		Compiler compiler = new Compiler();
 		Condition preCondition = null;
 		try {
@@ -39,9 +38,9 @@ public class Main {
 		System.out.println("Pre-condition");
 		System.out.println("-------------");
 		System.out.println(preCondition);
-		
+
 		System.out.println();
-	
+
 		// print the postcondition
 		System.out.println("--------------");
 		System.out.println("Post-condition");
