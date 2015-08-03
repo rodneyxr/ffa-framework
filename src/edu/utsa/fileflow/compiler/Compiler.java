@@ -94,7 +94,13 @@ public class Compiler {
 		boolean inPre = pre.exists(filePath);
 		boolean $inPre = !pre.canExist(filePath); // negate because it can exist then it is in pre
 		boolean inPost = post.exists(filePath);
-
+		boolean $inPost = !post.canExist(filePath);
+	
+		if ($inPost) {
+			Main.logger.log("%s cannot exist in post condition", filePath);
+			return false;
+		}
+		
 		if (inPre) {
 			// if path in precondition but not in the post then it was deleted/moved at some point
 			// because it was already used as a precondition and was added to the postcondition at
@@ -172,6 +178,7 @@ public class Compiler {
 		}
 
 		post.remove(arg1, true);
+		post.insert(arg1, false);
 	}
 
 	private void handleNew(Command cmd) throws CompilerException {
@@ -182,7 +189,7 @@ public class Compiler {
 
 		// arg1 should not exist in either pre or post
 		FilePath arg1 = new FilePath(cmd.getArg(1));
-		if (post.exists(arg1)) {
+		if (post.exists(arg1) && !assume(arg1)) {
 			throw new CompilerException(String.format("'%s': File or directory already exists in postcondition.\n%s", cmd, post));
 		}
 
@@ -192,6 +199,7 @@ public class Compiler {
 		}
 
 		post.insert(arg1, true);
+		post.remove(arg1, false);
 	}
 
 	public Condition getPostCondition() {
