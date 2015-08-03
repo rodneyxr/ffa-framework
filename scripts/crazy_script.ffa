@@ -4,5 +4,4 @@ new D/file.txt
 new D/E/readme.txt
 new D/E/F/G/H/I/J/K/L/M/N/O/P/
 mv D/E/F/G AA
-mv D d
 rm D

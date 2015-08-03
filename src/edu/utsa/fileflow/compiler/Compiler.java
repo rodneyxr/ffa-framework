@@ -94,12 +94,12 @@ public class Compiler {
 		boolean inPre = pre.exists(filePath);
 		boolean $inPre = !pre.canExist(filePath); // negate because it can exist then it is in pre
 		boolean inPost = post.exists(filePath);
-		boolean $inPost = !post.canExist(filePath);
+//		boolean $inPost = !post.canExist(filePath);
 	
-		if ($inPost) {
-			Main.logger.log("%s cannot exist in post condition", filePath);
-			return false;
-		}
+//		if ($inPost) {
+//			Main.logger.log("%s cannot exist in post condition", filePath);
+//			return false;
+//		}
 		
 		if (inPre) {
 			// if path in precondition but not in the post then it was deleted/moved at some point
@@ -152,14 +152,15 @@ public class Compiler {
 		// insert clone of the path to the new path
 		FileStruct efs = post.getFileStruct(true);
 		efs.insert(efs.getFileStruct(arg1).clone(), arg2);
-
 	}
 
 	private void handleMove(Command cmd) throws CompilerException {
 		handleCopy(cmd);
-		
+		FilePath arg1 = new FilePath(cmd.getArg(1));
+
 		// delete arg1 from file structure
-		post.remove(new FilePath(cmd.getArg(1)), true);
+		post.remove(arg1, true);
+		post.insert(arg1, false);
 	}
 
 	private void handleDelete(Command cmd) throws CompilerException {
@@ -189,9 +190,14 @@ public class Compiler {
 
 		// arg1 should not exist in either pre or post
 		FilePath arg1 = new FilePath(cmd.getArg(1));
-		if (post.exists(arg1) && !assume(arg1)) {
+		
+		if (post.exists(arg1)) {
 			throw new CompilerException(String.format("'%s': File or directory already exists in postcondition.\n%s", cmd, post));
 		}
+		
+//		if (post.exists(arg1) && !assume(arg1)) {
+//			throw new CompilerException(String.format("'%s': File or directory already exists in postcondition.\n%s", cmd, post));
+//		}
 
 		// assert it doesn't exist in precondition
 		if (pre.canExist(arg1) && pre.exists(arg1)) {
