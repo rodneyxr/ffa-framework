@@ -1,9 +1,8 @@
-# simple test script for file flow analysis
 cp home/bin/x.txt x.txt
 mv home/bin/x.txt home/x.txt
 # the previous command should make this first argument invalid
 #cp home/bin/x.txt dir1/x.txt
 
-#rm dir1
+rm dir1
 #this command should fail since we just removed dir1 and its already been assumed
-#cp home/bin/x.txt dir1/x.txt
+cp home/bin/x.txt dir1/x.txt
