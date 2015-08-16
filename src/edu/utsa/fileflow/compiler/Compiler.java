@@ -133,13 +133,13 @@ public class Compiler {
 		}
 
 		// handle the first argument
-		FilePath arg1 = new FilePath(cmd.getArg(1));
+		FilePath arg1 = new FilePath(cmd.getArg(1), true);
 		if (!assume(arg1)) {
 			throw new CompilerException(String.format("'%s': arg1 does not exist", cmd));
 		}
 
 		// the second argument should not exist, so if it does throw an exception
-		FilePath arg2 = new FilePath(cmd.getArg(2));
+		FilePath arg2 = new FilePath(cmd.getArg(2), true);
 		// in order for the second argument to be valid the path to the file must exist but not the file itself
 		if (!assume(arg2.getPathToFile())) {
 			throw new CompilerException(String.format("'%s': path to arg2 does not exist", cmd));
@@ -156,7 +156,7 @@ public class Compiler {
 
 	private void handleMove(Command cmd) throws CompilerException {
 		handleCopy(cmd);
-		FilePath arg1 = new FilePath(cmd.getArg(1));
+		FilePath arg1 = new FilePath(cmd.getArg(1), true);
 
 		// delete arg1 from file structure
 		post.remove(arg1, true);
@@ -170,7 +170,7 @@ public class Compiler {
 		}
 
 		// first argument must exist so add it to precondition file structure if it isn't in post
-		FilePath arg1 = new FilePath(cmd.getArg(1));
+		FilePath arg1 = new FilePath(cmd.getArg(1), true);
 
 		// if it exists in post then it doesn't need to be in precondition
 		// because it was already created by another command
@@ -189,7 +189,7 @@ public class Compiler {
 		}
 
 		// arg1 should not exist in either pre or post
-		FilePath arg1 = new FilePath(cmd.getArg(1));
+		FilePath arg1 = new FilePath(cmd.getArg(1), true);
 		
 		if (post.exists(arg1)) {
 			throw new CompilerException(String.format("'%s': File or directory already exists in postcondition.\n%s", cmd, post));
