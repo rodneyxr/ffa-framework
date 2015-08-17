@@ -1,73 +1,64 @@
 package edu.utsa.fileflow.filestructure;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.io.File;
+import java.io.IOException;
 
+/**
+ * This class will represent a file path within a file system. Separators must
+ * be a forward slash '/'. Any file path that ends with a separator is a
+ * directory.
+ * 
+ * @author Rodney Rodriguez
+ *
+ */
 public class FilePath {
 
-    private static final Pattern PATTERN_PATH_TO_FILE = Pattern.compile("(.*)[/\\\\].+[/\\\\]");
-    private static final Pattern PATTERN_FILE_SEPARATOR = Pattern.compile("[/\\\\]");
+	private String path;
+	private boolean isdir;
 
-    private String filepath;
-    private boolean isdir;
+	public FilePath(String path) {
+		// check for an ending separator to determine if it is a slash
+		this(path, path.matches(".*[/\\\\]\\s*$"));
+	}
+	
+	public FilePath(String path, boolean isdir) {
+		this.path = clean(path);
+		this.isdir = isdir;
+	}
 
-//    public FilePath(String filepath) {
-//        this.filepath = clean(filepath);
-//        this.isdir = filepath.matches("[/\\\\]$");
-//    }
+	/**
+	 * Splits the file path into separate strings representing each level.
+	 * 
+	 * @return an array of strings representing file names
+	 */
+	public String[] tokens() {
+		String regex = File.separator;
+		if (regex.equals("\\")) {
+			regex = "\\\\";
+		}
+		return path.split(regex);
+	}
 
-    public FilePath(String filepath, boolean isdir) {
-        this.filepath = clean(filepath);
-        this.isdir = isdir;
-    }
+	/**
+	 * 
+	 * @return true if the path points to a directory
+	 */
+	public boolean isDir() {
+		return isdir;
+	}
 
-    public boolean isDir() {
-        return isdir;
-    }
+	/**
+	 * Strips spaces from both sides of the path.
+	 * 
+	 * @return a cleaned file path
+	 * @throws IOException
+	 */
+	private String clean(String path) {
+		return new File(path).getPath();
+	}
 
-    /**
-     * Get the directory that a file is in. If the file is already a directory then the directory will be returned.
-     *
-     * @return the directory that the file is in
-     */
-    public FilePath getPathToFile() {
-        if (isdir) return this;
-        Matcher matcher = PATTERN_PATH_TO_FILE.matcher(filepath);
-        return new FilePath(matcher.group(0), true);
-//        return new FilePath(filepath.replaceFirst("[/\\\\][^/\\\\]+[/\\\\]?$", ""), true);
-//        return new FilePath(matcher.group(1), true);
-    }
-
-    public String[] getTokens() {
-        if (filepath.length() == 0)
-            return new String[0];
-//        return filepath.split("[/\\\\]");
-        return PATTERN_FILE_SEPARATOR.split(filepath);
-    }
-
-    public String getFileName() {
-        return filepath.replaceFirst("^.*[/\\\\]", "");
-    }
-
-    public String getFilePath() {
-        return filepath;
-    }
-
-    @Override
-    public String toString() {
-        return filepath;
-    }
-
-    /**
-     * Cleans a string to represents a filepath by removing redundant slashes.
-     *
-     * @param path the path to clean.
-     * @return the String that was passed in for chaining methods.
-     */
-    private String clean(String path) {
-        path = path.trim();
-        path = path.replaceAll("[/\\\\]", "/");
-        return path;
-    }
+	public String toString() {
+		return path;
+	}
 
 }

@@ -1,30 +1,32 @@
 package edu.utsa.fileflow.compiler;
 
+import edu.utsa.fileflow.filestructure.FileStructureException;
 import edu.utsa.fileflow.filestructure.FilePath;
-import edu.utsa.fileflow.filestructure.FileStruct;
+import edu.utsa.fileflow.filestructure.FileStructure;
 
 public class Condition {
 
-	// File Structure that can exists
-	private FileStruct existingFileStruct;
+	// File Structure that can exist
+	private FileStructure existingFileStruct;
 
-	// This one cannot exists
-	private FileStruct nonexistingFileStruct;
+	// This one cannot exist
+	private FileStructure nonexistingFileStruct;
 
 	/**
 	 * Instantiates the two file structures representing existing and non-existing conditions
 	 */
 	public Condition() {
-		existingFileStruct = new FileStruct("root");
-		nonexistingFileStruct = new FileStruct("root");
+		existingFileStruct = new FileStructure();
+		nonexistingFileStruct = new FileStructure();
 	}
 
 	/**
 	 * Inserts a file path into the this condition under the appropriate file structure.
 	 * @param filePath The file path to insert.
 	 * @param existing True if the file path should be inserted into the existing file structure. False otherwise.
+	 * @throws Exception 
 	 */
-	public void insert(FilePath filePath, boolean existing) {
+	public void insert(FilePath filePath, boolean existing) throws FileStructureException {
 		if (existing) {
 			existingFileStruct.insert(filePath);
 		} else {
@@ -50,7 +52,7 @@ public class Condition {
 	 * @param existing True if the existing file structure should be returned. False otherwise.
 	 * @return The file structure corresponding to the boolean parameter. 
 	 */
-	public FileStruct getFileStruct(boolean existing) {
+	public FileStructure getFileStruct(boolean existing) {
 		if (existing)
 			return existingFileStruct;
 		return nonexistingFileStruct;
@@ -62,7 +64,7 @@ public class Condition {
 	 * @return True if the file path exists in the existing file structure.
 	 */
 	public boolean exists(FilePath filePath) {
-		return existingFileStruct.pathExists(filePath);
+		return existingFileStruct.exists(filePath);
 	}
 
 	/**
@@ -71,15 +73,15 @@ public class Condition {
 	 * @return True if the file path exists in the non-existing file structure.
 	 */
 	public boolean canExist(FilePath filePath) {
-		return !nonexistingFileStruct.pathExists(filePath);
+		return !nonexistingFileStruct.exists(filePath);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("**** Must Exist *****\n");
+		sb.append("Existing\n");
 		sb.append(existingFileStruct);
-		sb.append("\n***** Cannot Exist *****\n");
+		sb.append("\nNon-existing\n");
 		sb.append(nonexistingFileStruct);
 		return sb.toString();
 	}

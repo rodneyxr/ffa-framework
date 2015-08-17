@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 import edu.utsa.fileflow.Main;
 import edu.utsa.fileflow.filestructure.FilePath;
-import edu.utsa.fileflow.filestructure.FileStruct;
+import edu.utsa.fileflow.filestructure.FileStructureException;
 
 public class Compiler {
 
@@ -89,8 +89,9 @@ public class Compiler {
 	 * 
 	 * @param filePath The file path we want to assume exists.
 	 * @return True if we CAN assume that filePath existed before we ran the script.
+	 * @throws FileStructureException 
 	 */
-	private boolean assume(FilePath filePath) {
+	private boolean assume(FilePath filePath) throws FileStructureException {
 		boolean inPre = pre.exists(filePath);
 		boolean $inPre = !pre.canExist(filePath); // negate because it can exist then it is in pre
 		boolean inPost = post.exists(filePath);
@@ -127,85 +128,85 @@ public class Compiler {
 	}
 
 	private void handleCopy(Command cmd) throws CompilerException {
-		// assert command is legal
-		if (cmd.getSize() != 3) {
-			throw new CompilerException(String.format("'%s': Command '%s' expects exactly 2 arguments", cmd, cmd.getType().getName()));
-		}
-
-		// handle the first argument
-		FilePath arg1 = new FilePath(cmd.getArg(1), true);
-		if (!assume(arg1)) {
-			throw new CompilerException(String.format("'%s': arg1 does not exist", cmd));
-		}
-
-		// the second argument should not exist, so if it does throw an exception
-		FilePath arg2 = new FilePath(cmd.getArg(2), true);
-		// in order for the second argument to be valid the path to the file must exist but not the file itself
-		if (!assume(arg2.getPathToFile())) {
-			throw new CompilerException(String.format("'%s': path to arg2 does not exist", cmd));
-		}
-
-		if (post.exists(arg2)) {
-			throw new CompilerException(String.format("'%s': File or directory already exists in postcondition.\n%s", cmd, post));
-		}
-
-		// insert clone of the path to the new path
-		FileStruct efs = post.getFileStruct(true);
-		efs.insert(efs.getFileStruct(arg1).clone(), arg2);
+//		// assert command is legal
+//		if (cmd.getSize() != 3) {
+//			throw new CompilerException(String.format("'%s': Command '%s' expects exactly 2 arguments", cmd, cmd.getType().getName()));
+//		}
+//
+//		// handle the first argument
+//		FilePath arg1 = new FilePath(cmd.getArg(1), true);
+//		if (!assume(arg1)) {
+//			throw new CompilerException(String.format("'%s': arg1 does not exist", cmd));
+//		}
+//
+//		// the second argument should not exist, so if it does throw an exception
+//		FilePath arg2 = new FilePath(cmd.getArg(2), true);
+//		// in order for the second argument to be valid the path to the file must exist but not the file itself
+//		if (!assume(arg2.getPathToFile())) {
+//			throw new CompilerException(String.format("'%s': path to arg2 does not exist", cmd));
+//		}
+//
+//		if (post.exists(arg2)) {
+//			throw new CompilerException(String.format("'%s': File or directory already exists in postcondition.\n%s", cmd, post));
+//		}
+//
+//		// insert clone of the path to the new path
+//		FileStruct efs = post.getFileStruct(true);
+//		efs.insert(efs.getFileStruct(arg1).clone(), arg2);
 	}
 
 	private void handleMove(Command cmd) throws CompilerException {
-		handleCopy(cmd);
-		FilePath arg1 = new FilePath(cmd.getArg(1), true);
-
-		// delete arg1 from file structure
-		post.remove(arg1, true);
-		post.insert(arg1, false);
+//		handleCopy(cmd);
+//		FilePath arg1 = new FilePath(cmd.getArg(1), true);
+//
+//		// delete arg1 from file structure
+//		post.remove(arg1, true);
+//		post.insert(arg1, false);
 	}
 
 	private void handleDelete(Command cmd) throws CompilerException {
-		// assert command is legal
-		if (cmd.getSize() != 2) {
-			throw new CompilerException(String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
-		}
-
-		// first argument must exist so add it to precondition file structure if it isn't in post
-		FilePath arg1 = new FilePath(cmd.getArg(1), true);
-
-		// if it exists in post then it doesn't need to be in precondition
-		// because it was already created by another command
-		if (!assume(arg1)) {
-			throw new CompilerException(String.format("'%s': File does not exist", cmd));
-		}
-
-		post.remove(arg1, true);
-		post.insert(arg1, false);
+//		// assert command is legal
+//		if (cmd.getSize() != 2) {
+//			throw new CompilerException(String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
+//		}
+//
+//		// first argument must exist so add it to precondition file structure if it isn't in post
+//		FilePath arg1 = new FilePath(cmd.getArg(1), true);
+//
+//		// if it exists in post then it doesn't need to be in precondition
+//		// because it was already created by another command
+//		if (!assume(arg1)) {
+//			throw new CompilerException(String.format("'%s': File does not exist", cmd));
+//		}
+//
+//		post.remove(arg1, true);
+//		post.insert(arg1, false);
 	}
 
 	private void handleNew(Command cmd) throws CompilerException {
-		// assert command is legal
-		if (cmd.getSize() != 2) {
-			throw new CompilerException(String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
-		}
-
-		// arg1 should not exist in either pre or post
-		FilePath arg1 = new FilePath(cmd.getArg(1), true);
-		
-		if (post.exists(arg1)) {
-			throw new CompilerException(String.format("'%s': File or directory already exists in postcondition.\n%s", cmd, post));
-		}
-		
-//		if (post.exists(arg1) && !assume(arg1)) {
+//		// assert command is legal
+//		if (cmd.getSize() != 2) {
+//			throw new CompilerException(String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
+//		}
+//
+//		// arg1 should not exist in either pre or post
+//		FilePath arg1 = new FilePath(cmd.getArg(1), true);
+//		
+//		if (post.exists(arg1)) {
 //			throw new CompilerException(String.format("'%s': File or directory already exists in postcondition.\n%s", cmd, post));
 //		}
-
-		// assert it doesn't exist in precondition
-		if (pre.canExist(arg1) && pre.exists(arg1)) {
-			pre.insert(arg1, false);
-		}
-
-		post.insert(arg1, true);
-		post.remove(arg1, false);
+//		
+////		if (post.exists(arg1) && !assume(arg1)) {
+////			throw new CompilerException(String.format("'%s': File or directory already exists in postcondition.\n%s", cmd, post));
+////		}
+//
+//		// assert it doesn't exist in precondition
+//		if (pre.canExist(arg1) && pre.exists(arg1)) {
+//			pre.insert(arg1, false);
+//		}
+//
+//		post.insert(arg1, true);
+//		post.remove(arg1, false);
 	}
 
 	public Condition getPostCondition() {

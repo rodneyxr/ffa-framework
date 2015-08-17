@@ -44,13 +44,13 @@ public class FilePathTest {
         // test paths as directories
         for (String path : VALID_FILE_PATHS) {
             filepath = new FilePath(path, true);
-            assertEquals("filepath has unexpected value", path, filepath.getFilePath());
+            assertEquals("filepath has unexpected value", true, filepath.isDir());
         }
 
-        // test paths as directories
+        // test paths as files
         for (String path : VALID_FILE_PATHS) {
             filepath = new FilePath(path, false);
-            assertEquals("filepath has unexpected value", path, filepath.getFilePath());
+            assertEquals("filepath has unexpected value", false, filepath.isDir());
         }
 
     }
