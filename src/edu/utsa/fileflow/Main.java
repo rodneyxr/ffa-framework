@@ -23,7 +23,7 @@ public class Main {
 		logger.setEnabled(DEBUG);
 
 		// create a file for the script to compile
-		File file = new File("scripts/test_postcondition.script");
+		File file = new File("scripts/test.script");
 		Compiler compiler = new Compiler();
 		Condition preCondition = null;
 		try {

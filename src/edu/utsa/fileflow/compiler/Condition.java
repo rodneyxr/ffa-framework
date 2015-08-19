@@ -81,7 +81,7 @@ public class Condition {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Existing\n");
 		sb.append(existingFileStruct);
-		sb.append("\nNon-existing\n");
+		sb.append("\n\nNon-existing\n");
 		sb.append(nonexistingFileStruct);
 		return sb.toString();
 	}

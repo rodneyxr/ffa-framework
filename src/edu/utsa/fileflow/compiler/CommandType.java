@@ -3,7 +3,7 @@ package edu.utsa.fileflow.compiler;
 import java.util.HashMap;
 
 public enum CommandType {
-	NEW("new"), COPY("cp"), MOVE("mv"), DELETE("rm");
+	touch("touch"), mkdir("mkdir"), cp("cp"), rm("rm");
 
 	// this HashMap will provide a fast lookup time for the typeFromString() method
 	private static final HashMap<String, CommandType> CMD_MAP;

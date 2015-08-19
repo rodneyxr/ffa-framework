@@ -61,17 +61,16 @@ public class Compiler {
 			}
 
 			switch (cmd.getType()) {
-			case COPY:
-				handleCopy(cmd);
+			case touch:
+//				handleNew(cmd);
 				break;
-			case DELETE:
-				handleDelete(cmd);
+			case mkdir:
 				break;
-			case MOVE:
-				handleMove(cmd);
+			case cp:
+//				handleCopy(cmd);
 				break;
-			case NEW:
-				handleNew(cmd);
+			case rm:
+//				handleDelete(cmd);
 				break;
 			default:
 				scanner.close();
