@@ -28,9 +28,9 @@ public class Condition {
 	 */
 	public void insert(FilePath filePath, boolean existing) throws FileStructureException {
 		if (existing) {
-			existingFileStruct.insert(filePath);
+//			existingFileStruct.insert(filePath);
 		} else {
-			nonexistingFileStruct.insert(filePath);
+//			nonexistingFileStruct.insert(filePath);
 		}
 	}
 
