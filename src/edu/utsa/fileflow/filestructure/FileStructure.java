@@ -30,8 +30,16 @@ public class FileStructure {
 		}
 	}
 
-	// traverse throught the path and touch the file at the end of the path
-	// the path to the file must exist
+	/**
+	 * Traverse through the path and touch the file at the end of the path. The
+	 * path to the file must exist.
+	 * 
+	 * @param path
+	 *            The path to the file to be touched
+	 * @return the file structure that was created
+	 * @throws FileStructureException
+	 * @throws FileFlowWarning
+	 */
 	public FileStructure touch(FilePath path) throws FileStructureException, FileFlowWarning {
 		FileStructure cp = this;
 		String[] tokens = path.tokens();
@@ -58,9 +66,47 @@ public class FileStructure {
 			throw new FileFlowWarning(String.format("touch: ‘%s’: File or directory already exists", path));
 		} else if (path.isDir()) {
 			// if it doesn't exist but is a directory throw an exception
-			throw new FileStructureException(String.format("touch: setting times of ‘%s’: No such file or directory", path));
+			throw new FileStructureException(
+					String.format("touch: setting times of ‘%s’: No such file or directory", path));
 		} else {
 			cp = cp.insert(tokens[tokens.length - 1], false);
+		}
+
+		return cp;
+	}
+
+	/**
+	 * Makes the directory at the path provided. If the path to that directory
+	 * does not exist, it will be created.
+	 *
+	 * @param path
+	 * @return
+	 * @throws Exception
+	 */
+	public FileStructure mkdir(FilePath path) throws FileStructureException {
+		if (!isdir)
+			throw new FileStructureException("cannot insert: not a directory");
+		if (exists(path)) {
+			throw new FileStructureException(String.format("mkdir: cannot create directory ‘path’: File exists", path));
+		}
+
+		FileStructure cp = this; // save the current pointer
+
+		// create the directory path
+		for (String token : path.tokens()) {
+			if (!cp.isdir)
+				throw new FileStructureException(String.format("mkdir: cannot create directory ‘%s’: Not a directory", path));
+			// peek ahead to check if next level exists
+			FileStructure next = cp.files.get(token);
+			if (next != null) {
+				// move to next level if a directory
+				if (!next.isdir)
+					throw new FileStructureException(String.format("mkdir: cannot create directory ‘%s’: Not a directory", path));
+				cp = next;
+			} else {
+				// create the next level and move pointer to the next level
+				cp = cp.insert(token, true);
+			}
 		}
 
 		return cp;

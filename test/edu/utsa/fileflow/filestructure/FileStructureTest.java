@@ -32,7 +32,7 @@ public class FileStructureTest {
 	}
 
 	@Test
-	public void textTouch() throws Exception {
+	public void testTouch() throws Exception {
 		FileStructure root = new FileStructure();
 
 		// assert exception is thrown when touching non-existing directory
@@ -51,6 +51,15 @@ public class FileStructureTest {
 
 		assertEquals(true, root.exists(new FilePath("file1")));
 		assertEquals(false, root.exists(new FilePath("dir1/")));
+	}
+	
+	@Test
+	public void testMkdir() throws Exception {
+		FileStructure root = new FileStructure();
+		root.mkdir(new FilePath("dir1/dir2/"));
+		
+		assertEquals(true, root.exists(new FilePath("dir1/")));
+		assertEquals(true, root.exists(new FilePath("dir1/dir2/")));
 	}
 
 //	@Test
