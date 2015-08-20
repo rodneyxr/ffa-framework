@@ -44,7 +44,7 @@ public class FileStructure {
 		FileStructure cp = this;
 		String[] tokens = path.tokens();
 
-		for (int i = 0; i < tokens.length - 2; i++) {
+		for (int i = 0; i < tokens.length - 1; i++) {
 			FileStructure next = cp.files.get(tokens[i]);
 			if (next != null) {
 				if (!next.isdir) {
