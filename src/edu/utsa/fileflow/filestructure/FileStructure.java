@@ -80,7 +80,8 @@ public class FileStructure {
 	 * does not exist, it will be created.
 	 *
 	 * @param path
-	 * @return
+	 *            The file path to make the directory in
+	 * @return the file structure that was inserted
 	 * @throws Exception
 	 */
 	public FileStructure mkdir(FilePath path) throws FileStructureException {
@@ -95,13 +96,15 @@ public class FileStructure {
 		// create the directory path
 		for (String token : path.tokens()) {
 			if (!cp.isdir)
-				throw new FileStructureException(String.format("mkdir: cannot create directory ‘%s’: Not a directory", path));
+				throw new FileStructureException(
+						String.format("mkdir: cannot create directory ‘%s’: Not a directory", path));
 			// peek ahead to check if next level exists
 			FileStructure next = cp.files.get(token);
 			if (next != null) {
 				// move to next level if a directory
 				if (!next.isdir)
-					throw new FileStructureException(String.format("mkdir: cannot create directory ‘%s’: Not a directory", path));
+					throw new FileStructureException(
+							String.format("mkdir: cannot create directory ‘%s’: Not a directory", path));
 				cp = next;
 			} else {
 				// create the next level and move pointer to the next level
@@ -110,6 +113,30 @@ public class FileStructure {
 		}
 
 		return cp;
+	}
+
+	/**
+	 * Copies a file denoted by a file path to another location in the directory
+	 * structure.
+	 * 
+	 * @param sourcePath
+	 *            The path pointing to the source file to copy
+	 * @param destinationPath
+	 *            The path pointing to the destination location
+	 * @return the new file structure that was created
+	 * @throws FileStructureException
+	 */
+	public FileStructure copy(FilePath sourcePath, FilePath destinationPath) throws FileStructureException {
+		// get the source file and check if it exists
+		FileStructure src = get(sourcePath);
+		if (src == null) {
+			throw new FileStructureException(
+					String.format("cp: cannot stat '%s': No such file or directory", sourcePath));
+		}
+		
+		// TODO: implement this
+
+		return null;
 	}
 
 	/**
@@ -230,47 +257,48 @@ public class FileStructure {
 		}
 	}
 
-	// /**
-	// * Inserts a path into the directory.
-	// *
-	// * @param path
-	// * @return
-	// * @throws Exception
-	// */
-	// public FileStructure insert(FilePath path) throws FileStructureException
-	// {
-	// if (!isdir)
-	// throw new FileStructureException("cannot insert: not a directory");
-	//
-	// FileStructure cp = this; // save the current pointer
-	// String[] tokens = path.tokens();
-	// int dirPathSize = tokens.length;
-	// if (!path.isDir())
-	// dirPathSize -= 1;
-	//
-	// // create the directory path first
-	// for (int i = 0; i < dirPathSize; i++) {
-	// if (!cp.isdir)
-	// throw new FileStructureException("cannot insert: not a directory");
-	// // peek ahead to check if next level exists
-	// FileStructure peek = cp.files.get(tokens[i]);
-	// if (peek != null) {
-	// // move to next level if a directory
-	// if (!peek.isdir)
-	// throw new FileStructureException("cannot insert: not a directory");
-	// cp = peek;
-	// } else {
-	// // create the next level and move pointer to the next level
-	// cp = cp.insert(tokens[i], true);
-	// }
-	// }
-	//
-	// // insert the last token if the path is a file
-	// if (!path.isDir()) {
-	// cp = cp.insert(tokens[tokens.length - 1], false);
-	// }
-	//
-	// return cp;
-	// }
+	/**
+	 * Inserts a path into the directory.
+	 *
+	 * @param path
+	 *            The path to insert into the directory
+	 * @return the file structure that was inserted
+	 * @throws Exception
+	 */
+	@Deprecated
+	public FileStructure insert(FilePath path) throws FileStructureException {
+		if (!isdir)
+			throw new FileStructureException("cannot insert: not a directory");
+
+		FileStructure cp = this; // save the current pointer
+		String[] tokens = path.tokens();
+		int dirPathSize = tokens.length;
+		if (!path.isDir())
+			dirPathSize -= 1;
+
+		// create the directory path first
+		for (int i = 0; i < dirPathSize; i++) {
+			if (!cp.isdir)
+				throw new FileStructureException("cannot insert: not a directory");
+			// peek ahead to check if next level exists
+			FileStructure peek = cp.files.get(tokens[i]);
+			if (peek != null) {
+				// move to next level if a directory
+				if (!peek.isdir)
+					throw new FileStructureException("cannot insert: not a directory");
+				cp = peek;
+			} else {
+				// create the next level and move pointer to the next level
+				cp = cp.insert(tokens[i], true);
+			}
+		}
+
+		// insert the last token if the path is a file
+		if (!path.isDir()) {
+			cp = cp.insert(tokens[tokens.length - 1], false);
+		}
+
+		return cp;
+	}
 
 }
