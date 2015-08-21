@@ -133,10 +133,25 @@ public class FileStructure {
 			throw new FileStructureException(
 					String.format("cp: cannot stat '%s': No such file or directory", sourcePath));
 		}
-		
-		// TODO: implement this
 
 		return null;
+	}
+
+	@Override
+	public FileStructure clone() {
+		FileStructure clone = new FileStructure(name, isdir);
+
+		if (!isdir) {
+			return clone;
+		}
+		for (Map.Entry<String, FileStructure> entry : files.entrySet()) {
+			FileStructure file = entry.getValue();
+			if (file == this || file == parent)
+				continue;
+			clone.insert(file.clone());
+		}
+
+		return clone;
 	}
 
 	/**
@@ -234,6 +249,25 @@ public class FileStructure {
 		// insert the node
 		files.put(name, child);
 		return child;
+	}
+
+	/**
+	 * Adds a file structure to the map of files.
+	 * 
+	 * @param fs
+	 *            the file structure to add
+	 */
+	public void insert(FileStructure fs) {
+		parent = fs;
+		if (isdir) {
+			files.put("..", parent);
+		}
+//		files.put(fs.name, fs);
+		try {
+			insert(fs.name, fs.isdir);
+		} catch (FileStructureException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
