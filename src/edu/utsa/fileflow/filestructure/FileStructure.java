@@ -137,23 +137,6 @@ public class FileStructure {
 		return null;
 	}
 
-	@Override
-	public FileStructure clone() {
-		FileStructure clone = new FileStructure(name, isdir);
-
-		if (!isdir) {
-			return clone;
-		}
-		for (Map.Entry<String, FileStructure> entry : files.entrySet()) {
-			FileStructure file = entry.getValue();
-			if (file == this || file == parent)
-				continue;
-			clone.insert(file.clone());
-		}
-
-		return clone;
-	}
-
 	/**
 	 * Removes a file from the file structure.
 	 * 
@@ -219,6 +202,28 @@ public class FileStructure {
 		print(0);
 	}
 
+	/**
+	 * Performs a deep copy of the file structure.
+	 * 
+	 * @return a clone of the file structure
+	 */
+	@Override
+	public FileStructure clone() {
+		FileStructure clone = new FileStructure(name, isdir);
+
+		if (!isdir) {
+			return clone;
+		}
+		for (Map.Entry<String, FileStructure> entry : files.entrySet()) {
+			FileStructure file = entry.getValue();
+			if (file == this || file == parent)
+				continue;
+			clone.insert(file.clone());
+		}
+
+		return clone;
+	}
+
 	@Override
 	public String toString() {
 		return displayName();
@@ -258,16 +263,13 @@ public class FileStructure {
 	 *            the file structure to add
 	 */
 	public void insert(FileStructure fs) {
-		parent = fs;
-		if (isdir) {
-			files.put("..", parent);
+		fs.parent = this;
+		if (fs.isdir) {
+			fs.files.put("..", this);
 		}
-//		files.put(fs.name, fs);
-		try {
-			insert(fs.name, fs.isdir);
-		} catch (FileStructureException e) {
-			e.printStackTrace();
-		}
+		// files.put(fs.name, fs);
+		// insert(fs.name, fs.isdir);
+		files.put(fs.name, fs);
 	}
 
 	/**

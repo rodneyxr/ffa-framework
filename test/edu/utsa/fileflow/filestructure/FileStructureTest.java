@@ -127,24 +127,40 @@ public class FileStructureTest {
 		// copy file1 to file2 and assert the new file2 exists
 		root.copy(file1, file2);
 		// FIXME: finish implementing copy method
-//		assertTrue(root.exists(file2));
+		 assertTrue(root.exists(file2));
 	}
-	
+
 	@Test
 	public void testClone() throws Exception {
+		// create a file structure and insert some files
 		FileStructure f1 = new FileStructure();
 		f1.mkdir(new FilePath("dir1/dir2/"));
+		f1.mkdir(new FilePath("dir1/dir2/dir3"));
 		f1.touch(new FilePath("dir1/dir2/file1"));
-		
-		FileStructure clone = f1.clone();
-		
-		System.out.println("f1");
-		f1.print();
-		
-		System.out.println();
 
-		System.out.println("clone");
-		clone.print();
+		// clone the file structure
+		FileStructure clone = f1.clone();
+
+		// assert the files that are in f1 are also in the clone
+		assertTrue(f1.exists(new FilePath("dir1/dir2/dir3")));
+		assertTrue(clone.exists(new FilePath("dir1/dir2/dir3")));
+		
+		assertTrue(f1.exists(new FilePath("dir1/dir2/file1")));
+		assertTrue(clone.exists(new FilePath("dir1/dir2/file1")));
+
+		// make some changes to f1 and clone
+		FilePath onlyInF1 = new FilePath("dir1/dir2/file2");
+		f1.touch(onlyInF1);
+		
+		FilePath onlyInClone = new FilePath("dir1/dir2/dir3/filea");
+		clone.touch(onlyInClone);
+
+		// assert that that changes did not affect each other
+		assertTrue(f1.exists(onlyInF1));
+		assertFalse(clone.exists(onlyInF1));
+		
+		assertTrue(clone.exists(onlyInClone));
+		assertFalse(f1.exists(onlyInClone));
 	}
 
 }
