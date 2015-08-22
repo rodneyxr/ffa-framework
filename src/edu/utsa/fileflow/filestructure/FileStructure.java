@@ -8,416 +8,411 @@ import edu.utsa.fileflow.utilities.Strings;
 
 public class FileStructure {
 
-	private TreeMap<String, FileStructure> files;
-	private String name;
-	private FileStructure parent;
-	private boolean isdir;
+    private TreeMap<String, FileStructure> files;
+    private String name;
+    private FileStructure parent;
+    private boolean isdir;
 
-	public FileStructure() {
-		this("root", true);
-	}
+    public FileStructure() {
+        this("root", true);
+    }
 
-	private FileStructure(String name, boolean isdir) {
-		this.name = name;
-		this.isdir = isdir;
-		parent = this;
-		if (isdir) {
-			files = new TreeMap<String, FileStructure>();
-			files.put(".", this);
-			files.put("..", parent);
-		} else {
-			files = null;
-		}
-	}
+    private FileStructure(String name, boolean isdir) {
+        this.name = name;
+        this.isdir = isdir;
+        parent = this;
+        if (isdir) {
+            files = new TreeMap<String, FileStructure>();
+            files.put(".", this);
+            files.put("..", parent);
+        } else {
+            files = null;
+        }
+    }
 
-	/**
-	 * Traverse through the path and touch the file at the end of the path. The
-	 * path to the file must exist.
-	 * 
-	 * @param path
-	 *            The path to the file to be touched
-	 * @return the file structure that was created
-	 * @throws FileStructureException
-	 * @throws FileFlowWarning
-	 */
-	public FileStructure touch(FilePath path) throws FileStructureException, FileFlowWarning {
-		FileStructure cp = this;
-		String[] tokens = path.tokens();
+    /**
+     * Traverse through the path and touch the file at the end of the path. The
+     * path to the file must exist.
+     *
+     * @param path The path to the file to be touched
+     * @return the file structure that was created
+     * @throws FileStructureException
+     * @throws FileFlowWarning
+     */
+    public FileStructure touch(FilePath path) throws FileStructureException, FileFlowWarning {
+        FileStructure cp = this;
+        String[] tokens = path.tokens();
 
-		for (int i = 0; i < tokens.length - 1; i++) {
-			FileStructure next = cp.files.get(tokens[i]);
-			if (next != null) {
-				if (!next.isdir) {
-					throw new FileStructureException(String.format("touch: cannot touch ‘%s’: Not a directory", path));
-				}
-				cp = next;
-			} else {
-				throw new FileStructureException(
-						String.format("touch: cannot touch ‘%s’: No such file or directory", path));
-			}
-		}
+        for (int i = 0; i < tokens.length - 1; i++) {
+            FileStructure next = cp.files.get(tokens[i]);
+            if (next != null) {
+                if (!next.isdir) {
+                    throw new FileStructureException(String.format("touch: cannot touch ï¿½%sï¿½: Not a directory", path));
+                }
+                cp = next;
+            } else {
+                throw new FileStructureException(
+                        String.format("touch: cannot touch ï¿½%sï¿½: No such file or directory", path));
+            }
+        }
 
-		// check if the file already exists
-		FileStructure next = cp.files.get(tokens[tokens.length - 1]);
+        // check if the file already exists
+        FileStructure next = cp.files.get(tokens[tokens.length - 1]);
 
-		if (next != null) {
-			// cp = next;
-			// issue a warning that the file already exists
-			throw new FileFlowWarning(String.format("touch: ‘%s’: File or directory already exists", path));
-		} else if (path.isDir()) {
-			// if it doesn't exist but is a directory throw an exception
-			throw new FileStructureException(
-					String.format("touch: setting times of ‘%s’: No such file or directory", path));
-		} else {
-			cp = cp.insert(tokens[tokens.length - 1], false);
-		}
+        if (next != null) {
+            // cp = next;
+            // issue a warning that the file already exists
+            throw new FileFlowWarning(String.format("touch: ï¿½%sï¿½: File or directory already exists", path));
+        } else if (path.isDir()) {
+            // if it doesn't exist but is a directory throw an exception
+            throw new FileStructureException(
+                    String.format("touch: setting times of ï¿½%sï¿½: No such file or directory", path));
+        } else {
+            cp = cp.insert(tokens[tokens.length - 1], false);
+        }
 
-		return cp;
-	}
+        return cp;
+    }
 
-	/**
-	 * Makes the directory at the path provided. If the path to that directory
-	 * does not exist, it will be created.
-	 *
-	 * @param path
-	 *            The file path to make the directory in
-	 * @return the file structure that was inserted
-	 * @throws Exception
-	 */
-	public FileStructure mkdir(FilePath path) throws FileStructureException {
-		if (!isdir)
-			throw new FileStructureException("cannot insert: not a directory");
-		if (exists(path)) {
-			throw new FileStructureException(String.format("mkdir: cannot create directory ‘path’: File exists", path));
-		}
+    /**
+     * Makes the directory at the path provided. If the path to that directory
+     * does not exist, it will be created.
+     *
+     * @param path The file path to make the directory in
+     * @return the file structure that was inserted
+     * @throws FileStructureException
+     */
+    public FileStructure mkdir(FilePath path) throws FileStructureException {
+        if (!isdir)
+            throw new FileStructureException("cannot insert: not a directory");
+        if (exists(path)) {
+            throw new FileStructureException(String.format("mkdir: cannot create directory '%s': File exists", path));
+        }
 
-		FileStructure cp = this; // save the current pointer
+        FileStructure cp = this; // save the current pointer
 
-		// create the directory path
-		for (String token : path.tokens()) {
-			if (!cp.isdir)
-				throw new FileStructureException(
-						String.format("mkdir: cannot create directory ‘%s’: Not a directory", path));
-			// peek ahead to check if next level exists
-			FileStructure next = cp.files.get(token);
-			if (next != null) {
-				// move to next level if a directory
-				if (!next.isdir)
-					throw new FileStructureException(
-							String.format("mkdir: cannot create directory ‘%s’: Not a directory", path));
-				cp = next;
-			} else {
-				// create the next level and move pointer to the next level
-				cp = cp.insert(token, true);
-			}
-		}
+        // create the directory path
+        for (String token : path.tokens()) {
+            if (!cp.isdir)
+                throw new FileStructureException(
+                        String.format("mkdir: cannot create directory '%s': Not a directory", path));
+            // peek ahead to check if next level exists
+            FileStructure next = cp.files.get(token);
+            if (next != null) {
+                // move to next level if a directory
+                if (!next.isdir)
+                    throw new FileStructureException(
+                            String.format("mkdir: cannot create directory '%s': Not a directory", path));
+                cp = next;
+            } else {
+                // create the next level and move pointer to the next level
+                cp = cp.insert(token, true);
+            }
+        }
 
-		return cp;
-	}
+        return cp;
+    }
 
-	/**
-	 * Copies a file denoted by a file path to another location in the directory
-	 * structure. Consider the following cases:
-	 * 
-	 * -> file1 to file2: If file2 exists it will be overwritten; else it will
-	 * be created
-	 * 
-	 * -> file1 to dir2: file1 will be copied into dir2 overwritten file1 in
-	 * dir2 if it exists
-	 * 
-	 * -> dir1 to dir2: a copy of dir1 will be created in dir2. if dir2/dir1
-	 * happens to exists, contents will be merged overwriting the existing
-	 * 
-	 * -> dir1 to file2: cp: cannot overwrite non-directory ‘file2’ with
-	 * directory ‘dir1’
-	 * 
-	 * -> file1 to non-existing dir: cp: cannot create regular file
-	 * ‘dir1/file1’: No such file or directory
-	 * 
-	 * -> dir1 to non-existing dir: cp: cannot create directory ‘dir2/dir1’: No
-	 * such file or directory
-	 * 
-	 * @param sourcePath
-	 *            The path pointing to the source file to copy
-	 * @param destinationPath
-	 *            The path pointing to the destination location
-	 * @return the new file structure that was created
-	 * @throws FileStructureException
-	 */
-	public FileStructure copy(FilePath sourcePath, FilePath destinationPath) throws FileStructureException {
-		// get the source file and check if it exists
-		FileStructure src = get(sourcePath);
-		if (src == null) {
-			throw new FileStructureException(
-					String.format("cp: cannot stat '%s': No such file or directory", sourcePath));
-		}
+    /**
+     * Copies a file denoted by a file path to another location in the directory
+     * structure. Consider the following cases:
+     * <p/>
+     * -> file1 to file2: If file2 exists it will be overwritten; else it will
+     * be created
+     * <p/>
+     * -> file1 to dir2: file1 will be copied into dir2 overwritten file1 in
+     * dir2 if it exists
+     * <p/>
+     * -> dir1 to dir2: a copy of dir1 will be created in dir2. if dir2/dir1
+     * happens to exists, contents will be merged overwriting the existing
+     * <p/>
+     * -> dir1 to file2: cp: cannot overwrite non-directory 'file2' with
+     * directory 'dir1'
+     * <p/>
+     * -> file1 to non-existing dir: cp: cannot create regular file
+     * 'dir1/file1': No such file or directory
+     * <p/>
+     * -> dir1 to non-existing dir: cp: cannot create directory 'dir2/dir1': No
+     * such file or directory
+     *
+     * @param sourcePath      The path pointing to the source file to copy
+     * @param destinationPath The path pointing to the destination location
+     * @return the new file structure that was created
+     * @throws FileStructureException
+     */
+    public FileStructure copy(FilePath sourcePath, FilePath destinationPath) throws FileStructureException {
+        // get the source file and check if it exists
+        FileStructure src = get(sourcePath);
+        if (src == null) {
+            throw new FileStructureException(
+                    String.format("cp: cannot stat '%s': No such file or directory", sourcePath));
+        }
 
-		// find the node to insert at
-		// FIXME: implement this
+        // find the node to insert at
+        // FIXME: implement this
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
-	 * Merge two files structures together. All files under the invoking file
-	 * structure will be overwritten by the files under the file structure that
-	 * is passed in. Note that a clone of source will be merged so source will
-	 * not be modified.
-	 * 
-	 * @param source
-	 *            The file structure to merge into the invoking file structure.
-	 *            The files under this will overwrite any files under the
-	 *            invoking file structure.
-	 * @return the original file structure merged with the fs
-	 */
-	public FileStructure merge(FileStructure source) {
-		return mergeImpl(source.clone());
-	}
+    /**
+     * Merge two files structures together. All files under the invoking file
+     * structure will be overwritten by the files under the file structure that
+     * is passed in. Note that a clone of source will be merged so source will
+     * not be modified.
+     *
+     * @param source The file structure to merge into the invoking file structure.
+     *               The files under this will overwrite any files under the
+     *               invoking file structure.
+     * @return a new FileStructure object with both file structures merged
+     */
+    public FileStructure merge(FileStructure source) {
+        return clone().mergeImpl(source.clone());
+    }
 
-	/**
-	 * Removes a file from the file structure.
-	 * 
-	 * @param path
-	 *            The path to the file to be removed
-	 * @return the file that was removed or null if it does not exist
-	 */
-	public FileStructure remove(FilePath path) {
-		FileStructure fs = get(path);
-		if (fs == null)
-			return null;
-		fs.parent.files.remove(fs.name);
-		fs.parent = fs;
-		if (fs.isdir) {
-			fs.files.put("..", fs);
-		}
+    /**
+     * Removes a file from the file structure.
+     *
+     * @param path The path to the file to be removed
+     * @return the file that was removed or null if it does not exist
+     */
+    public FileStructure remove(FilePath path) {
+        FileStructure fs = get(path);
+        if (fs == null)
+            return null;
+        fs.parent.files.remove(fs.name);
+        fs.parent = fs;
+        if (fs.isdir) {
+            fs.files.put("..", fs);
+        }
 
-		return fs;
-	}
+        return fs;
+    }
 
-	/**
-	 * Gets the file at the path provided.
-	 * 
-	 * @param path
-	 *            the path to the file to be returned
-	 * @return the file that the path points to or null if it does not exist
-	 */
-	public FileStructure get(FilePath path) {
-		FileStructure cp = this;
-		for (String filename : path.tokens()) {
-			cp = cp.files.get(filename);
-			if (cp == null)
-				return null;
-		}
-		return cp;
-	}
+    /**
+     * Gets the file at the path provided.
+     *
+     * @param path the path to the file to be returned
+     * @return the file that the path points to or null if it does not exist
+     */
+    public FileStructure get(FilePath path) {
+        FileStructure cp = this;
+        for (String filename : path.tokens()) {
+            cp = cp.files.get(filename);
+            if (cp == null)
+                return null;
+        }
+        return cp;
+    }
 
-	/**
-	 * Tells whether a path exists in the file structure.
-	 * 
-	 * @param path
-	 *            The path to check if it exists
-	 * @return true if the path exists
-	 */
-	public boolean exists(FilePath path) {
-		return get(path) != null;
-	}
+    /**
+     * Tells whether a path exists in the file structure.
+     *
+     * @param path The path to check if it exists
+     * @return true if the path exists
+     */
+    public boolean exists(FilePath path) {
+        return get(path) != null;
+    }
 
-	/**
-	 * 
-	 * @return the name with an ending slash if the file is a directory
-	 */
-	public String displayName() {
-		if (isdir)
-			return name + File.separator;
-		return name;
-	}
+    /**
+     * @return the name with an ending slash if the file is a directory
+     */
+    public String displayName() {
+        if (isdir)
+            return name + File.separator;
+        return name;
+    }
 
-	/**
-	 * Print the file structure.
-	 */
-	public void print() {
-		print(0);
-	}
+    /**
+     * @return true if this file is a directory
+     */
+    public boolean isDir() {
+        return isdir;
+    }
 
-	/**
-	 * Performs a deep copy of the file structure.
-	 * 
-	 * @return a clone of the file structure
-	 */
-	@Override
-	public FileStructure clone() {
-		FileStructure clone = new FileStructure(name, isdir);
+    /**
+     * Print the file structure.
+     */
+    public void print() {
+        print(0);
+    }
 
-		if (!isdir) {
-			return clone;
-		}
-		for (Map.Entry<String, FileStructure> entry : files.entrySet()) {
-			FileStructure file = entry.getValue();
-			if (file == this || file == parent)
-				continue;
-			clone.insert(file.clone());
-		}
+    /**
+     * Performs a deep copy of the file structure.
+     *
+     * @return a clone of the file structure
+     */
+    @Override
+    public FileStructure clone() {
+        FileStructure clone = new FileStructure(name, isdir);
 
-		return clone;
-	}
+        if (!isdir) {
+            return clone;
+        }
+        for (Map.Entry<String, FileStructure> entry : files.entrySet()) {
+            FileStructure file = entry.getValue();
+            if (file == this || file == parent)
+                continue;
+            clone.insert(file.clone());
+        }
 
-	@Override
-	public String toString() {
-		return displayName();
-	}
+        return clone;
+    }
 
-	/**
-	 * Inserts a file into the current directory.
-	 * 
-	 * @param name
-	 *            the name of the file to insert
-	 * @param isdir
-	 *            true if the new file should be a directory; false otherwise
-	 * @return the new file that was inserted
-	 * @throws Exception
-	 *             if the parent is not a directory
-	 */
-	private FileStructure insert(String name, boolean isdir) throws FileStructureException {
-		if (!this.isdir)
-			throw new FileStructureException("FileStructure: cannot insert: not a directory");
+    @Override
+    public String toString() {
+        return displayName();
+    }
 
-		// create the node to insert
-		FileStructure child = new FileStructure(name, isdir);
-		// set the parent
-		child.parent = this;
-		if (child.files != null) {
-			child.files.put("..", child.parent);
-		}
-		// insert the node
-		files.put(name, child);
-		return child;
-	}
+    /**
+     * Inserts a file into the current directory.
+     *
+     * @param name  the name of the file to insert
+     * @param isdir true if the new file should be a directory; false otherwise
+     * @return the new file that was inserted
+     * @throws Exception if the parent is not a directory
+     */
+    private FileStructure insert(String name, boolean isdir) throws FileStructureException {
+        if (!this.isdir)
+            throw new FileStructureException("FileStructure: cannot insert: not a directory");
 
-	/**
-	 * Adds a file structure to the map of files.
-	 * 
-	 * @param fs
-	 *            the file structure to add
-	 */
-	public void insert(FileStructure fs) {
-		fs.parent = this;
-		if (fs.isdir) {
-			fs.files.put("..", this);
-		}
-		files.put(fs.name, fs);
-	}
+        // create the node to insert
+        FileStructure child = new FileStructure(name, isdir);
+        // set the parent
+        child.parent = this;
+        if (child.files != null) {
+            child.files.put("..", child.parent);
+        }
+        // insert the node
+        files.put(name, child);
+        return child;
+    }
 
-	/**
-	 * Merge two files structures together. All files under the invoking file
-	 * structure will be overwritten by the files under the file structure that
-	 * is passed in. Source will be modified using this method. See
-	 * merge(FileStructure source) to avoid making changes to source.
-	 * 
-	 * @param source
-	 *            The file structure to merge into the invoking file structure.
-	 *            The files under this will overwrite any files under the
-	 *            invoking file structure.
-	 * @return the original file structure merged with the fs
-	 */
-	private FileStructure mergeImpl(FileStructure source) {
-		// if destination is a file just insert source
-		if (!isdir) {
-			insert(source);
-			return this;
-		}
+    /**
+     * Adds a file structure to the map of files.
+     *
+     * @param fs the file structure to add
+     */
+    public void insert(FileStructure fs) {
+        fs.parent = this;
+        if (fs.isdir) {
+            fs.files.put("..", this);
+        }
+        files.put(fs.name, fs);
+    }
 
-		// for all entries in source
-		for (Map.Entry<String, FileStructure> entry : source.files.entrySet()) {
-			// cache the value
-			FileStructure srcFile = entry.getValue();
-			// ignore '.' and '..'
-			if (srcFile == source || srcFile == source.parent)
-				continue;
-			// put all files in source and merge directories
-			if (srcFile.isdir) {
-				// get destination directory
-				FileStructure destDir = files.get(srcFile.name);
-				// check if it exists
-				if (destDir == null) {
-					// if it doesn't exist then just insert it
-					insert(srcFile);
-				} else {
-					// if it exists then merge the destination into the source
-					destDir.mergeImpl(srcFile);
-				}
-			} else {
-				// if its a file just insert since overwriting is acceptable
-				insert(srcFile);
-			}
+    /**
+     * Merge two files structures together. All files under the invoking file
+     * structure will be overwritten by the files under the file structure that
+     * is passed in. Source will be modified using this method. See
+     * merge(FileStructure source) to avoid making changes to source.
+     *
+     * @param source The file structure to merge into the invoking file structure.
+     *               The files under this will overwrite any files under the
+     *               invoking file structure.
+     * @return the original file structure merged with the fs
+     */
+    private FileStructure mergeImpl(FileStructure source) {
+        // if destination is a file just insert source
+        if (!source.isdir) {
+            insert(source);
+            return this;
+        } else if (!isdir) {
+            source.insert(this);
+            return source;
+        }
 
-		}
+        // for all entries in source
+        for (Map.Entry<String, FileStructure> entry : source.files.entrySet()) {
+            // cache the value
+            FileStructure srcFile = entry.getValue();
+            // ignore '.' and '..'
+            if (srcFile == source || srcFile == source.parent)
+                continue;
+            // put all files in source and merge directories
+            if (srcFile.isdir) {
+                // get destination directory
+                FileStructure destDir = files.get(srcFile.name);
+                // check if it exists
+                if (destDir == null) {
+                    // if it doesn't exist then just insert it
+                    insert(srcFile);
+                } else {
+                    // if it exists then merge the destination into the source
+                    destDir.mergeImpl(srcFile);
+                }
+            } else {
+                // if its a file just insert since overwriting is acceptable
+                insert(srcFile);
+            }
 
-		return this;
-	}
+        }
 
-	/**
-	 * Recursively traverse the tree and print each node representing a
-	 * directory structure.
-	 * 
-	 * @param level
-	 */
-	private void print(int level) {
-		System.out.printf("%s%s\n", Strings.repeat('\t', level), displayName());
-		if (files == null)
-			return;
+        return this;
+    }
 
-		// iterate over all files in the file structure
-		FileStructure file;
-		for (Map.Entry<String, FileStructure> entry : files.entrySet()) {
-			file = entry.getValue();
-			if (file == this || file == parent)
-				continue;
-			file.print(level + 1);
-		}
-	}
+    /**
+     * Recursively traverse the tree and print each node representing a
+     * directory structure.
+     *
+     * @param level
+     */
+    private void print(int level) {
+        System.out.printf("%s%s\n", Strings.repeat('\t', level), displayName());
+        if (files == null)
+            return;
 
-	/**
-	 * Inserts a path into the directory.
-	 *
-	 * @param path
-	 *            The path to insert into the directory
-	 * @return the file structure that was inserted
-	 * @throws Exception
-	 */
-	@Deprecated
-	public FileStructure insert(FilePath path) throws FileStructureException {
-		if (!isdir)
-			throw new FileStructureException("cannot insert: not a directory");
+        // iterate over all files in the file structure
+        FileStructure file;
+        for (Map.Entry<String, FileStructure> entry : files.entrySet()) {
+            file = entry.getValue();
+            if (file == this || file == parent)
+                continue;
+            file.print(level + 1);
+        }
+    }
 
-		FileStructure cp = this; // save the current pointer
-		String[] tokens = path.tokens();
-		int dirPathSize = tokens.length;
-		if (!path.isDir())
-			dirPathSize -= 1;
+    /**
+     * Inserts a path into the directory.
+     *
+     * @param path The path to insert into the directory
+     * @return the file structure that was inserted
+     * @throws Exception
+     */
+    @Deprecated
+    public FileStructure insert(FilePath path) throws FileStructureException {
+        if (!isdir)
+            throw new FileStructureException("cannot insert: not a directory");
 
-		// create the directory path first
-		for (int i = 0; i < dirPathSize; i++) {
-			if (!cp.isdir)
-				throw new FileStructureException("cannot insert: not a directory");
-			// peek ahead to check if next level exists
-			FileStructure peek = cp.files.get(tokens[i]);
-			if (peek != null) {
-				// move to next level if a directory
-				if (!peek.isdir)
-					throw new FileStructureException("cannot insert: not a directory");
-				cp = peek;
-			} else {
-				// create the next level and move pointer to the next level
-				cp = cp.insert(tokens[i], true);
-			}
-		}
+        FileStructure cp = this; // save the current pointer
+        String[] tokens = path.tokens();
+        int dirPathSize = tokens.length;
+        if (!path.isDir())
+            dirPathSize -= 1;
 
-		// insert the last token if the path is a file
-		if (!path.isDir()) {
-			cp = cp.insert(tokens[tokens.length - 1], false);
-		}
+        // create the directory path first
+        for (int i = 0; i < dirPathSize; i++) {
+            if (!cp.isdir)
+                throw new FileStructureException("cannot insert: not a directory");
+            // peek ahead to check if next level exists
+            FileStructure peek = cp.files.get(tokens[i]);
+            if (peek != null) {
+                // move to next level if a directory
+                if (!peek.isdir)
+                    throw new FileStructureException("cannot insert: not a directory");
+                cp = peek;
+            } else {
+                // create the next level and move pointer to the next level
+                cp = cp.insert(tokens[i], true);
+            }
+        }
 
-		return cp;
-	}
+        // insert the last token if the path is a file
+        if (!path.isDir()) {
+            cp = cp.insert(tokens[tokens.length - 1], false);
+        }
+
+        return cp;
+    }
 
 }
