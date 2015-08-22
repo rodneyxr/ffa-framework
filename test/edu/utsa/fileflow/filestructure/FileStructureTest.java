@@ -144,23 +144,60 @@ public class FileStructureTest {
 		// assert the files that are in f1 are also in the clone
 		assertTrue(f1.exists(new FilePath("dir1/dir2/dir3")));
 		assertTrue(clone.exists(new FilePath("dir1/dir2/dir3")));
-		
+
 		assertTrue(f1.exists(new FilePath("dir1/dir2/file1")));
 		assertTrue(clone.exists(new FilePath("dir1/dir2/file1")));
 
 		// make some changes to f1 and clone
 		FilePath onlyInF1 = new FilePath("dir1/dir2/file2");
 		f1.touch(onlyInF1);
-		
+
 		FilePath onlyInClone = new FilePath("dir1/dir2/dir3/filea");
 		clone.touch(onlyInClone);
 
 		// assert that that changes did not affect each other
 		assertTrue(f1.exists(onlyInF1));
 		assertFalse(clone.exists(onlyInF1));
-		
+
 		assertTrue(clone.exists(onlyInClone));
 		assertFalse(f1.exists(onlyInClone));
+	}
+
+	@Test
+	public void testMerge() throws Exception {
+		// create some file paths to use for testing
+		FilePath dir1_dir2 = new FilePath("dir1/dir2/");
+		FilePath dira_dirb = new FilePath("dira/dirb/");
+		FilePath dir1_dir2_file1 = new FilePath("dir1/dir2/file1");
+		FilePath dir1_dir2_file2 = new FilePath("dir1/dir2/file2");
+		FilePath dira_dirb_filea1 = new FilePath("dira/dirb/filea1");
+
+		// create the destination root. sourceRoot will be merged into this
+		FileStructure destinationRoot = new FileStructure();
+		destinationRoot.mkdir(dir1_dir2);
+		destinationRoot.touch(dir1_dir2_file2);
+
+		// create the source root to merge into destinationRoot
+		FileStructure sourceRoot = new FileStructure();
+		sourceRoot.mkdir(dir1_dir2);
+		sourceRoot.touch(dir1_dir2_file1);
+		sourceRoot.mkdir(dira_dirb);
+
+		// do the merge
+		destinationRoot.merge(sourceRoot);
+
+		// assert files from both file structures are in destination
+		assertTrue(destinationRoot.exists(new FilePath("dir1/dir2/file1")));
+		assertTrue(destinationRoot.exists(new FilePath("dir1/dir2/file2")));
+		assertTrue(destinationRoot.exists(new FilePath("dira/dirb/")));
+
+		// modify the destination
+		destinationRoot.touch(dira_dirb_filea1);
+
+		// assert that modifying destination after a merge doesn't affect the
+		// source file structure
+		assertFalse(sourceRoot.exists(dira_dirb_filea1));
+
 	}
 
 }

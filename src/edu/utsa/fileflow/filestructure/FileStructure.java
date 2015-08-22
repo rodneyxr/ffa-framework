@@ -117,7 +117,25 @@ public class FileStructure {
 
 	/**
 	 * Copies a file denoted by a file path to another location in the directory
-	 * structure.
+	 * structure. Consider the following cases:
+	 * 
+	 * -> file1 to file2: If file2 exists it will be overwritten; else it will
+	 * be created
+	 * 
+	 * -> file1 to dir2: file1 will be copied into dir2 overwritten file1 in
+	 * dir2 if it exists
+	 * 
+	 * -> dir1 to dir2: a copy of dir1 will be created in dir2. if dir2/dir1
+	 * happens to exists, contents will be merged overwriting the existing
+	 * 
+	 * -> dir1 to file2: cp: cannot overwrite non-directory ‘file2’ with
+	 * directory ‘dir1’
+	 * 
+	 * -> file1 to non-existing dir: cp: cannot create regular file
+	 * ‘dir1/file1’: No such file or directory
+	 * 
+	 * -> dir1 to non-existing dir: cp: cannot create directory ‘dir2/dir1’: No
+	 * such file or directory
 	 * 
 	 * @param sourcePath
 	 *            The path pointing to the source file to copy
@@ -134,7 +152,26 @@ public class FileStructure {
 					String.format("cp: cannot stat '%s': No such file or directory", sourcePath));
 		}
 
+		// find the node to insert at
+		// FIXME: implement this
+
 		return null;
+	}
+
+	/**
+	 * Merge two files structures together. All files under the invoking file
+	 * structure will be overwritten by the files under the file structure that
+	 * is passed in. Note that a clone of source will be merged so source will
+	 * not be modified.
+	 * 
+	 * @param source
+	 *            The file structure to merge into the invoking file structure.
+	 *            The files under this will overwrite any files under the
+	 *            invoking file structure.
+	 * @return the original file structure merged with the fs
+	 */
+	public FileStructure merge(FileStructure source) {
+		return mergeImpl(source.clone());
 	}
 
 	/**
@@ -267,9 +304,55 @@ public class FileStructure {
 		if (fs.isdir) {
 			fs.files.put("..", this);
 		}
-		// files.put(fs.name, fs);
-		// insert(fs.name, fs.isdir);
 		files.put(fs.name, fs);
+	}
+
+	/**
+	 * Merge two files structures together. All files under the invoking file
+	 * structure will be overwritten by the files under the file structure that
+	 * is passed in. Source will be modified using this method. See
+	 * merge(FileStructure source) to avoid making changes to source.
+	 * 
+	 * @param source
+	 *            The file structure to merge into the invoking file structure.
+	 *            The files under this will overwrite any files under the
+	 *            invoking file structure.
+	 * @return the original file structure merged with the fs
+	 */
+	private FileStructure mergeImpl(FileStructure source) {
+		// if destination is a file just insert source
+		if (!isdir) {
+			insert(source);
+			return this;
+		}
+
+		// for all entries in source
+		for (Map.Entry<String, FileStructure> entry : source.files.entrySet()) {
+			// cache the value
+			FileStructure srcFile = entry.getValue();
+			// ignore '.' and '..'
+			if (srcFile == source || srcFile == source.parent)
+				continue;
+			// put all files in source and merge directories
+			if (srcFile.isdir) {
+				// get destination directory
+				FileStructure destDir = files.get(srcFile.name);
+				// check if it exists
+				if (destDir == null) {
+					// if it doesn't exist then just insert it
+					insert(srcFile);
+				} else {
+					// if it exists then merge the destination into the source
+					destDir.mergeImpl(srcFile);
+				}
+			} else {
+				// if its a file just insert since overwriting is acceptable
+				insert(srcFile);
+			}
+
+		}
+
+		return this;
 	}
 
 	/**
