@@ -11,6 +11,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import edu.utsa.fileflow.Main;
+
 /**
  * @author Rodney Rodriguez
  *
@@ -126,8 +128,37 @@ public class FileStructureTest {
 
 		// copy file1 to file2 and assert the new file2 exists
 		root.copy(file1, file2);
-		// FIXME: finish implementing copy method
-		// assertTrue(root.exists(file2));
+		assertTrue(root.exists(file2));
+		
+		// make a directory to test copying a file into
+		// test file to directory
+		FilePath dir1 = new FilePath("dir1/");
+		root.mkdir(dir1);
+		root.copy(file1, dir1);
+		assertTrue(root.exists(new FilePath("dir1/file1")));
+		
+		// test directory to directory
+		root = new FileStructure();
+		FilePath dir2 = new FilePath("dir2/");
+		FilePath dir1_file1 = new FilePath("dir1/file1");
+		root.mkdir(dir1);
+		root.mkdir(dir2);
+		root.touch(dir1_file1);
+		root.copy(dir1, dir2);
+		assertTrue(root.exists(new FilePath("dir2/dir1/file1")));
+		
+		// test directory to existing directory
+		root.touch(new FilePath("dir1/file2"));
+		root.copy(dir1, dir2);
+		assertTrue(root.exists(new FilePath("dir2/dir1/file1")));
+		
+		// test directory to file (should throw an exception)
+		root = new FileStructure();
+		root.touch(file1);
+		root.mkdir(dir1);
+		exception.expect(FileStructureException.class);
+		root.copy(dir1, file1);
+		
 	}
 
 	@Test
