@@ -49,12 +49,12 @@ public class FileStructure implements Cloneable {
 			if (next != null) {
 				if (!next.isdir) {
 					throw new FileStructureException(
-							String.format("touch: cannot touch �%s�: Not a directory", path));
+							String.format("touch: cannot touch '%s': Not a directory", path));
 				}
 				cp = next;
 			} else {
 				throw new FileStructureException(
-						String.format("touch: cannot touch �%s�: No such file or directory", path));
+						String.format("touch: cannot touch '%s': No such file or directory", path));
 			}
 		}
 
@@ -64,11 +64,11 @@ public class FileStructure implements Cloneable {
 		if (next != null) {
 			// cp = next;
 			// issue a warning that the file already exists
-			throw new FileFlowWarning(String.format("touch: �%s�: File or directory already exists", path));
+			throw new FileFlowWarning(String.format("touch: '%s': File or directory already exists", path));
 		} else if (path.isDir()) {
 			// if it doesn't exist but is a directory throw an exception
 			throw new FileStructureException(
-					String.format("touch: setting times of �%s�: No such file or directory", path));
+					String.format("touch: setting times of '%s': No such file or directory", path));
 		} else {
 			cp = cp.insert(tokens[tokens.length - 1], false);
 		}
