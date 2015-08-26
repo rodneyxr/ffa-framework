@@ -41,9 +41,9 @@ public class Condition {
 	 */
 	public void remove(FilePath filePath, boolean existing) {
 		if (existing) {
-			existingFileStruct.remove(filePath);
+			existingFileStruct.removeFile(filePath);
 		} else {
-			nonexistingFileStruct.remove(filePath);
+			nonexistingFileStruct.removeFile(filePath);
 		}
 	}
 
@@ -64,7 +64,7 @@ public class Condition {
 	 * @return True if the file path exists in the existing file structure.
 	 */
 	public boolean exists(FilePath filePath) {
-		return existingFileStruct.exists(filePath);
+		return existingFileStruct.fileExists(filePath);
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class Condition {
 	 * @return True if the file path exists in the non-existing file structure.
 	 */
 	public boolean canExist(FilePath filePath) {
-		return !nonexistingFileStruct.exists(filePath);
+		return !nonexistingFileStruct.fileExists(filePath);
 	}
 
 	@Override

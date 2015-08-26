@@ -11,8 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import edu.utsa.fileflow.Main;
-
 /**
  * @author Rodney Rodriguez
  *
@@ -42,37 +40,37 @@ public class FileStructureTest {
 
 		// assert exception is thrown when touching non-existing directory
 		exception.expect(FileStructureException.class);
-		root.touch(new FilePath("dir1/"));
+		root.insertRegularFile(new FilePath("dir1/"));
 
 		// assert warning is issued when touching a file that already exists
 		exception.expect(FileFlowWarning.class);
-		root.touch(new FilePath("file1"));
-		root.touch(new FilePath("file1"));
+		root.insertRegularFile(new FilePath("file1"));
+		root.insertRegularFile(new FilePath("file1"));
 
 		// assert warning is issued when touching a directory that already
 		// exists
 		exception.expect(FileFlowWarning.class);
-		root.mkdir(new FilePath("dir1/"));
-		root.touch(new FilePath("dir1/"));
+		root.insertDirectory(new FilePath("dir1/"));
+		root.insertRegularFile(new FilePath("dir1/"));
 
-		assertEquals(true, root.exists(new FilePath("file1")));
-		assertEquals(false, root.exists(new FilePath("dir1/")));
+		assertEquals(true, root.fileExists(new FilePath("file1")));
+		assertEquals(false, root.fileExists(new FilePath("dir1/")));
 	}
 
 	@Test
 	public void testMkdir() throws Exception {
 		FileStructure root = new FileStructure();
-		root.mkdir(new FilePath("dir1/dir2/"));
+		root.insertDirectory(new FilePath("dir1/dir2/"));
 
-		assertEquals(true, root.exists(new FilePath("dir1/")));
-		assertEquals(true, root.exists(new FilePath("dir1/dir2/")));
+		assertEquals(true, root.fileExists(new FilePath("dir1/")));
+		assertEquals(true, root.fileExists(new FilePath("dir1/dir2/")));
 	}
 
 	@Test
 	public void testExists() throws Exception {
 		FileStructure root = new FileStructure();
-		root.mkdir(new FilePath("dir1/dir2/dir3/"));
-		root.touch(new FilePath("dir1/dir2/dir3/file1"));
+		root.insertDirectory(new FilePath("dir1/dir2/dir3/"));
+		root.insertRegularFile(new FilePath("dir1/dir2/dir3/file1"));
 
 		FilePath[] shouldExist = new FilePath[] { new FilePath("dir1/dir2/dir3/file1"), new FilePath("dir1/dir2/dir3/"),
 				new FilePath("dir1/dir2/"), new FilePath("dir1/"), new FilePath("/"), new FilePath(".."),
@@ -84,28 +82,28 @@ public class FileStructureTest {
 
 		// test the file paths that should exist
 		for (FilePath fp : shouldExist) {
-			assertTrue(fp.toString() + " does not exist", root.exists(fp));
+			assertTrue(fp.toString() + " does not exist", root.fileExists(fp));
 		}
 
 		// test the file paths that should not exist
 		for (FilePath fp : shouldNotExist) {
-			assertFalse(fp.toString() + " exists", root.exists(fp));
+			assertFalse(fp.toString() + " exists", root.fileExists(fp));
 		}
 	}
 
 	@Test
 	public void testRemove() throws Exception {
 		FileStructure root = new FileStructure();
-		root.mkdir(new FilePath("dir1/dir2/dir3/"));
-		root.touch(new FilePath("dir1/dir2/dir3/file1"));
+		root.insertDirectory(new FilePath("dir1/dir2/dir3/"));
+		root.insertRegularFile(new FilePath("dir1/dir2/dir3/file1"));
 		FilePath pathToRemove = new FilePath("dir1/dir2/dir3");
 
 		// before removal dir3 should exist
-		assertTrue(root.exists(pathToRemove));
+		assertTrue(root.fileExists(pathToRemove));
 
 		// remove and test to ensure dir3 no longer exists
-		root.remove(pathToRemove);
-		assertFalse(root.exists(pathToRemove));
+		root.removeFile(pathToRemove);
+		assertFalse(root.fileExists(pathToRemove));
 	}
 
 	@Test
@@ -116,82 +114,82 @@ public class FileStructureTest {
 
 		// this copy should throw an exception because file1 does not exist
 		try {
-			root.copy(file1, file2);
+			root.copyFileToPath(file1, file2);
 			fail("copying non-existing file should not have worked");
 		} catch (FileStructureException e) {
 			assertTrue(e.getMessage().contains("No such file or directory"));
 		}
 
 		// touch file1 and assert it exists
-		root.touch(file1);
-		assertTrue(root.exists(file1));
+		root.insertRegularFile(file1);
+		assertTrue(root.fileExists(file1));
 
 		// copy file1 to file2 and assert the new file2 exists
-		root.copy(file1, file2);
-		assertTrue(root.exists(file2));
-		
+		root.copyFileToPath(file1, file2);
+		assertTrue(root.fileExists(file2));
+
 		// make a directory to test copying a file into
 		// test file to directory
 		FilePath dir1 = new FilePath("dir1/");
-		root.mkdir(dir1);
-		root.copy(file1, dir1);
-		assertTrue(root.exists(new FilePath("dir1/file1")));
-		
+		root.insertDirectory(dir1);
+		root.copyFileToPath(file1, dir1);
+		assertTrue(root.fileExists(new FilePath("dir1/file1")));
+
 		// test directory to directory
 		root = new FileStructure();
 		FilePath dir2 = new FilePath("dir2/");
 		FilePath dir1_file1 = new FilePath("dir1/file1");
-		root.mkdir(dir1);
-		root.mkdir(dir2);
-		root.touch(dir1_file1);
-		root.copy(dir1, dir2);
-		assertTrue(root.exists(new FilePath("dir2/dir1/file1")));
-		
+		root.insertDirectory(dir1);
+		root.insertDirectory(dir2);
+		root.insertRegularFile(dir1_file1);
+		root.copyFileToPath(dir1, dir2);
+		assertTrue(root.fileExists(new FilePath("dir2/dir1/file1")));
+
 		// test directory to existing directory
-		root.touch(new FilePath("dir1/file2"));
-		root.copy(dir1, dir2);
-		assertTrue(root.exists(new FilePath("dir2/dir1/file1")));
-		
+		root.insertRegularFile(new FilePath("dir1/file2"));
+		root.copyFileToPath(dir1, dir2);
+		assertTrue(root.fileExists(new FilePath("dir2/dir1/file1")));
+
 		// test directory to file (should throw an exception)
 		root = new FileStructure();
-		root.touch(file1);
-		root.mkdir(dir1);
+		root.insertRegularFile(file1);
+		root.insertDirectory(dir1);
 		exception.expect(FileStructureException.class);
-		root.copy(dir1, file1);
-		
+		root.copyFileToPath(dir1, file1);
+
 	}
 
 	@Test
 	public void testClone() throws Exception {
 		// create a file structure and insert some files
 		FileStructure f1 = new FileStructure();
-		f1.mkdir(new FilePath("dir1/dir2/"));
-		f1.mkdir(new FilePath("dir1/dir2/dir3"));
-		f1.touch(new FilePath("dir1/dir2/file1"));
+		f1.insertDirectory(new FilePath("dir1/dir2/"));
+		f1.insertDirectory(new FilePath("dir1/dir2/dir3"));
+		f1.insertRegularFile(new FilePath("dir1/dir2/file1"));
 
 		// clone the file structure
 		FileStructure clone = f1.clone();
 
 		// assert the files that are in f1 are also in the clone
-		assertTrue(f1.exists(new FilePath("dir1/dir2/dir3")));
-		assertTrue(clone.exists(new FilePath("dir1/dir2/dir3")));
+		assertTrue(f1.fileExists(new FilePath("dir1/dir2/dir3")));
+		assertTrue(clone.fileExists(new FilePath("dir1/dir2/dir3")));
 
-		assertTrue(f1.exists(new FilePath("dir1/dir2/file1")));
-		assertTrue(clone.exists(new FilePath("dir1/dir2/file1")));
+		assertTrue(f1.fileExists(new FilePath("dir1/dir2/file1")));
+		assertTrue(clone.fileExists(new FilePath("dir1/dir2/file1")));
 
 		// make some changes to f1 and clone
 		FilePath onlyInF1 = new FilePath("dir1/dir2/file2");
-		f1.touch(onlyInF1);
+		f1.insertRegularFile(onlyInF1);
 
 		FilePath onlyInClone = new FilePath("dir1/dir2/dir3/filea");
-		clone.touch(onlyInClone);
+		clone.insertRegularFile(onlyInClone);
 
 		// assert that that changes did not affect each other
-		assertTrue(f1.exists(onlyInF1));
-		assertFalse(clone.exists(onlyInF1));
+		assertTrue(f1.fileExists(onlyInF1));
+		assertFalse(clone.fileExists(onlyInF1));
 
-		assertTrue(clone.exists(onlyInClone));
-		assertFalse(f1.exists(onlyInClone));
+		assertTrue(clone.fileExists(onlyInClone));
+		assertFalse(f1.fileExists(onlyInClone));
 
 	}
 
@@ -206,43 +204,43 @@ public class FileStructureTest {
 
 		// create the destination root. sourceRoot will be merged into this
 		FileStructure destinationRoot = new FileStructure();
-		destinationRoot.mkdir(dir1_dir2);
-		destinationRoot.touch(dir1_dir2_file2);
+		destinationRoot.insertDirectory(dir1_dir2);
+		destinationRoot.insertRegularFile(dir1_dir2_file2);
 
 		// create the source root to merge into destinationRoot
 		FileStructure sourceRoot = new FileStructure();
-		sourceRoot.mkdir(dir1_dir2);
-		sourceRoot.touch(dir1_dir2_file1);
-		sourceRoot.mkdir(dira_dirb);
+		sourceRoot.insertDirectory(dir1_dir2);
+		sourceRoot.insertRegularFile(dir1_dir2_file1);
+		sourceRoot.insertDirectory(dira_dirb);
 
 		// do the merge
 		destinationRoot = destinationRoot.merge(sourceRoot);
 
 		// assert files from both file structures are in destination
-		assertTrue(destinationRoot.exists(dir1_dir2_file1));
-		assertTrue(destinationRoot.exists(dir1_dir2_file2));
-		assertTrue(destinationRoot.exists(dira_dirb));
+		assertTrue(destinationRoot.fileExists(dir1_dir2_file1));
+		assertTrue(destinationRoot.fileExists(dir1_dir2_file2));
+		assertTrue(destinationRoot.fileExists(dira_dirb));
 
 		// modify the destination
-		destinationRoot.touch(dira_dirb_filea1);
+		destinationRoot.insertRegularFile(dira_dirb_filea1);
 
 		// assert that modifying destination after a merge doesn't affect the
 		// source file structure
-		assertFalse(sourceRoot.exists(dira_dirb_filea1));
+		assertFalse(sourceRoot.fileExists(dira_dirb_filea1));
 
 		// test merging a file that is not a directory
 		FileStructure root = new FileStructure();
 		FilePath file1 = new FilePath("file1");
-		root.touch(file1);
-		FileStructure file1Structure = root.get(file1);
+		root.insertRegularFile(file1);
+		FileStructure file1Structure = root.getFile(file1);
 		destinationRoot = destinationRoot.merge(file1Structure);
-		assertTrue(destinationRoot.exists(file1));
+		assertTrue(destinationRoot.fileExists(file1));
 
 		// test merging a directory with a file
-		FileStructure file = root.get(file1);
-		assertFalse(file.isDir());
+		FileStructure file = root.getFile(file1);
+		assertFalse(file.isDirectory());
 		file = file.merge(destinationRoot);
-		assertTrue(file.exists(file1) && file.exists(dir1_dir2_file1));
+		assertTrue(file.fileExists(file1) && file.fileExists(dir1_dir2_file1));
 	}
 
 }
