@@ -11,7 +11,6 @@ import edu.utsa.fileflow.utilities.LuckyLogger;
  * File Flow Analysis
  * 
  * @author Rodney Rodriguez
- * @author Steven Petroff
  *
  */
 
@@ -35,15 +34,15 @@ public class Main {
 
 		// print the precondition
 		System.out.println("-------------");
-		System.out.println("Pre-condition");
+		System.out.println("Precondition");
 		System.out.println("-------------");
 		System.out.println(preCondition);
-		
+
 		System.out.println();
-	
+
 		// print the postcondition
 		System.out.println("--------------");
-		System.out.println("Post-condition");
+		System.out.println("Postcondition");
 		System.out.println("--------------");
 		System.out.println(compiler.getPostCondition());
 

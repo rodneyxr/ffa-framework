@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 import edu.utsa.fileflow.Main;
+import edu.utsa.fileflow.filestructure.FileFlowWarning;
 import edu.utsa.fileflow.filestructure.FilePath;
 import edu.utsa.fileflow.filestructure.FileStructureException;
 
@@ -34,11 +35,11 @@ public class Compiler {
 		}
 
 		// instantiate the precondition file structure
-		pre = new Condition();
+		pre = new Precondition();
 
 		// instantiate the postcondition (current structure while we execute commands)
-		post = new Condition();
-
+		post = new Postcondition();
+		
 		// while we have more commands to read
 		while (scanner.hasNext()) {
 			// parse line to command object
@@ -89,11 +90,12 @@ public class Compiler {
 	 * @param filePath The file path we want to assume exists.
 	 * @return True if we CAN assume that filePath existed before we ran the script.
 	 * @throws FileStructureException 
+	 * @throws FileFlowWarning 
 	 */
-	private boolean assume(FilePath filePath) throws FileStructureException {
-		boolean inPre = pre.exists(filePath);
-		boolean $inPre = !pre.canExist(filePath); // negate because it can exist then it is in pre
-		boolean inPost = post.exists(filePath);
+	private boolean assume(FilePath filePath) throws FileStructureException, FileFlowWarning {
+		boolean inPre = pre.existsInPositive(filePath);
+		boolean $inPre = !pre.existsInNegative(filePath); // negate because it can exist then it is in pre
+		boolean inPost = post.existsInPositive(filePath);
 //		boolean $inPost = !post.canExist(filePath);
 	
 //		if ($inPost) {
@@ -118,8 +120,8 @@ public class Compiler {
 					Main.logger.log("%s cannot be assumed", filePath);
 					return false;
 				}
-				pre.insert(filePath, true);
-				post.insert(filePath, true);
+				pre.insertPositive(filePath);
+				post.insertPositive(filePath);
 			}
 		}
 

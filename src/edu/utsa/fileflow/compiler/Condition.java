@@ -1,88 +1,96 @@
 package edu.utsa.fileflow.compiler;
 
-import edu.utsa.fileflow.filestructure.FileStructureException;
+import edu.utsa.fileflow.filestructure.FileFlowWarning;
 import edu.utsa.fileflow.filestructure.FilePath;
 import edu.utsa.fileflow.filestructure.FileStructure;
+import edu.utsa.fileflow.filestructure.FileStructureException;
 
-public class Condition {
+public abstract class Condition {
 
-	// File Structure that can exist
-	private FileStructure existingFileStruct;
+	// existing file structure
+	protected FileStructure positive;
 
-	// This one cannot exist
-	private FileStructure nonexistingFileStruct;
+	// non-existing file structure
+	protected FileStructure negative;
 
 	/**
-	 * Instantiates the two file structures representing existing and non-existing conditions
+	 * Instantiates the two file structures representing existing and
+	 * non-existing conditions
 	 */
 	public Condition() {
-		existingFileStruct = new FileStructure();
-		nonexistingFileStruct = new FileStructure();
+		positive = new FileStructure();
+		negative = new FileStructure();
 	}
 
 	/**
-	 * Inserts a file path into the this condition under the appropriate file structure.
-	 * @param filePath The file path to insert.
-	 * @param existing True if the file path should be inserted into the existing file structure. False otherwise.
-	 * @throws Exception 
-	 */
-	public void insert(FilePath filePath, boolean existing) throws FileStructureException {
-		if (existing) {
-//			existingFileStruct.insert(filePath);
-		} else {
-//			nonexistingFileStruct.insert(filePath);
-		}
-	}
-
-	/**
-	 * Removes a file path from the condition. 
-	 * @param filePath The file path to be removed.
-	 * @param existing True if the file path should be removed from the existing file structure. False otherwise.
-	 */
-	public void remove(FilePath filePath, boolean existing) {
-		if (existing) {
-			existingFileStruct.removeFile(filePath);
-		} else {
-			nonexistingFileStruct.removeFile(filePath);
-		}
-	}
-
-	/**
-	 * Returns the existing or non-existing file structure.
-	 * @param existing True if the existing file structure should be returned. False otherwise.
-	 * @return The file structure corresponding to the boolean parameter. 
-	 */
-	public FileStructure getFileStruct(boolean existing) {
-		if (existing)
-			return existingFileStruct;
-		return nonexistingFileStruct;
-	}
-
-	/**
+	 * Inserts an existing file into this condition.
 	 * 
-	 * @param filePath The file path to check if it exists.
-	 * @return True if the file path exists in the existing file structure.
+	 * @param path
+	 *            The path to insert the positive file at
+	 * @return the file that was inserted
+	 * @throws FileStructureException
+	 * @throws FileFlowWarning
 	 */
-	public boolean exists(FilePath filePath) {
-		return existingFileStruct.fileExists(filePath);
+	public FileStructure insertPositive(FilePath path) throws FileStructureException, FileFlowWarning {
+		if (path.isDir())
+			return positive.insertDirectory(path);
+		return positive.insertRegularFile(path);
+	}
+
+	public FileStructure removePositive(FilePath path) {
+		return positive.removeFile(path);
+	}
+
+	public FileStructure getPositiveRoot() {
+		return positive;
+	}
+
+	public boolean existsInPositive(FilePath path) {
+		return positive.fileExists(path);
 	}
 
 	/**
+	 * Inserts a non-existing file into this condition.
 	 * 
-	 * @param filePath The file path to check if it can exist.
-	 * @return True if the file path exists in the non-existing file structure.
+	 * @param path
+	 *            The path to insert the negative file at
+	 * @return the file that was inserted
+	 * @throws FileStructureException
+	 * @throws FileFlowWarning
 	 */
-	public boolean canExist(FilePath filePath) {
-		return !nonexistingFileStruct.fileExists(filePath);
+	public FileStructure insertNegative(FilePath path) throws FileStructureException, FileFlowWarning {
+		if (path.isDir())
+			return negative.insertDirectory(path);
+		return negative.insertRegularFile(path);
+	}
+
+	public FileStructure removeNegative(FilePath path) {
+		return negative.removeFile(path);
+	}
+
+	public FileStructure getNegativeRoot() {
+		return negative;
+	}
+
+	public boolean existsInNegative(FilePath path) {
+		return negative.fileExists(path);
+	}
+	
+	public void print() {
+		System.out.println("Existing");
+		positive.print();
+		System.out.println();
+		System.out.println("Non-existing");
+		negative.print();
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Existing\n");
-		sb.append(existingFileStruct);
+		sb.append(positive);
 		sb.append("\n\nNon-existing\n");
-		sb.append(nonexistingFileStruct);
+		sb.append(negative);
 		return sb.toString();
 	}
 
