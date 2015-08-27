@@ -1,1 +1,4 @@
-touch a
+touch file1
+rm file1
+# this issues a warning when it shouldn't
+touch file1

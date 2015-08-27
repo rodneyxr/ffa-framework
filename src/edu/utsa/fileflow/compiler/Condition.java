@@ -37,14 +37,33 @@ public abstract class Condition {
 		return positive.insertRegularFile(path);
 	}
 
+	/**
+	 * Removes the file at the path provided from the positive file structure.
+	 * 
+	 * @param path
+	 *            the path to the file to remove
+	 * @return the file that was removed or null if it does not exist
+	 */
 	public FileStructure removePositive(FilePath path) {
 		return positive.removeFile(path);
 	}
 
+	/**
+	 * 
+	 * @return the positive file structure
+	 */
 	public FileStructure getPositiveRoot() {
 		return positive;
 	}
 
+	/**
+	 * Tells if a file exists under the positive file structure at the path
+	 * provided.
+	 * 
+	 * @param path
+	 *            the path to the file to determine its existence
+	 * @return true if the file exists; false otherwise
+	 */
 	public boolean existsInPositive(FilePath path) {
 		return positive.fileExists(path);
 	}
@@ -64,18 +83,37 @@ public abstract class Condition {
 		return negative.insertRegularFile(path);
 	}
 
+	/**
+	 * Removes the file at the path provided from the negative file structure.
+	 * 
+	 * @param path
+	 *            the path to the file to remove
+	 * @return the file that was removed or null if it does not exist
+	 */
 	public FileStructure removeNegative(FilePath path) {
 		return negative.removeFile(path);
 	}
 
+	/**
+	 * 
+	 * @return the negative file structure
+	 */
 	public FileStructure getNegativeRoot() {
 		return negative;
 	}
 
+	/**
+	 * Tells if a file exists under the negative file structure at the path
+	 * provided.
+	 * 
+	 * @param path
+	 *            the path to the file to determine its existence
+	 * @return true if the file exists; false otherwise
+	 */
 	public boolean existsInNegative(FilePath path) {
 		return negative.fileExists(path);
 	}
-	
+
 	public void print() {
 		System.out.println("Existing");
 		positive.print();
@@ -83,15 +121,5 @@ public abstract class Condition {
 		System.out.println("Non-existing");
 		negative.print();
 	}
-
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("Existing\n");
-		sb.append(positive);
-		sb.append("\n\nNon-existing\n");
-		sb.append(negative);
-		return sb.toString();
-	}
-
+	
 }
