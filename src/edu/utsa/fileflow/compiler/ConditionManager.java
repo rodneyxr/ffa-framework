@@ -49,7 +49,8 @@ public class ConditionManager {
 			postcondition.insertPositive(path);
 			postcondition.removeNegative(path);
 			// if no exceptions then assume it does not exist
-			precondition.insertNegative(path);
+			if (!$pre) // unnecessary warnings
+				precondition.insertNegative(path);
 		} catch (FileStructureException e) {
 			throw new CompilerException(e.getMessage());
 		} catch (FileFlowWarning e) {
@@ -71,29 +72,15 @@ public class ConditionManager {
 			// TODO: assume the removed file exists
 		}
 
-        try {
+		try {
 			postcondition.insertNegative(path);
 		} catch (FileStructureException e) {
 			e.printStackTrace();
 		} catch (FileFlowWarning e) {
 			// ignore warning
 		}
-        
-        print();
-	}
 
-	// private boolean assume(FilePath path) {
-	// boolean post = postcondition.existsInPositive(path);
-	// boolean $post = postcondition.existsInNegative(path);
-	// boolean pre = precondition.existsInPositive(path);
-	// boolean $pre = precondition.existsInNegative(path);
-	//
-	// if (post) {
-	// return false;
-	// }
-	//
-	//
-	// }
+	}
 
 	public void print() {
 		// print the precondition
