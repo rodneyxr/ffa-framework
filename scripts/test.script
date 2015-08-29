@@ -1,4 +1,36 @@
-touch file1
-rm file1
-# this issues a warning when it shouldn't
-touch file1
+####################
+# CASE 0: PASS
+####################
+#
+#touch file1
+#
+#===================
+# file1 non-existing precondition
+# file1 existing postcondition
+#===================
+
+
+####################
+# CASE 1: PASS
+####################
+#
+#touch file1
+#touch file1
+#
+#===================
+# file1 non-existing precondition
+# file1 existing postcondition
+# Warning: file1 exists
+#===================
+
+
+####################
+# CASE 2: PASS
+####################
+#
+#rm file1
+#
+#===================
+# file1 existing precondition
+# file1 non-existing postcondition
+#===================

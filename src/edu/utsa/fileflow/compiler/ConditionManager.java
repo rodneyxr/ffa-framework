@@ -38,19 +38,15 @@ public class ConditionManager {
 		boolean pre = precondition.existsInPositive(path);
 		boolean $pre = precondition.existsInNegative(path);
 
-		// first check if the file cannot exist
-		if (pre && !post) {
-			// if it cannot exist then throw an exception
-			throw new CompilerException(String.format("File '%s' does not exist", path));
-		}
-
 		// if the file already exists then issue a warning of possible overwrite
 		try {
 			postcondition.insertPositive(path);
 			postcondition.removeNegative(path);
+
 			// if no exceptions then assume it does not exist
-			if (!$pre) // unnecessary warnings
+			if (!pre && !$pre) { // unnecessary warnings
 				precondition.insertNegative(path);
+			}
 		} catch (FileStructureException e) {
 			throw new CompilerException(e.getMessage());
 		} catch (FileFlowWarning e) {
@@ -65,11 +61,35 @@ public class ConditionManager {
 		boolean pre = precondition.existsInPositive(path);
 		boolean $pre = precondition.existsInNegative(path);
 
+		// check if it cannot exist
+		if ($post) {
+			throw new CompilerException(String.format("rm: cannot remove '%s': No such file or directory", path));
+		}
+
+		// try to remove the file. null will be returned if it does not exist
 		FileStructure removedFile = postcondition.removePositive(path);
 
 		if (removedFile == null) {
 			// the file did not exist so try to assume that it exists
-			// TODO: assume the removed file exists
+			if (pre || $pre) {
+				// check if it has not already been assumed
+				throw new CompilerException(String.format("rm: cannot remove '%s': No such file or directory", path));
+			}
+
+			// assume the removed file exists
+			try {
+				/**
+				 * FIXME: create a way to force insert paths because if we try
+				 * to insert a file to a directory that doesn't exist then a
+				 * FileStructureException will occur
+				 */
+				precondition.insertPositive(path);
+			} catch (FileStructureException e) {
+				e.printStackTrace();
+			} catch (FileFlowWarning e) {
+				// this should never happen since we checked if it exists
+				e.printStackTrace();
+			}
 		}
 
 		try {
