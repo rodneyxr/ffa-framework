@@ -63,9 +63,9 @@
 # CASE 4: PASS
 ####################
 #
-# touch file1
-# rm file1
-# touch file1
+#touch file1
+#rm file1
+#touch file1
 #
 #===================
 # Precondition:
@@ -73,4 +73,76 @@
 #
 # Postcondition:
 #	+file1
+#===================
+
+
+####################
+# CASE 5: PASS
+####################
+#
+#mkdir dir1
+#
+#===================
+# Precondition:
+#	-dir1/
+#
+# Postcondition:
+#	+dir1/
+#===================
+
+####################
+# CASE 6: PASS
+####################
+#
+#mkdir dir1
+#mkdir dir1
+#
+#===================
+# CompilerException: FileException: mkdir: cannot create directory 'dir1': File exists
+#===================
+
+
+####################
+# CASE 7: PASS
+####################
+#
+#mkdir dir1
+#touch dir1/file1
+#
+#===================
+# Precondition:
+#	-dir1/file1
+# Postcondition:
+#	+dir1/file1
+#===================
+
+
+####################
+# CASE 8: PASS
+####################
+#
+#mkdir dir1/dir2
+#
+#===================
+# Precondition:
+#	-dir1/dir2
+# Postcondition:
+#	+dir1/dir2
+#===================
+
+
+####################
+# CASE 9: FAIL
+####################
+#
+mkdir dir1
+touch dir1/file1
+rm dir1/file1
+#
+#===================
+# Precondition:
+#	-dir1/file1
+# Postcondition:
+#	+dir1/
+# NOTES: FileException occurs
 #===================
