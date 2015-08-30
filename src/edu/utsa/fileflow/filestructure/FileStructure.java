@@ -114,6 +114,65 @@ public class FileStructure implements Cloneable {
 
 		return cp;
 	}
+	
+	/**
+	 * Adds a file structure to the map of files.
+	 *
+	 * @param fs
+	 *            the file structure to add
+	 * @return the file structure that was inserted
+	 */
+	public FileStructure insertFileStructure(FileStructure fs) {
+		fs.parent = this;
+		if (fs.isdir) {
+			fs.files.put("..", this);
+		}
+		files.put(fs.name, fs);
+		return fs;
+	}
+	
+	/**
+	 * Inserts a path into the directory.
+	 *
+	 * @param path
+	 *            The path to insert into the directory
+	 * @return the file structure that was inserted
+	 * @throws Exception
+	 */
+	public FileStructure insertForce(FilePath path) throws FileStructureException {
+		if (!isdir)
+			throw new FileStructureException(String.format("cannot touch ‘%s’: Not a directory", path));
+
+		FileStructure cp = this; // save the current pointer
+		String[] tokens = path.tokens();
+		int dirPathSize = tokens.length;
+		if (!path.isDir())
+			dirPathSize -= 1;
+
+		// create the directory path first
+		for (int i = 0; i < dirPathSize; i++) {
+			if (!cp.isdir)
+				throw new FileStructureException(String.format("cannot touch ‘%s’: Not a directory", path));
+			// peek ahead to check if next level exists
+			FileStructure peek = cp.files.get(tokens[i]);
+			if (peek != null) {
+				// move to next level if a directory
+				if (!peek.isdir)
+					throw new FileStructureException(String.format("cannot touch ‘%s’: Not a directory", path));
+				cp = peek;
+			} else {
+				// create the next level and move pointer to the next level
+				cp = cp.insertFile(tokens[i], true);
+			}
+		}
+
+		// insert the last token if the path is a file
+		if (!path.isDir()) {
+			cp = cp.insertFile(tokens[tokens.length - 1], false);
+		}
+
+		return cp;
+	}
 
 	/**
 	 * Copies a file denoted by a file path to another location in the directory
@@ -373,22 +432,6 @@ public class FileStructure implements Cloneable {
 	}
 
 	/**
-	 * Adds a file structure to the map of files.
-	 *
-	 * @param fs
-	 *            the file structure to add
-	 * @return the file structure that was inserted
-	 */
-	public FileStructure insertFileStructure(FileStructure fs) {
-		fs.parent = this;
-		if (fs.isdir) {
-			fs.files.put("..", this);
-		}
-		files.put(fs.name, fs);
-		return fs;
-	}
-
-	/**
 	 * Merge two files structures together. All files under the invoking file
 	 * structure will be overwritten by the files under the file structure that
 	 * is passed in. Source will be modified using this method. See
@@ -464,50 +507,6 @@ public class FileStructure implements Cloneable {
 				continue;
 			file.print(level + 1);
 		}
-	}
-
-	/**
-	 * Inserts a path into the directory.
-	 *
-	 * @param path
-	 *            The path to insert into the directory
-	 * @return the file structure that was inserted
-	 * @throws Exception
-	 */
-	@Deprecated
-	public FileStructure insert(FilePath path) throws FileStructureException {
-		if (!isdir)
-			throw new FileStructureException("cannot insert: not a directory");
-
-		FileStructure cp = this; // save the current pointer
-		String[] tokens = path.tokens();
-		int dirPathSize = tokens.length;
-		if (!path.isDir())
-			dirPathSize -= 1;
-
-		// create the directory path first
-		for (int i = 0; i < dirPathSize; i++) {
-			if (!cp.isdir)
-				throw new FileStructureException("cannot insert: not a directory");
-			// peek ahead to check if next level exists
-			FileStructure peek = cp.files.get(tokens[i]);
-			if (peek != null) {
-				// move to next level if a directory
-				if (!peek.isdir)
-					throw new FileStructureException("cannot insert: not a directory");
-				cp = peek;
-			} else {
-				// create the next level and move pointer to the next level
-				cp = cp.insertFile(tokens[i], true);
-			}
-		}
-
-		// insert the last token if the path is a file
-		if (!path.isDir()) {
-			cp = cp.insertFile(tokens[tokens.length - 1], false);
-		}
-
-		return cp;
 	}
 
 }
