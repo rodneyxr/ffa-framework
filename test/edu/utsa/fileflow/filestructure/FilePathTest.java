@@ -38,7 +38,7 @@ public class FilePathTest {
 	}
 	
 	@Test
-    public void testFilePathCreation() {
+    public void testFilePathCreation() throws Exception {
         FilePath filepath;
 
         // test paths as directories
@@ -54,5 +54,17 @@ public class FilePathTest {
         }
 
     }
+	
+	@Test
+	public void testPathToFile() throws Exception {
+		// test a path with multiple levels
+		FilePath dir1_dir2_file1 = new FilePath("dir1/dir2/file1");
+		FilePath dir1_dir2 = new FilePath("dir1/dir2/");
+		assertEquals(dir1_dir2.toString(), dir1_dir2_file1.pathToFile().toString());
+	
+		// test a path with only one level
+		FilePath file1 = new FilePath("file1");
+		assertEquals(file1, file1.pathToFile());
+	}
 
 }

@@ -77,8 +77,7 @@ public class FileStructureTest {
 				new FilePath("."), };
 
 		FilePath[] shouldNotExist = new FilePath[] { new FilePath("dir1/dir2/dir3/doesnotexist"),
-				new FilePath("dir1/dir2/fakedir/"), new FilePath("dirfake/"), new FilePath("fakefile"),
-				new FilePath(""), };
+				new FilePath("dir1/dir2/fakedir/"), new FilePath("dirfake/"), new FilePath("fakefile"), };
 
 		// test the file paths that should exist
 		for (FilePath fp : shouldExist) {

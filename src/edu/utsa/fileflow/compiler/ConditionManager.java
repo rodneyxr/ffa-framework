@@ -76,10 +76,13 @@ public class ConditionManager {
 			// assume the removed file exists
 			try {
 				precondition.positive.insertForce(path);
-				/*
-				 * FIXME: when assuming a file exists when removing, the path to
-				 * that file should be put into postcondition
-				 */
+				// when assuming a file exists when removing, the path to that
+				// file should be put into postcondition
+				FilePath pathToFile = path.pathToFile();
+				// if the path has no parent itself is returned
+				if (path != pathToFile) { 
+					postcondition.positive.insertForce(path.pathToFile());
+				}
 			} catch (FileStructureException e) {
 				e.printStackTrace();
 			}

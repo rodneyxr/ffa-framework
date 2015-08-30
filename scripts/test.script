@@ -152,17 +152,16 @@
 
 
 ####################
-# CASE 10: FAIL
+# CASE 10: PASS
 ####################
 #
-rm dir1/file1
+#rm dir1/file1
 #
 #===================
 # Precondition:
 #	+dir1/file1
 #
 # Postcondition:
+#	+dir1/
 #	-dir1/file1
-# 
-# NOTES: dir1 should exist in post but does not
 #===================
