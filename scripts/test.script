@@ -5,8 +5,11 @@
 #touch file1
 #
 #===================
-# file1 non-existing precondition
-# file1 existing postcondition
+# Precondition:
+#	-file1
+#
+# Postcondition:
+#	+file1
 #===================
 
 
@@ -18,9 +21,14 @@
 #touch file1
 #
 #===================
-# file1 non-existing precondition
-# file1 existing postcondition
-# Warning: file1 exists
+# Precondition:
+#	-file1
+# 
+# Postcondition:
+# +file1
+#
+# Warnings: 
+#	file1 exists
 #===================
 
 
@@ -31,6 +39,38 @@
 #rm file1
 #
 #===================
-# file1 existing precondition
-# file1 non-existing postcondition
+# Precondition:
+#	+file1
+# 
+# Postcondition:
+#	-file1
+#===================
+
+
+####################
+# CASE 3: PASS
+####################
+#
+#rm file1
+#rm file1
+#
+#===================
+# cannot remove 'file1': No such file or directory
+#===================
+
+
+####################
+# CASE 4: PASS
+####################
+#
+# touch file1
+# rm file1
+# touch file1
+#
+#===================
+# Precondition:
+#	-file1
+#
+# Postcondition:
+#	+file1
 #===================
