@@ -75,12 +75,12 @@ public abstract class Condition {
 	 *            The path to insert the negative file at
 	 * @return the file that was inserted
 	 * @throws FileStructureException
-	 * @throws FileFlowWarning
 	 */
-	public FileStructure insertNegative(FilePath path) throws FileStructureException, FileFlowWarning {
-		if (path.isDir())
-			return negative.insertDirectory(path);
-		return negative.insertRegularFile(path);
+	public FileStructure insertNegative(FilePath path) throws FileStructureException {
+//		if (path.isDir())
+//			return negative.insertDirectory(path);
+//		return negative.insertRegularFile(path);
+		return negative.insertForce(path);
 	}
 
 	/**

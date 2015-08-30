@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import edu.utsa.fileflow.Main;
-import edu.utsa.fileflow.filestructure.FileFlowWarning;
 import edu.utsa.fileflow.filestructure.FilePath;
-import edu.utsa.fileflow.filestructure.FileStructureException;
 
 public class Compiler {
 
@@ -83,19 +80,21 @@ public class Compiler {
 
 	private void touch(Command cmd) throws CompilerException {
 		if (cmd.getSize() != 2) {
-			throw new CompilerException(String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
+			throw new CompilerException(
+					String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
 		}
 
 		// create the file to insert
 		FilePath file1 = new FilePath(cmd.getArg(1), false);
 		cm.insertPath(file1);
 	}
-	
+
 	private void mkdir(Command cmd) throws CompilerException {
 		if (cmd.getSize() != 2) {
-			throw new CompilerException(String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
+			throw new CompilerException(
+					String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
 		}
-		
+
 		// create the directory to insert
 		FilePath directory = new FilePath(cmd.getArg(1), true);
 		cm.insertPath(directory);
@@ -103,12 +102,13 @@ public class Compiler {
 
 	private void rm(Command cmd) throws CompilerException {
 		if (cmd.getSize() != 2) {
-			throw new CompilerException(String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
+			throw new CompilerException(
+					String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
 		}
-		
+
 		// instantiate the file to remove
 		FilePath file = new FilePath(cmd.getArg(1));
 		cm.removePath(file);
 	}
-	
+
 }

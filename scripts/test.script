@@ -112,6 +112,7 @@
 #===================
 # Precondition:
 #	-dir1/file1
+#
 # Postcondition:
 #	+dir1/file1
 #===================
@@ -126,23 +127,42 @@
 #===================
 # Precondition:
 #	-dir1/dir2
+#
 # Postcondition:
 #	+dir1/dir2
 #===================
 
 
 ####################
-# CASE 9: FAIL
+# CASE 9: PASS
 ####################
 #
-mkdir dir1
-touch dir1/file1
-rm dir1/file1
+#mkdir dir1
+#touch dir1/file1
+#rm dir1/file1
 #
 #===================
 # Precondition:
 #	-dir1/file1
+#
 # Postcondition:
 #	+dir1/
-# NOTES: FileException occurs
+#	-dir1/file1
+#===================
+
+
+####################
+# CASE 10: FAIL
+####################
+#
+rm dir1/file1
+#
+#===================
+# Precondition:
+#	+dir1/file1
+#
+# Postcondition:
+#	-dir1/file1
+# 
+# NOTES: dir1 should exist in post but does not
 #===================

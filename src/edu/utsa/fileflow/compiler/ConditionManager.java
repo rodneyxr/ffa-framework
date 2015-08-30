@@ -33,8 +33,6 @@ public class ConditionManager {
 	 * @throws CompilerException
 	 */
 	public void insertPath(FilePath path) throws CompilerException {
-		boolean post = postcondition.existsInPositive(path);
-		boolean $post = postcondition.existsInNegative(path);
 		boolean pre = precondition.existsInPositive(path);
 		boolean $pre = precondition.existsInNegative(path);
 
@@ -56,7 +54,6 @@ public class ConditionManager {
 	}
 
 	public void removePath(FilePath path) throws CompilerException {
-		// boolean post = postcondition.existsInPositive(path);
 		boolean $post = postcondition.existsInNegative(path);
 		boolean pre = precondition.existsInPositive(path);
 		boolean $pre = precondition.existsInNegative(path);
@@ -78,16 +75,12 @@ public class ConditionManager {
 
 			// assume the removed file exists
 			try {
-				/**
-				 * FIXME: create a way to force insert paths because if we try
-				 * to insert a file to a directory that doesn't exist then a
-				 * FileStructureException will occur
+				precondition.positive.insertForce(path);
+				/*
+				 * FIXME: when assuming a file exists when removing, the path to
+				 * that file should be put into postcondition
 				 */
-				precondition.insertPositive(path);
 			} catch (FileStructureException e) {
-				e.printStackTrace();
-			} catch (FileFlowWarning e) {
-				// this should never happen since we checked if it exists
 				e.printStackTrace();
 			}
 		}
@@ -95,9 +88,8 @@ public class ConditionManager {
 		try {
 			postcondition.insertNegative(path);
 		} catch (FileStructureException e) {
+			// not sure if this could ever happen
 			e.printStackTrace();
-		} catch (FileFlowWarning e) {
-			// ignore warning
 		}
 
 	}
