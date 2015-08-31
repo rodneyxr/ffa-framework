@@ -1,7 +1,6 @@
 package edu.utsa.fileflow.compiler;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Scanner;
 
 import edu.utsa.fileflow.filestructure.FilePath;
@@ -22,14 +21,9 @@ public class Compiler {
 	 *         postcondition
 	 * @throws CompilerException
 	 */
-	public ConditionManager compile(File file) throws CompilerException {
+	public ConditionManager compile(InputStream inputStream) throws CompilerException {
 		// open the file for reading
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(file);
-		} catch (FileNotFoundException fnfe) {
-			throw new CompilerException(fnfe.getMessage());
-		}
+		Scanner scanner = new Scanner(inputStream);
 
 		// instantiate the condition manager which contains our precondition and
 		// post condition

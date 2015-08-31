@@ -3,7 +3,7 @@
  */
 package edu.utsa.fileflow.filestructure;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,32 +36,32 @@ public class FilePathTest {
 	@After
 	public void tearDown() throws Exception {
 	}
-	
+
 	@Test
-    public void testFilePathCreation() throws Exception {
-        FilePath filepath;
+	public void testFilePathCreation() throws Exception {
+		FilePath filepath;
 
-        // test paths as directories
-        for (String path : VALID_FILE_PATHS) {
-            filepath = new FilePath(path, true);
-            assertEquals("filepath has unexpected value", true, filepath.isDir());
-        }
+		// test paths as directories
+		for (String path : VALID_FILE_PATHS) {
+			filepath = new FilePath(path, true);
+			assertEquals("filepath has unexpected value", true, filepath.isDir());
+		}
 
-        // test paths as files
-        for (String path : VALID_FILE_PATHS) {
-            filepath = new FilePath(path, false);
-            assertEquals("filepath has unexpected value", false, filepath.isDir());
-        }
+		// test paths as files
+		for (String path : VALID_FILE_PATHS) {
+			filepath = new FilePath(path, false);
+			assertEquals("filepath has unexpected value", false, filepath.isDir());
+		}
 
-    }
-	
+	}
+
 	@Test
 	public void testPathToFile() throws Exception {
 		// test a path with multiple levels
 		FilePath dir1_dir2_file1 = new FilePath("dir1/dir2/file1");
 		FilePath dir1_dir2 = new FilePath("dir1/dir2/");
 		assertEquals(dir1_dir2.toString(), dir1_dir2_file1.pathToFile().toString());
-	
+
 		// test a path with only one level
 		FilePath file1 = new FilePath("file1");
 		assertEquals(file1, file1.pathToFile());
