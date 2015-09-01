@@ -24,7 +24,7 @@ public class Main {
 		logger.setEnabled(DEBUG);
 
 		// create a file for the script to compile
-		File file = new File("scripts/test.script");
+		File file = new File("scripts/test.ffa");
 		try {
 			System.setIn(new FileInputStream(file));
 		} catch (FileNotFoundException e) {

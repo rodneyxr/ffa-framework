@@ -97,6 +97,14 @@ public class ConditionManager {
 
 	}
 
+	/**
+	 * 
+	 * @return the log for this condition manager
+	 */
+	public ArrayList<String> getLog() {
+		return log;
+	}
+
 	public void print() {
 		// print the precondition
 		System.out.println("-------------");
