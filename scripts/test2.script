@@ -1,16 +1,3 @@
-TEST case0 #hello world
-{
-	touch file1
-	touch file2
-} 
-EXPECTS 
-{
-	pre:
-		-file1
-	post:
-		+file1
-}
-
 ####################
 # CASE 0: PASS
 ####################
