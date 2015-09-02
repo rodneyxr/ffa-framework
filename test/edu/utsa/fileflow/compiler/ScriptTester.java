@@ -96,13 +96,13 @@ public class ScriptTester {
 				char sign = s.charAt(0);
 				switch (sign) {
 				case '+':
-					assertTrue(cm.getPrecondition().existsInPositive(new FilePath(s.substring(1))));
+					assertTrue(String.format("%s: '%s' not found", caseName, s), cm.getPrecondition().existsInPositive(new FilePath(s.substring(1))));
 					break;
 				case '-':
-					assertTrue(cm.getPrecondition().existsInNegative(new FilePath(s.substring(1))));
+					assertTrue(String.format("%s: '%s' not found", caseName, s), cm.getPrecondition().existsInNegative(new FilePath(s.substring(1))));
 					break;
 				default:
-					throw new Exception(String.format("'%s': must begin with a '+' or '-'", s));
+					throw new Exception(String.format("%s: '%s' must begin with a '+' or '-'", caseName, s));
 				}
 			}
 
@@ -111,10 +111,10 @@ public class ScriptTester {
 				char sign = s.charAt(0);
 				switch (sign) {
 				case '+':
-					assertTrue(cm.getPostcondition().existsInPositive(new FilePath(s.substring(1))));
+					assertTrue(String.format("%s: '%s' not found", caseName, s), cm.getPostcondition().existsInPositive(new FilePath(s.substring(1))));
 					break;
 				case '-':
-					assertTrue(cm.getPostcondition().existsInNegative(new FilePath(s.substring(1))));
+					assertTrue(String.format("%s: '%s' not found", caseName, s), cm.getPostcondition().existsInNegative(new FilePath(s.substring(1))));
 					break;
 				default:
 					throw new Exception(String.format("%s: '%s' must begin with a '+' or '-'", caseName, s));
