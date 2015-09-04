@@ -100,19 +100,18 @@ public class ConditionManager {
 	}
 
 	public void copyPath(FilePath source, FilePath dest) throws CompilerException {
-		boolean post = postcondition.existsInPositive(source);
-		boolean $post = postcondition.existsInNegative(source);
-		boolean pre = precondition.existsInPositive(source);
-		boolean $pre = precondition.existsInNegative(source);
-
-		boolean dpost = postcondition.existsInPositive(dest);
-		boolean $dposts = postcondition.existsInNegative(dest);
+		// boolean post = postcondition.existsInPositive(source);
+		// boolean $post = postcondition.existsInNegative(source);
+		// boolean pre = precondition.existsInPositive(source);
+		// boolean $pre = precondition.existsInNegative(source);
+		// boolean dpost = postcondition.existsInPositive(dest);
+		// boolean $dposts = postcondition.existsInNegative(dest);
 		boolean dpre = precondition.existsInPositive(dest);
 		boolean $dpre = precondition.existsInNegative(dest);
 
-		if (!post) {
-			// if the source file does not exist then we must assume it exists
-			insertPath(source);
+		// if the source file does not exist then we msut assume it exists
+		if (!assume(source)) {
+			throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", source));
 		}
 
 		// sourceFile will exist here
@@ -137,6 +136,39 @@ public class ConditionManager {
 		} catch (FileStructureException e) {
 			throw new CompilerException(e.getMessage());
 		}
+	}
+
+	/**
+	 * Assumes a file exists and make the necessary modifications to both the
+	 * precondition and postcondition.
+	 * 
+	 * @param path
+	 *            the path to the file to assume exists
+	 * @return true if the file was assumed successfully; false otherwise.
+	 */
+	public boolean assume(FilePath path) {
+		boolean pre = precondition.existsInPositive(path);
+		boolean $pre = precondition.existsInNegative(path);
+		FileStructure file = postcondition.positive.getFile(path);
+
+		if (file == null) {
+			// the file did not exist so try to assume that it exists
+			if (pre || $pre) {
+				// check if it has not already been assumed
+				return false;
+			}
+
+			// assume the removed file exists
+			try {
+				precondition.positive.insertForce(path);
+				postcondition.positive.insertForce(path);
+			} catch (FileStructureException e) {
+				// this should never occur
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

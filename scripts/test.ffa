@@ -1,3 +1,6 @@
-touch file1
 cp file1 file2
-cp file2 dir1/file2copy
+cp file1 file2
+cp file2 file3
+rm file1
+cp file2 file1
+cp dir1/file2 filea
