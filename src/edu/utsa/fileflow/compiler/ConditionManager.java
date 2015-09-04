@@ -28,6 +28,8 @@ public class ConditionManager {
 	}
 
 	/**
+	 * Inserts a path to the post condition. If the file exists it will be
+	 * overwritten. If the file does not exist it will be
 	 * 
 	 * @param path
 	 * @throws CompilerException
@@ -80,7 +82,7 @@ public class ConditionManager {
 				// file should be put into postcondition
 				FilePath pathToFile = path.pathToFile();
 				// if the path has no parent itself is returned
-				if (path != pathToFile) { 
+				if (path != pathToFile) {
 					postcondition.positive.insertForce(path.pathToFile());
 				}
 			} catch (FileStructureException e) {
@@ -95,6 +97,46 @@ public class ConditionManager {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void copyPath(FilePath source, FilePath dest) throws CompilerException {
+		boolean post = postcondition.existsInPositive(source);
+		boolean $post = postcondition.existsInNegative(source);
+		boolean pre = precondition.existsInPositive(source);
+		boolean $pre = precondition.existsInNegative(source);
+
+		boolean dpost = postcondition.existsInPositive(dest);
+		boolean $dposts = postcondition.existsInNegative(dest);
+		boolean dpre = precondition.existsInPositive(dest);
+		boolean $dpre = precondition.existsInNegative(dest);
+
+		if (!post) {
+			// if the source file does not exist then we must assume it exists
+			insertPath(source);
+		}
+
+		// sourceFile will exist here
+		FileStructure sourceFile = postcondition.positive.getFile(source);
+		sourceFile = sourceFile.clone();
+
+		FilePath pathToDest = dest.pathToFile();
+
+		if (dest != pathToDest) {
+			if (!postcondition.existsInPositive(dest.pathToFile())) {
+				insertPath(pathToDest);
+			}
+		}
+
+		try {
+			postcondition.positive.copyFileToPath(source, dest);
+			postcondition.removeNegative(dest);
+			// if no exceptions then assume it does not exist
+			if (!dpre && !$dpre) { // unnecessary warnings
+				precondition.insertNegative(dest);
+			}
+		} catch (FileStructureException e) {
+			throw new CompilerException(e.getMessage());
+		}
 	}
 
 	/**

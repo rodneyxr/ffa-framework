@@ -58,7 +58,7 @@ public class Compiler {
 				mkdir(cmd);
 				break;
 			case cp:
-				// TODO: implement cp
+				cp(cmd);
 				break;
 			case rm:
 				rm(cmd);
@@ -76,7 +76,7 @@ public class Compiler {
 	private void touch(Command cmd) throws CompilerException {
 		if (cmd.getSize() != 2) {
 			throw new CompilerException(
-					String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
+					String.format("'%s': Command '%s' expects one argument", cmd, cmd.getType().getName()));
 		}
 
 		// create the file to insert
@@ -87,7 +87,7 @@ public class Compiler {
 	private void mkdir(Command cmd) throws CompilerException {
 		if (cmd.getSize() != 2) {
 			throw new CompilerException(
-					String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
+					String.format("'%s': Command '%s' expects one argument", cmd, cmd.getType().getName()));
 		}
 
 		// create the directory to insert
@@ -98,12 +98,29 @@ public class Compiler {
 	private void rm(Command cmd) throws CompilerException {
 		if (cmd.getSize() != 2) {
 			throw new CompilerException(
-					String.format("'%s': Command '%s' expects only 1 argument", cmd, cmd.getType().getName()));
+					String.format("'%s': Command '%s' expects one argument", cmd, cmd.getType().getName()));
 		}
 
 		// instantiate the file to remove
 		FilePath file = createFilePath(cmd.getArg(1));
 		cm.removePath(file);
+	}
+
+	// TODO: implement this
+	private void cp(Command cmd) throws CompilerException {
+		if (cmd.getSize() != 3) {
+			throw new CompilerException(
+					String.format("'%s': Command '%s' expects two arguments", cmd, cmd.getType().getName()));
+		}
+
+		// instantiate the source file
+		FilePath source = createFilePath(cmd.getArg(1));
+		
+		// instantiate the destination file
+		FilePath dest = createFilePath(cmd.getArg(2));
+		
+		cm.copyPath(source, dest);
+		
 	}
 
 	/**

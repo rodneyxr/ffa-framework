@@ -8,5 +8,10 @@ public class ScriptsTest {
 	public void testElementalFunctions() throws Exception {
 		ScriptTester.testScript("scripts/tests/elemental_functions_test.ffa");
 	}
-
+	
+	@Test
+	public void testCopy() throws Exception {
+		ScriptTester.testScript("scripts/tests/copy_test.ffa");
+	}
+	
 }

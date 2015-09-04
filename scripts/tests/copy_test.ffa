@@ -1,0 +1,15 @@
+TEST case0
+{
+	touch file1
+	cp file1 file2
+} 
+EXPECTS
+{
+	pre:
+		-file1
+	post:
+		+file1
+		+file2
+	warn:
+	error:
+}
