@@ -182,3 +182,19 @@ EXPECTS
 		+dir1/
 		-dir1/file1
 }
+
+####################
+# CASE 11: PASS
+####################
+TEST case11
+{
+	touch dir1/file1
+}
+EXPECTS
+{
+	pre:
+		+dir1
+		-dir1/file1
+	post:
+		+dir1/file1
+}

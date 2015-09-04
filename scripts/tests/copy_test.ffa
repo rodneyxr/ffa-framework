@@ -13,3 +13,40 @@ EXPECTS
 	warn:
 	error:
 }
+
+TEST case1
+{
+	touch file1
+	rm file1
+	cp file1 file2
+}
+EXPECTS
+{
+	error:
+		cannot stat 'file1'
+}
+
+TEST case2
+{
+	rm file1
+	cp file1 file2
+}
+EXPECTS
+{
+	error:
+		cannot stat 'file1'
+}
+
+TEST case3
+{
+	cp file1 file2
+}
+EXPECTS
+{
+	pre:
+		+file1
+		-file2
+	post:
+		+file1
+		+file2
+}

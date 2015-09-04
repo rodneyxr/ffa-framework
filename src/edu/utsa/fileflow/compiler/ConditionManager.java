@@ -38,6 +38,12 @@ public class ConditionManager {
 		boolean pre = precondition.existsInPositive(path);
 		boolean $pre = precondition.existsInNegative(path);
 
+		FilePath pathToFile = path.pathToFile();
+		if (pathToFile != path)
+		if (!assume(pathToFile)) {
+			throw new CompilerException(String.format("touch: cannot touch '%s': No such file or directory", path));
+		}
+		
 		// if the file already exists then issue a warning of possible overwrite
 		try {
 			postcondition.insertPositive(path);

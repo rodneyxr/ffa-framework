@@ -1,6 +1,1 @@
-cp file1 file2
-cp file1 file2
-cp file2 file3
-rm file1
-cp file2 file1
-cp dir1/file2 filea
+touch dir1/file1
