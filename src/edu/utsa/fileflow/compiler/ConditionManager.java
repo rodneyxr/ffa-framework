@@ -38,11 +38,16 @@ public class ConditionManager {
 		boolean pre = precondition.existsInPositive(path);
 		boolean $pre = precondition.existsInNegative(path);
 
-		FilePath pathToFile = path.pathToFile();
-		if (pathToFile != path)
-			if (!assume(pathToFile)) {
-				throw new CompilerException(String.format("touch: cannot touch '%s': No such file or directory", path));
-			}
+		// only do this for regular files because if it is a directory then
+		// mkdir will make the path to that directory
+		if (!path.isDir()) {
+			FilePath pathToFile = path.pathToFile();
+			if (pathToFile != path)
+				if (!assume(pathToFile)) {
+					throw new CompilerException(
+							String.format("touch: cannot touch '%s': No such file or directory", path));
+				}
+		}
 
 		// if the file already exists then issue a warning of possible overwrite
 		try {
@@ -115,7 +120,7 @@ public class ConditionManager {
 		boolean dpre = precondition.existsInPositive(dest);
 		boolean $dpre = precondition.existsInNegative(dest);
 
-		// TODO: assume files under dest path do not exists
+		// TODO: assume files under dest path do not exist
 		// if the source file does not exist then we must assume it exists
 		if (!assume(source)) {
 			throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", source));
