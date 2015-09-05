@@ -40,10 +40,10 @@ public class ConditionManager {
 
 		FilePath pathToFile = path.pathToFile();
 		if (pathToFile != path)
-		if (!assume(pathToFile)) {
-			throw new CompilerException(String.format("touch: cannot touch '%s': No such file or directory", path));
-		}
-		
+			if (!assume(pathToFile)) {
+				throw new CompilerException(String.format("touch: cannot touch '%s': No such file or directory", path));
+			}
+
 		// if the file already exists then issue a warning of possible overwrite
 		try {
 			postcondition.insertPositive(path);
@@ -115,7 +115,8 @@ public class ConditionManager {
 		boolean dpre = precondition.existsInPositive(dest);
 		boolean $dpre = precondition.existsInNegative(dest);
 
-		// if the source file does not exist then we msut assume it exists
+		// TODO: assume files under dest path do not exists
+		// if the source file does not exist then we must assume it exists
 		if (!assume(source)) {
 			throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", source));
 		}

@@ -1,1 +1,3 @@
 touch dir1/file1
+mkdir dira/dirb/dirc/
+cp dir1 dira/dirb/dirc
