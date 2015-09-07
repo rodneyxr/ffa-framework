@@ -2,7 +2,9 @@ package edu.utsa.fileflow.filestructure;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.TreeMap;
 
 import edu.utsa.fileflow.utilities.Strings;
@@ -317,6 +319,44 @@ public class FileStructure implements Cloneable {
 			e.printStackTrace();
 		}
 		return paths;
+	}
+
+	/**
+	 * Gives the full path to this file. The file path returned does not include
+	 * a preceding file separator.
+	 * 
+	 * ex: file1 will return 'root/file1' and not '/root/file1'
+	 * 
+	 * @return the full path to this file
+	 */
+	public FilePath getAbsolutePath() {
+		// create a list to store all levels visited on the way up to root
+		ArrayList<String> pathList = new ArrayList<String>();
+
+		// traverse the tree to the root (when the parent is itself)
+		FileStructure fs = this;
+		pathList.add(fs.name);
+		while (fs != fs.parent) {
+			fs = fs.parent;
+			pathList.add(fs.name);
+		}
+
+		// join the path list with the file separator
+		StringJoiner sj = new StringJoiner(File.separator);
+		ListIterator<String> li = pathList.listIterator(pathList.size());
+		while (li.hasPrevious()) {
+			sj.add(li.previous());
+		}
+
+		// convert the string to a file path and return
+		FilePath fp = null;
+		try {
+			fp = new FilePath(sj.toString(), isdir);
+		} catch (InvalidFilePathException e) {
+			// this will never happen
+			e.printStackTrace();
+		}
+		return fp;
 	}
 
 	/**

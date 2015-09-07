@@ -150,6 +150,11 @@ public class ConditionManager {
 		}
 
 		// TODO: assume all sub-directories and files if dest is a directory
+		for (FilePath path : fs.getAllFilePaths()) {
+			if (!assume(path)) {
+				throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", path));
+			}
+		}
 		
 	}
 

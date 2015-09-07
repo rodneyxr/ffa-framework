@@ -6,15 +6,12 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import edu.utsa.fileflow.utilities.Strings;
 
 /**
  * @author Rodney Rodriguez
@@ -261,6 +258,16 @@ public class FileStructureTest {
 		root = new FileStructure();
 		paths = root.getAllFilePaths();
 		assertTrue(paths.isEmpty());
+	}
+	
+	@Test
+	public void testGetAbsolutePath() throws Exception {
+		FileStructure root = new FileStructure();
+		root.insertForce(new FilePath("dir1/dir2/dir3/file1"));
+		FileStructure file1 = root.getFile(new FilePath("dir1/dir2/dir3/file1"));
+		assertEquals(file1.getAbsolutePath(), new FilePath("root/dir1/dir2/dir3/file1"));
+		
+		assertEquals(root.getAbsolutePath(), new FilePath("root/"));
 	}
 
 }
