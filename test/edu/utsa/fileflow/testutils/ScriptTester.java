@@ -96,6 +96,7 @@ public class ScriptTester {
 
 			// assert precondition
 			for (String s : pre) {
+				assertTrue(String.format("%s: an error occurred", caseName, s), cm != null && cm.getPrecondition() != null);
 				char sign = s.charAt(0);
 				switch (sign) {
 				case '+':
@@ -111,6 +112,7 @@ public class ScriptTester {
 
 			// assert postcondition
 			for (String s : post) {
+				assertTrue(String.format("%s: an error occurred", caseName, s), cm != null && cm.getPostcondition() != null);
 				char sign = s.charAt(0);
 				switch (sign) {
 				case '+':
@@ -126,6 +128,7 @@ public class ScriptTester {
 
 			// assert warnings are found in the log
 			for (String s : warn) {
+				assertTrue(String.format("%s: an error occurred", caseName, s), cm != null && cm.getPostcondition() != null);
 				s = s.toLowerCase();
 				boolean contains = false;
 				for (String l : cm.getLog()) {
@@ -153,6 +156,11 @@ public class ScriptTester {
 
 		scanner.close();
 
+	}
+
+	private static void assertFalse(String format, boolean b) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public static ConditionManager script(String data) throws CompilerException {
