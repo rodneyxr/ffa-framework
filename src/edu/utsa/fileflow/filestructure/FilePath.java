@@ -92,6 +92,14 @@ public class FilePath {
 		return path;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof FilePath))
+			return false;
+		return ((FilePath) o).toString().equals(toString());
+	}
+
+	@Override
 	public String toString() {
 		if (isdir) {
 			return path + File.separator;

@@ -120,7 +120,6 @@ public class ConditionManager {
 		boolean dpre = precondition.existsInPositive(dest);
 		boolean $dpre = precondition.existsInNegative(dest);
 
-		// TODO: assume files under dest path do not exist
 		// if the source file does not exist then we must assume it exists
 		if (!assume(source)) {
 			throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", source));
@@ -138,8 +137,9 @@ public class ConditionManager {
 			}
 		}
 
+		FileStructure fs = null;
 		try {
-			postcondition.positive.copyFileToPath(source, dest);
+			fs = postcondition.positive.copyFileToPath(source, dest);
 			postcondition.removeNegative(dest);
 			// if no exceptions then assume it does not exist
 			if (!dpre && !$dpre) { // unnecessary warnings
@@ -148,6 +148,9 @@ public class ConditionManager {
 		} catch (FileStructureException e) {
 			throw new CompilerException(e.getMessage());
 		}
+
+		// TODO: assume all sub-directories and files if dest is a directory
+		
 	}
 
 	/**
@@ -182,6 +185,31 @@ public class ConditionManager {
 		}
 		return true;
 	}
+
+	// public boolean assume(FilePath path) {
+	// boolean pre = precondition.existsInPositive(path);
+	// boolean $pre = precondition.existsInNegative(path);
+	// FileStructure file = postcondition.positive.getFile(path);
+	//
+	// if (file == null) {
+	// // the file did not exist so try to assume that it exists
+	// if (pre || $pre) {
+	// // check if it has not already been assumed
+	// return false;
+	// }
+	//
+	// // assume the removed file exists
+	// try {
+	// precondition.positive.insertForce(path);
+	// postcondition.positive.insertForce(path);
+	// } catch (FileStructureException e) {
+	// // this should never occur
+	// e.printStackTrace();
+	// return false;
+	// }
+	// }
+	// return true;
+	// }
 
 	/**
 	 * 

@@ -1,6 +1,7 @@
 package edu.utsa.fileflow.filestructure;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -114,7 +115,7 @@ public class FileStructure implements Cloneable {
 
 		return cp;
 	}
-	
+
 	/**
 	 * Adds a file structure to the map of files.
 	 *
@@ -130,7 +131,7 @@ public class FileStructure implements Cloneable {
 		files.put(fs.name, fs);
 		return fs;
 	}
-	
+
 	/**
 	 * Inserts a path into the directory.
 	 *
@@ -297,6 +298,25 @@ public class FileStructure implements Cloneable {
 	 */
 	public FileStructure merge(FileStructure source) {
 		return clone().mergeImpl(source.clone());
+	}
+
+	/**
+	 * If the file is a directory then the paths of all files under the
+	 * directory will be returned. If it is a regular file then its name will be
+	 * returned
+	 * 
+	 * @return an ArrayList of all file paths under this file
+	 */
+	public ArrayList<FilePath> getAllFilePaths() {
+		ArrayList<FilePath> paths = new ArrayList<FilePath>();
+		try {
+			// call to recursive method that will get all paths under this file
+			getAllFilePathsImpl("", paths);
+		} catch (InvalidFilePathException e) {
+			// this will never happen
+			e.printStackTrace();
+		}
+		return paths;
 	}
 
 	/**
@@ -507,6 +527,46 @@ public class FileStructure implements Cloneable {
 				continue;
 			file.print(level + 1);
 		}
+	}
+
+	/**
+	 * 
+	 * @param path
+	 *            the current path that this recursive method is in
+	 * @param paths
+	 *            the reference to the list of paths
+	 * @return the filename of the current file
+	 * @throws InvalidFilePathException
+	 */
+	private String getAllFilePathsImpl(String path, ArrayList<FilePath> paths) throws InvalidFilePathException {
+		if (files == null)
+			return joinPath(path, name);
+
+		// iterate over all files in the file structure
+		FileStructure file;
+		for (Map.Entry<String, FileStructure> entry : files.entrySet()) {
+			file = entry.getValue();
+			if (file == this || file == parent)
+				continue;
+			paths.add(new FilePath(file.getAllFilePathsImpl(joinPath(path, name), paths), file.isdir));
+		}
+		return joinPath(path, name);
+	}
+
+	/**
+	 * Helper method to concatenate a file path with a filename.
+	 * 
+	 * @param path
+	 *            the path to append the file name to
+	 * @param filename
+	 *            the file name to append to the path
+	 * @return the file path joined with the filename
+	 */
+	private String joinPath(String path, String filename) {
+		if (path == "" || path == null) {
+			return filename;
+		}
+		return String.join(File.separator, path, filename);
 	}
 
 }

@@ -5,11 +5,16 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import edu.utsa.fileflow.utilities.Strings;
 
 /**
  * @author Rodney Rodriguez
@@ -240,6 +245,22 @@ public class FileStructureTest {
 		assertFalse(file.isDirectory());
 		file = file.merge(destinationRoot);
 		assertTrue(file.fileExists(file1) && file.fileExists(dir1_dir2_file1));
+	}
+
+	@Test
+	public void testGetAllFilePaths() throws Exception {
+		FileStructure root = new FileStructure();
+		root.insertDirectory(new FilePath("dir1"));
+		root.insertRegularFile(new FilePath("dir1/file1"));
+		root.insertDirectory(new FilePath("dir1/dir2/"));
+
+		ArrayList<FilePath> paths = root.getFile(new FilePath("dir1")).getAllFilePaths();
+		assertTrue(paths.contains(new FilePath("dir1/dir2/")));
+		assertTrue(paths.contains(new FilePath("dir1/file1")));
+		
+		root = new FileStructure();
+		paths = root.getAllFilePaths();
+		assertTrue(paths.isEmpty());
 	}
 
 }
