@@ -68,3 +68,17 @@ EXPECTS
 		+dir1/file1
 		+dira/dirb/dirc/dir1/file1
 }
+
+TEST case5
+{
+	mkdir dira/dirb/dirc
+	mkdir z
+	touch dira/dirb/dirc/file1
+	cp dira/dirb z
+} EXPECTS {
+	pre:
+		-dira/dirb/dirc/
+		-z2/
+	post:
+		+dira/dirb/dirc/
+}

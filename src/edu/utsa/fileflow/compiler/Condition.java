@@ -7,6 +7,8 @@ import edu.utsa.fileflow.filestructure.FileStructureException;
 
 public abstract class Condition {
 
+	public static boolean MERGED_PRINT = true;
+
 	// existing file structure
 	protected FileStructure positive;
 
@@ -19,7 +21,9 @@ public abstract class Condition {
 	 */
 	public Condition() {
 		positive = new FileStructure();
+		positive.prefix = "+";
 		negative = new FileStructure();
+		negative.prefix = "-";
 	}
 
 	/**
@@ -35,6 +39,18 @@ public abstract class Condition {
 		if (path.isDir())
 			return positive.insertDirectory(path);
 		return positive.insertRegularFile(path);
+	}
+
+	/**
+	 * Force inserts a file path into the positive file structure
+	 * 
+	 * @param path
+	 *            the path to insert
+	 * @return the file structure that was inserted
+	 * @throws FileStructureException
+	 */
+	public FileStructure insertPositiveForce(FilePath path) throws FileStructureException {
+		return positive.insertForce(path);
 	}
 
 	/**
@@ -75,11 +91,23 @@ public abstract class Condition {
 	 *            The path to insert the negative file at
 	 * @return the file that was inserted
 	 * @throws FileStructureException
+	 * @throws FileFlowWarning
 	 */
-	public FileStructure insertNegative(FilePath path) throws FileStructureException {
-//		if (path.isDir())
-//			return negative.insertDirectory(path);
-//		return negative.insertRegularFile(path);
+	public FileStructure insertNegative(FilePath path) throws FileStructureException, FileFlowWarning {
+		if (path.isDir())
+			return negative.insertDirectory(path);
+		return negative.insertRegularFile(path);
+	}
+
+	/**
+	 * Force inserts a file path into the negative file structure
+	 * 
+	 * @param path
+	 *            the path to insert
+	 * @return the file structure that was inserted
+	 * @throws FileStructureException
+	 */
+	public FileStructure insertNegativeForce(FilePath path) throws FileStructureException {
 		return negative.insertForce(path);
 	}
 
@@ -115,11 +143,15 @@ public abstract class Condition {
 	}
 
 	public void print() {
-		System.out.println("Existing");
-		positive.print();
-		System.out.println();
-		System.out.println("Non-existing");
-		negative.print();
+		if (MERGED_PRINT) {
+			positive.merge(negative).print();
+		} else {
+			System.out.println("Existing");
+			positive.print();
+			System.out.println();
+			System.out.println("Non-existing");
+			negative.print();
+		}
 	}
-	
+
 }

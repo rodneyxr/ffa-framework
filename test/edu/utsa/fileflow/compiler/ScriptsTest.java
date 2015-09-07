@@ -2,6 +2,8 @@ package edu.utsa.fileflow.compiler;
 
 import org.junit.Test;
 
+import edu.utsa.fileflow.testutils.ScriptTester;
+
 public class ScriptsTest {
 
 	@Test

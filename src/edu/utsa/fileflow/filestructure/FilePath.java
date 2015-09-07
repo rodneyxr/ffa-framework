@@ -97,6 +97,17 @@ public class FilePath {
 	}
 
 	/**
+	 * Sets the file path to be a directory or regular file
+	 * 
+	 * @param isdir
+	 *            true if the path should represent a directory; false if it
+	 *            should represent a regular file
+	 */
+	public void setDir(boolean isdir) {
+		this.isdir = isdir;
+	}
+
+	/**
 	 * Strips spaces from both sides of the path.
 	 * 
 	 * @return a cleaned file path

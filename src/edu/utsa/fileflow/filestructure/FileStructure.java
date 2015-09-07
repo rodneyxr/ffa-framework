@@ -15,6 +15,8 @@ public class FileStructure implements Cloneable {
 	private String name;
 	private FileStructure parent;
 	private boolean isdir;
+	
+	public String prefix;
 
 	public FileStructure() {
 		this("root", true);
@@ -23,6 +25,7 @@ public class FileStructure implements Cloneable {
 	private FileStructure(String name, boolean isdir) {
 		this.name = name;
 		this.isdir = isdir;
+		this.prefix = "";
 		parent = this;
 		if (isdir) {
 			files = new TreeMap<String, FileStructure>();
@@ -144,7 +147,7 @@ public class FileStructure implements Cloneable {
 	 */
 	public FileStructure insertForce(FilePath path) throws FileStructureException {
 		if (!isdir)
-			throw new FileStructureException(String.format("cannot touch ‘%s’: Not a directory", path));
+			throw new FileStructureException(String.format("cannot touch '%s': Not a directory", path));
 
 		FileStructure cp = this; // save the current pointer
 		String[] tokens = path.tokens();
@@ -412,8 +415,8 @@ public class FileStructure implements Cloneable {
 	 */
 	public String displayName() {
 		if (isdir)
-			return name + File.separator;
-		return name;
+			return prefix + name + File.separator;
+		return prefix + name;
 	}
 
 	/**
@@ -445,6 +448,7 @@ public class FileStructure implements Cloneable {
 	@Override
 	public FileStructure clone() {
 		FileStructure clone = new FileStructure(name, isdir);
+		clone.prefix = prefix;
 
 		if (!isdir) {
 			return clone;
@@ -481,6 +485,8 @@ public class FileStructure implements Cloneable {
 
 		// create the node to insert
 		FileStructure child = new FileStructure(name, isdir);
+		child.prefix = prefix;
+		
 		// set the parent
 		child.parent = this;
 		if (child.files != null) {
@@ -555,7 +561,7 @@ public class FileStructure implements Cloneable {
 	 * @param level
 	 */
 	private void print(int level) {
-		System.out.printf("%s%s\n", Strings.repeat("  ", level), displayName());
+		System.out.printf("%s%s\n", Strings.repeat("   ", level), displayName());
 		if (files == null)
 			return;
 
