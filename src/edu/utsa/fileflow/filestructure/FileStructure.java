@@ -555,7 +555,7 @@ public class FileStructure implements Cloneable {
 	 * @param level
 	 */
 	private void print(int level) {
-		System.out.printf("%s%s\n", Strings.repeat('\t', level), displayName());
+		System.out.printf("%s%s\n", Strings.repeat("  ", level), displayName());
 		if (files == null)
 			return;
 
