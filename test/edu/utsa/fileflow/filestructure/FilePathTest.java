@@ -66,5 +66,15 @@ public class FilePathTest {
 		FilePath file1 = new FilePath("file1");
 		assertEquals(file1, file1.pathToFile());
 	}
+	
+	@Test
+	public void testConcat() throws Exception {
+		FilePath root_dir1 = new FilePath("dir1/dir2");
+		FilePath file1 = new FilePath("file1");
+		assertEquals(FilePath.concat(root_dir1, file1), new FilePath("dir1/dir2/file1"));
+		
+		FilePath root = new FilePath("root");
+		assertEquals(FilePath.concat(root, file1), new FilePath("root/file1"));
+	}
 
 }

@@ -68,6 +68,27 @@ public class FilePath {
 	}
 
 	/**
+	 * Concatenate two file paths together.
+	 * 
+	 * @param fp1
+	 *            preceding file path
+	 * @param fp2
+	 *            following file path
+	 * @return a new file path with the two paths combined
+	 */
+	public static FilePath concat(FilePath fp1, FilePath fp2) {
+		String path = fp1.toString() + SEPARATOR + fp2.toString();
+		FilePath fpNew = null;
+		try {
+			fpNew = new FilePath(path);
+		} catch (InvalidFilePathException e) {
+			// this will never happen
+			e.printStackTrace();
+		}
+		return fpNew;
+	}
+
+	/**
 	 * 
 	 * @return true if the path points to a directory
 	 */
