@@ -31,6 +31,9 @@ public class ConditionManager {
 	 * Inserts a path to the post condition. If the file exists it will be
 	 * overwritten. If the file does not exist it will be
 	 * 
+	 * FIXME: when inserting a file to a path that doesn't exist the path to
+	 * that file should be marked as existing
+	 * 
 	 * @param path
 	 * @throws CompilerException
 	 */
@@ -111,12 +114,6 @@ public class ConditionManager {
 	}
 
 	public void copyPath(FilePath source, FilePath dest) throws CompilerException {
-		// boolean post = postcondition.existsInPositive(source);
-		// boolean $post = postcondition.existsInNegative(source);
-		// boolean pre = precondition.existsInPositive(source);
-		// boolean $pre = precondition.existsInNegative(source);
-		// boolean dpost = postcondition.existsInPositive(dest);
-		// boolean $dposts = postcondition.existsInNegative(dest);
 		boolean dpre = precondition.existsInPositive(dest);
 		boolean $dpre = precondition.existsInNegative(dest);
 
@@ -137,9 +134,15 @@ public class ConditionManager {
 			}
 		}
 
-		FileStructure fs = null;
+		// assume all sub-directories and files if dest is a directory
+		for (FilePath path : sourceFile.getAllFilePaths()) {
+			if (!assumeNot(FilePath.concat(dest, path))) {
+				throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", path));
+			}
+		}
+
 		try {
-			fs = postcondition.positive.copyFileToPath(source, dest);
+			postcondition.positive.copyFileToPath(source, dest);
 			postcondition.removeNegative(dest);
 			// if no exceptions then assume it does not exist
 			if (!dpre && !$dpre) { // unnecessary warnings
@@ -149,13 +152,6 @@ public class ConditionManager {
 			throw new CompilerException(e.getMessage());
 		}
 
-		// TODO: assume all sub-directories and files if dest is a directory
-		for (FilePath path : fs.getAllFilePaths()) {
-			if (!assume(path)) {
-				throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", path));
-			}
-		}
-		
 	}
 
 	/**
@@ -178,7 +174,7 @@ public class ConditionManager {
 				return false;
 			}
 
-			// assume the removed file exists
+			// assume the file exists
 			try {
 				precondition.positive.insertForce(path);
 				postcondition.positive.insertForce(path);
@@ -191,30 +187,39 @@ public class ConditionManager {
 		return true;
 	}
 
-	// public boolean assume(FilePath path) {
-	// boolean pre = precondition.existsInPositive(path);
-	// boolean $pre = precondition.existsInNegative(path);
-	// FileStructure file = postcondition.positive.getFile(path);
-	//
-	// if (file == null) {
-	// // the file did not exist so try to assume that it exists
-	// if (pre || $pre) {
-	// // check if it has not already been assumed
-	// return false;
-	// }
-	//
-	// // assume the removed file exists
-	// try {
-	// precondition.positive.insertForce(path);
-	// postcondition.positive.insertForce(path);
-	// } catch (FileStructureException e) {
-	// // this should never occur
-	// e.printStackTrace();
-	// return false;
-	// }
-	// }
-	// return true;
-	// }
+	/**
+	 * Assumes a file exists and make the necessary modifications to both the
+	 * precondition and postcondition.
+	 * 
+	 * @param path
+	 *            the path to the file to assume exists
+	 * @return true if the file was assumed successfully; false otherwise.
+	 */
+	public boolean assumeNot(FilePath path) {
+		boolean pre = precondition.existsInPositive(path);
+		boolean $pre = precondition.existsInNegative(path);
+		FileStructure file = postcondition.positive.getFile(path);
+
+		if (file == null) {
+			// the file did not exist so try to assume that it exists
+			if (pre || $pre) {
+				// check if it has not already been assumed
+				return false;
+			}
+
+			// assume the file does not exist
+			try {
+				precondition.negative.insertForce(path);
+				// TODO: possibly enable this
+				// postcondition.negative.insertForce(path);
+			} catch (FileStructureException e) {
+				// this should never occur
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+	}
 
 	/**
 	 * 
