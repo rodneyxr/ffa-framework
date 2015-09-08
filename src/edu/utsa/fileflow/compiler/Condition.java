@@ -5,7 +5,7 @@ import edu.utsa.fileflow.filestructure.FilePath;
 import edu.utsa.fileflow.filestructure.FileStructure;
 import edu.utsa.fileflow.filestructure.FileStructureException;
 
-public abstract class Condition {
+public class Condition {
 
 	public static boolean MERGED_PRINT = true;
 

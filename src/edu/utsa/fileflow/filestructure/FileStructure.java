@@ -2,6 +2,7 @@ package edu.utsa.fileflow.filestructure;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -15,7 +16,7 @@ public class FileStructure implements Cloneable {
 	private String name;
 	private FileStructure parent;
 	private boolean isdir;
-	
+
 	public String prefix;
 
 	public FileStructure() {
@@ -321,6 +322,8 @@ public class FileStructure implements Cloneable {
 			// this will never happen
 			e.printStackTrace();
 		}
+
+		Collections.reverse(paths);
 		return paths;
 	}
 
@@ -392,6 +395,8 @@ public class FileStructure implements Cloneable {
 	public FileStructure getFile(FilePath path) {
 		FileStructure cp = this;
 		for (String filename : path.tokens()) {
+			if (cp.files == null)
+				return null;
 			cp = cp.files.get(filename);
 			if (cp == null)
 				return null;
@@ -486,7 +491,7 @@ public class FileStructure implements Cloneable {
 		// create the node to insert
 		FileStructure child = new FileStructure(name, isdir);
 		child.prefix = prefix;
-		
+
 		// set the parent
 		child.parent = this;
 		if (child.files != null) {

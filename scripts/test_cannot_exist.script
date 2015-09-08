@@ -1,6 +1,0 @@
-cp home/bin/x.txt x.txt
-mv home/bin/x.txt home/dir1_cpy
-
-# cannot exists because it is in precondition and not in postcondition
-# meaning that it existed before but was removed during the script
-cp home/bin/x.txt dir1/x.txt

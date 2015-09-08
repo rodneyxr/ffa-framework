@@ -1,10 +1,7 @@
-#touch dir1/file1
-#mkdir dira/dirb/dirc/
-#cp dir1 dira/dirb/dirc
-#rm dira/dirb/dirc/dir1
-#rm dira/dirb/dirc/
-#rm dira/dirb/
+touch dir1/file1
+mkdir dira/dirb/dirc/
+cp dir1 dira/dirb/dirc
+rm dira/dirb/dirc/dir1
+rm dira/dirb/dirc/
+rm dira/dirb/
 #touch dira/dirb/dirc/dir1/filenew
-
-mkdir a/b/c
-touch a/b/c/file1

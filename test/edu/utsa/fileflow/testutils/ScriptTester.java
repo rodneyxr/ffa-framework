@@ -158,11 +158,6 @@ public class ScriptTester {
 
 	}
 
-	private static void assertFalse(String format, boolean b) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	public static ConditionManager script(String data) throws CompilerException {
 		return compiler.compile(new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8)));
 	}

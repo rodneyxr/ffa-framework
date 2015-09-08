@@ -82,3 +82,14 @@ TEST case5
 	post:
 		+dira/dirb/dirc/
 }
+
+TEST case6
+{
+	rm dira/dirb
+	cp file1 dira/dirb/dirc
+}
+EXPECTS
+{
+	error:
+		cannot create
+}

@@ -9,21 +9,21 @@ import edu.utsa.fileflow.filestructure.FileStructureException;
 
 public class ConditionManager {
 
-	private final Precondition precondition;
-	private final Postcondition postcondition;
+	private final Condition precondition;
+	private final Condition postcondition;
 	private final ArrayList<String> log;
 
 	public ConditionManager() {
-		precondition = new Precondition();
-		postcondition = new Postcondition();
+		precondition = new Condition();
+		postcondition = new Condition();
 		log = new ArrayList<String>();
 	}
 
-	public Precondition getPrecondition() {
+	public Condition getPrecondition() {
 		return precondition;
 	}
 
-	public Postcondition getPostcondition() {
+	public Condition getPostcondition() {
 		return postcondition;
 	}
 
@@ -57,6 +57,7 @@ public class ConditionManager {
 			postcondition.insertPositive(path);
 			postcondition.removeNegative(path);
 
+			// TODO: try assumeNot here
 			// if no exceptions then assume it does not exist
 			if (!pre && !$pre) { // unnecessary warnings
 				precondition.insertNegativeForce(path);
@@ -113,22 +114,28 @@ public class ConditionManager {
 		FileStructure sourceFile = postcondition.positive.getFile(source);
 		sourceFile = sourceFile.clone();
 
-		FilePath pathToDest = dest.pathToFile();
-
-		if (dest != pathToDest) {
-			if (!postcondition.existsInPositive(dest.pathToFile())) {
-				insertPath(pathToDest);
+		// assume the path to the destination exists
+		FileStructure fs = assume(dest.pathToFile());
+		if (fs == null) {
+			if (sourceFile.isRegularFile()) {
+				throw new CompilerException(
+						String.format("cp: cannot create regular file '%s': No such file or directory", dest));
+			} else {
+				throw new CompilerException(
+						String.format("cp: cannot create directory '%s': No such file or directory", dest));
 			}
 		}
 
 		// assume all sub-directories and files do not exist if dest is a
 		// directory
 		for (FilePath path : sourceFile.getAllFilePaths()) {
-			if (!assumeNot(FilePath.concat(dest, path))) {
-				throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", path));
+			FilePath fullPath = FilePath.concat(dest, path);
+			if (!assumeNot(fullPath)) {
+				throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", fullPath));
 			}
 		}
 
+		// if all is good up to this point then copy the file over
 		try {
 			postcondition.positive.copyFileToPath(source, dest);
 			postcondition.removeNegative(dest);
@@ -200,7 +207,7 @@ public class ConditionManager {
 			try {
 				precondition.insertNegativeForce(path);
 				// TODO: possibly enable this
-				// postcondition.negative.insertForce(path);
+				postcondition.insertNegativeForce(path);
 			} catch (FileStructureException e) {
 				// this should never occur
 				e.printStackTrace();
