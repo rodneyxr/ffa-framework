@@ -4,4 +4,3 @@ cp dir1 dira/dirb/dirc
 rm dira/dirb/dirc/dir1
 rm dira/dirb/dirc/
 rm dira/dirb/
-#touch dira/dirb/dirc/dir1/filenew

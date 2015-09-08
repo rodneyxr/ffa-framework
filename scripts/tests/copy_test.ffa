@@ -93,3 +93,44 @@ EXPECTS
 	error:
 		cannot create
 }
+
+TEST case7
+{
+	cp dir1/file1 dir1/file1Copy
+}
+EXPECTS
+{
+	pre:
+		+dir1/
+		+dir1/file1
+		-dir1/file1Copy
+	post:
+		+dir1/file1
+		+dir1/file1Copy
+}
+
+TEST case7
+{
+	cp dir1/file1 dir1/file1Copy
+}
+EXPECTS
+{
+	pre:
+		+dir1/
+		+dir1/file1
+		-dir1/file1Copy
+	post:
+		+dir1/file1
+		+dir1/file1Copy
+}
+
+TEST case8
+{
+	touch file1
+	cp file1 file1
+}
+EXPECTS
+{
+	error:
+		are the same file
+}
