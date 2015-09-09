@@ -104,6 +104,7 @@ public class ConditionManager {
 	public void copyPath(FilePath source, FilePath dest) throws CompilerException {
 		boolean dpre = precondition.existsInPositive(dest);
 		boolean $dpre = precondition.existsInNegative(dest);
+		boolean dpost = postcondition.existsInPositive(dest);
 
 		// if the source file does not exist then we must assume it exists
 		if (assume(source) == null) {
@@ -114,15 +115,24 @@ public class ConditionManager {
 		FileStructure sourceFile = postcondition.positive.getFile(source);
 		sourceFile = sourceFile.clone();
 
+		// if the destination file does not exist, set destination file to
+		// match isDir in order to avoid copying dir into file
+		if (!dpost) {
+			dest.setDir(sourceFile.isDirectory());
+		}
+
 		// assume the path to the destination exists
-		FileStructure fs = assume(dest.pathToFile());
-		if (fs == null) {
-			if (sourceFile.isRegularFile()) {
-				throw new CompilerException(
-						String.format("cp: cannot create regular file '%s': No such file or directory", dest));
-			} else {
-				throw new CompilerException(
-						String.format("cp: cannot create directory '%s': No such file or directory", dest));
+		FilePath pathToDest = dest.pathToFile();
+		if (pathToDest != dest) {
+			FileStructure fs = assume(dest.pathToFile());
+			if (fs == null) {
+				if (sourceFile.isRegularFile()) {
+					throw new CompilerException(
+							String.format("cp: cannot create regular file '%s': No such file or directory", dest));
+				} else {
+					throw new CompilerException(
+							String.format("cp: cannot create directory '%s': No such file or directory", dest));
+				}
 			}
 		}
 

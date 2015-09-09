@@ -96,14 +96,14 @@ public class ScriptTester {
 
 			// assert precondition
 			for (String s : pre) {
-				assertTrue(String.format("%s: an error occurred", caseName, s), cm != null && cm.getPrecondition() != null);
+				assertTrue(String.format("%s: an error occurred", caseName), cm != null && cm.getPrecondition() != null);
 				char sign = s.charAt(0);
 				switch (sign) {
 				case '+':
-					assertTrue(String.format("%s: '%s' not found", caseName, s), cm.getPrecondition().existsInPositive(new FilePath(s.substring(1))));
+					assertTrue(String.format("%s: pre: '%s' not found", caseName, s), cm.getPrecondition().existsInPositive(new FilePath(s.substring(1))));
 					break;
 				case '-':
-					assertTrue(String.format("%s: '%s' not found", caseName, s), cm.getPrecondition().existsInNegative(new FilePath(s.substring(1))));
+					assertTrue(String.format("%s: pre: '%s' not found", caseName, s), cm.getPrecondition().existsInNegative(new FilePath(s.substring(1))));
 					break;
 				default:
 					throw new Exception(String.format("%s: '%s' must begin with a '+' or '-'", caseName, s));
@@ -112,14 +112,14 @@ public class ScriptTester {
 
 			// assert postcondition
 			for (String s : post) {
-				assertTrue(String.format("%s: an error occurred", caseName, s), cm != null && cm.getPostcondition() != null);
+				assertTrue(String.format("%s: an error occurred", caseName), cm != null && cm.getPostcondition() != null);
 				char sign = s.charAt(0);
 				switch (sign) {
 				case '+':
-					assertTrue(String.format("%s: '%s' not found", caseName, s), cm.getPostcondition().existsInPositive(new FilePath(s.substring(1))));
+					assertTrue(String.format("%s: post: '%s' not found", caseName, s), cm.getPostcondition().existsInPositive(new FilePath(s.substring(1))));
 					break;
 				case '-':
-					assertTrue(String.format("%s: '%s' not found", caseName, s), cm.getPostcondition().existsInNegative(new FilePath(s.substring(1))));
+					assertTrue(String.format("%s: post: '%s' not found", caseName, s), cm.getPostcondition().existsInNegative(new FilePath(s.substring(1))));
 					break;
 				default:
 					throw new Exception(String.format("%s: '%s' must begin with a '+' or '-'", caseName, s));
@@ -128,7 +128,7 @@ public class ScriptTester {
 
 			// assert warnings are found in the log
 			for (String s : warn) {
-				assertTrue(String.format("%s: an error occurred", caseName, s), cm != null && cm.getPostcondition() != null);
+				assertTrue(String.format("%s: an error occurred", caseName), cm != null && cm.getPostcondition() != null);
 				s = s.toLowerCase();
 				boolean contains = false;
 				for (String l : cm.getLog()) {
