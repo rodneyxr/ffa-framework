@@ -63,6 +63,9 @@ public class Compiler {
 			case rm:
 				rm(cmd);
 				break;
+			case mv: // TODO: test move
+				mv(cmd);
+				break;
 			default:
 				scanner.close();
 				throw new CompilerException("Unknown command: '" + cmd.getArg(0) + "'");
@@ -106,7 +109,6 @@ public class Compiler {
 		cm.removePath(file);
 	}
 
-	// TODO: implement this
 	private void cp(Command cmd) throws CompilerException {
 		if (cmd.getSize() != 3) {
 			throw new CompilerException(
@@ -121,6 +123,22 @@ public class Compiler {
 		
 		cm.copyPath(source, dest);
 		
+	}
+	
+	private void mv(Command cmd) throws CompilerException {
+		if (cmd.getSize() != 3) {
+			throw new CompilerException(
+					String.format("'%s': Command '%s' expects two arguments", cmd, cmd.getType().getName()));
+		}
+
+		// instantiate the source file
+		FilePath source = createFilePath(cmd.getArg(1));
+		
+		// instantiate the destination file
+		FilePath dest = createFilePath(cmd.getArg(2));
+		
+		cm.copyPath(source, dest);
+		cm.removePath(source);
 	}
 
 	/**

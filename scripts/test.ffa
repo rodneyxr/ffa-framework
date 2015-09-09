@@ -1,2 +1,2 @@
-touch file1
-cp file1 file1
+mkdir dir1
+cp dir1 dir2

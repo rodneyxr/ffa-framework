@@ -134,3 +134,20 @@ EXPECTS
 	error:
 		are the same file
 }
+
+# dir2 is being assumed as a regular file so the copy
+# fails because you cannot copy a directory into a file
+TEST case9
+{
+	mkdir dir1
+	cp dir1 dir2
+}
+EXPECTS
+{
+	pre:
+		-dir1/
+		-dir2/
+	post:
+		-dir1/
+		+dir2/
+}
