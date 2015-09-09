@@ -206,7 +206,6 @@ public class ConditionManager {
 			// assume the file does not exist
 			try {
 				precondition.insertNegativeForce(path);
-				// TODO: possibly enable this
 				postcondition.insertNegativeForce(path);
 			} catch (FileStructureException e) {
 				// this should never occur

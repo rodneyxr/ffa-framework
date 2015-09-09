@@ -217,6 +217,12 @@ public class FileStructure implements Cloneable {
 			throw new FileStructureException(
 					String.format("cp: cannot stat '%s': No such file or directory", sourcePath));
 		}
+		
+		// check if the paths point to the same file
+		if (sourcePath.equals(destinationPath)) {
+			throw new FileStructureException(
+					String.format("cp: '%s' and '%s' are the same file", sourcePath, sourcePath));
+		}
 
 		// find the node to insert at
 		FileStructure pointer = this;

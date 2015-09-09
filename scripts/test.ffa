@@ -1,6 +1,2 @@
-touch dir1/file1
-mkdir dira/dirb/dirc/
-cp dir1 dira/dirb/dirc
-rm dira/dirb/dirc/dir1
-rm dira/dirb/dirc/
-rm dira/dirb/
+touch file1
+cp file1 file1
