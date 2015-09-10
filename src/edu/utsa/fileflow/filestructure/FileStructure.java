@@ -15,20 +15,22 @@ public class FileStructure implements Cloneable {
 	private TreeMap<String, FileStructure> files;
 	private String name;
 	private FileStructure parent;
-	private boolean isdir;
+	
+	// TODO: consider UNKNOWN types
+	private FileStructureType type;
 
 	public String prefix;
 
 	public FileStructure() {
-		this("root", true);
+		this("root", FileStructureType.DIRECTORY);
 	}
 
-	private FileStructure(String name, boolean isdir) {
+	private FileStructure(String name, FileStructureType type) {
 		this.name = name;
-		this.isdir = isdir;
+		this.type = type;
 		this.prefix = "";
 		parent = this;
-		if (isdir) {
+		if (isDirectory()) {
 			files = new TreeMap<String, FileStructure>();
 			files.put(".", this);
 			files.put("..", parent);
@@ -54,7 +56,7 @@ public class FileStructure implements Cloneable {
 		for (int i = 0; i < tokens.length - 1; i++) {
 			FileStructure next = cp.files.get(tokens[i]);
 			if (next != null) {
-				if (!next.isdir) {
+				if (!next.isDirectory()) {
 					throw new FileStructureException(String.format("touch: cannot touch '%s': Not a directory", path));
 				}
 				cp = next;
@@ -76,7 +78,7 @@ public class FileStructure implements Cloneable {
 			throw new FileStructureException(
 					String.format("touch: setting times of '%s': No such file or directory", path));
 		} else {
-			cp = cp.insertFile(tokens[tokens.length - 1], false);
+			cp = cp.insertFile(tokens[tokens.length - 1], FileStructureType.REGULAR_FILE);
 		}
 
 		return cp;
@@ -92,7 +94,7 @@ public class FileStructure implements Cloneable {
 	 * @throws FileStructureException
 	 */
 	public FileStructure insertDirectory(FilePath path) throws FileStructureException {
-		if (!isdir)
+		if (!isDirectory())
 			throw new FileStructureException("cannot insert: not a directory");
 		if (fileExists(path)) {
 			throw new FileStructureException(String.format("mkdir: cannot create directory '%s': File exists", path));
@@ -102,20 +104,20 @@ public class FileStructure implements Cloneable {
 
 		// create the directory path
 		for (String token : path.tokens()) {
-			if (!cp.isdir)
+			if (!cp.isDirectory())
 				throw new FileStructureException(
 						String.format("mkdir: cannot create directory '%s': Not a directory", path));
 			// peek ahead to check if next level exists
 			FileStructure next = cp.files.get(token);
 			if (next != null) {
 				// move to next level if a directory
-				if (!next.isdir)
+				if (!next.isDirectory())
 					throw new FileStructureException(
 							String.format("mkdir: cannot create directory '%s': Not a directory", path));
 				cp = next;
 			} else {
 				// create the next level and move pointer to the next level
-				cp = cp.insertFile(token, true);
+				cp = cp.insertFile(token, FileStructureType.DIRECTORY);
 			}
 		}
 
@@ -131,7 +133,7 @@ public class FileStructure implements Cloneable {
 	 */
 	public FileStructure insertFileStructure(FileStructure fs) {
 		fs.parent = this;
-		if (fs.isdir) {
+		if (fs.isDirectory()) {
 			fs.files.put("..", this);
 		}
 		files.put(fs.name, fs);
@@ -147,7 +149,7 @@ public class FileStructure implements Cloneable {
 	 * @throws Exception
 	 */
 	public FileStructure insertForce(FilePath path) throws FileStructureException {
-		if (!isdir)
+		if (!isDirectory())
 			throw new FileStructureException(String.format("cannot touch '%s': Not a directory", path));
 
 		FileStructure cp = this; // save the current pointer
@@ -158,24 +160,24 @@ public class FileStructure implements Cloneable {
 
 		// create the directory path first
 		for (int i = 0; i < dirPathSize; i++) {
-			if (!cp.isdir)
+			if (!cp.isDirectory())
 				throw new FileStructureException(String.format("cannot touch ‘%s’: Not a directory", path));
 			// peek ahead to check if next level exists
 			FileStructure peek = cp.files.get(tokens[i]);
 			if (peek != null) {
 				// move to next level if a directory
-				if (!peek.isdir)
+				if (!peek.isDirectory())
 					throw new FileStructureException(String.format("cannot touch ‘%s’: Not a directory", path));
 				cp = peek;
 			} else {
 				// create the next level and move pointer to the next level
-				cp = cp.insertFile(tokens[i], true);
+				cp = cp.insertFile(tokens[i], FileStructureType.DIRECTORY);
 			}
 		}
 
 		// insert the last token if the path is a file
 		if (!path.isDir()) {
-			cp = cp.insertFile(tokens[tokens.length - 1], false);
+			cp = cp.insertFile(tokens[tokens.length - 1], FileStructureType.REGULAR_FILE);
 		}
 
 		return cp;
@@ -239,7 +241,7 @@ public class FileStructure implements Cloneable {
 				// the next level does not exist
 				// if the next level happens to be the last level of the path
 				// and is a directory then insert into the current pointer
-				if (i == tokens.length - 1 && pointer.isdir) {
+				if (i == tokens.length - 1 && pointer.isDirectory()) {
 					// rename and copy the source to the destination name
 					src = src.clone();
 					src.name = filename;
@@ -247,7 +249,7 @@ public class FileStructure implements Cloneable {
 				} else {
 					// there is no path to the destination path in the file
 					// structure
-					if (src.isdir) {
+					if (src.isDirectory()) {
 						throw new FileStructureException(String.format(
 								"cp: cannot create directory '%s': No such file or directory", destinationPath));
 					} else {
@@ -260,19 +262,19 @@ public class FileStructure implements Cloneable {
 
 		// here pointer is the destination
 
-		if (!src.isdir && !pointer.isdir) {
+		if (!src.isDirectory() && !pointer.isDirectory()) {
 			// file1 to file2: If file2 exists it will be overwritten; else it
 			// will be created
 			src = src.clone();
 			src.name = filename;
 			pointer.parent.insertFileStructure(src);
 
-		} else if (!src.isdir && pointer.isdir) {
+		} else if (!src.isDirectory() && pointer.isDirectory()) {
 			// file1 to dir2: file1 will be copied into dir2 overwriting file1
 			// in dir2 if it exists
 			pointer.insertFileStructure(src.clone());
 
-		} else if (src.isdir && pointer.isdir) {
+		} else if (src.isDirectory() && pointer.isDirectory()) {
 			// dir1 to dir2: a copy of dir1 will be created in dir2. if
 			// dir2/dir1 happens to exist, contents will be merged overwriting
 			// the existing
@@ -285,7 +287,7 @@ public class FileStructure implements Cloneable {
 			}
 			pointer.insertFileStructure(src);
 
-		} else if (src.isdir && !pointer.isdir) {
+		} else if (src.isDirectory() && !pointer.isDirectory()) {
 			// dir1 to file2: cp: cannot overwrite non-directory 'file2' with
 			// directory 'dir1'
 			throw new FileStructureException(String.format(
@@ -363,7 +365,7 @@ public class FileStructure implements Cloneable {
 		// convert the string to a file path and return
 		FilePath fp = null;
 		try {
-			fp = new FilePath(sj.toString(), isdir);
+			fp = new FilePath(sj.toString(), isDirectory());
 		} catch (InvalidFilePathException e) {
 			// this will never happen
 			e.printStackTrace();
@@ -384,7 +386,7 @@ public class FileStructure implements Cloneable {
 			return null;
 		fs.parent.files.remove(fs.name);
 		fs.parent = fs;
-		if (fs.isdir) {
+		if (fs.isDirectory()) {
 			fs.files.put("..", fs);
 		}
 
@@ -425,7 +427,7 @@ public class FileStructure implements Cloneable {
 	 * @return the name with an ending slash if the file is a directory
 	 */
 	public String displayName() {
-		if (isdir)
+		if (isDirectory())
 			return prefix + name + File.separator;
 		return prefix + name;
 	}
@@ -434,14 +436,14 @@ public class FileStructure implements Cloneable {
 	 * @return true if this file is a directory; false otherwise
 	 */
 	public boolean isDirectory() {
-		return isdir;
+		return type == FileStructureType.DIRECTORY;
 	}
 
 	/**
 	 * @return true if this file is a regular file; false otherwise
 	 */
 	public boolean isRegularFile() {
-		return !isdir;
+		return type == FileStructureType.REGULAR_FILE;
 	}
 
 	/**
@@ -458,10 +460,10 @@ public class FileStructure implements Cloneable {
 	 */
 	@Override
 	public FileStructure clone() {
-		FileStructure clone = new FileStructure(name, isdir);
+		FileStructure clone = new FileStructure(name, type);
 		clone.prefix = prefix;
 
-		if (!isdir) {
+		if (!isDirectory()) {
 			return clone;
 		}
 		for (Map.Entry<String, FileStructure> entry : files.entrySet()) {
@@ -484,18 +486,18 @@ public class FileStructure implements Cloneable {
 	 *
 	 * @param name
 	 *            the name of the file to insert
-	 * @param isdir
-	 *            true if the new file should be a directory; false otherwise
+	 * @param type
+	 *            the type that the new file should be
 	 * @return the new file that was inserted
 	 * @throws Exception
 	 *             if the parent is not a directory
 	 */
-	private FileStructure insertFile(String name, boolean isdir) throws FileStructureException {
-		if (!this.isdir)
+	private FileStructure insertFile(String name, FileStructureType type) throws FileStructureException {
+		if (!this.isDirectory())
 			throw new FileStructureException("FileStructure: cannot insert: not a directory");
 
 		// create the node to insert
-		FileStructure child = new FileStructure(name, isdir);
+		FileStructure child = new FileStructure(name, type);
 		child.prefix = prefix;
 
 		// set the parent
@@ -528,10 +530,10 @@ public class FileStructure implements Cloneable {
 		}
 
 		// if destination is a file just insert source
-		if (!source.isdir) {
+		if (!source.isDirectory()) {
 			insertFileStructure(source);
 			return this;
-		} else if (!isdir) {
+		} else if (!isDirectory()) {
 			source.insertFileStructure(this);
 			return source;
 		}
@@ -544,7 +546,7 @@ public class FileStructure implements Cloneable {
 			if (srcFile == source || srcFile == source.parent)
 				continue;
 			// put all files in source and merge directories
-			if (srcFile.isdir) {
+			if (srcFile.isDirectory()) {
 				// get destination directory
 				FileStructure destDir = files.get(srcFile.name);
 				// check if it exists
@@ -605,7 +607,7 @@ public class FileStructure implements Cloneable {
 			file = entry.getValue();
 			if (file == this || file == parent)
 				continue;
-			paths.add(new FilePath(file.getAllFilePathsImpl(joinPath(path, name), paths), file.isdir));
+			paths.add(new FilePath(file.getAllFilePathsImpl(joinPath(path, name), paths), file.isDirectory()));
 		}
 		return joinPath(path, name);
 	}
