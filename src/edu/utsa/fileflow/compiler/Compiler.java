@@ -51,19 +51,19 @@ public class Compiler {
 			}
 
 			switch (cmd.getType()) {
-			case touch:
+			case TOUCH:
 				touch(cmd);
 				break;
-			case mkdir:
+			case MAKE_DIRECTORY:
 				mkdir(cmd);
 				break;
-			case cp:
+			case COPY:
 				cp(cmd);
 				break;
-			case rm:
+			case REMOVE:
 				rm(cmd);
 				break;
-			case mv: // TODO: test move
+			case MOVE: // TODO: test move
 				mv(cmd);
 				break;
 			default:
