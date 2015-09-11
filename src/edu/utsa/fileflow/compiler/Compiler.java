@@ -83,7 +83,7 @@ public class Compiler {
 		}
 
 		// create the file to insert
-		FilePath file1 = createFilePath(cmd.getArg(1), false);
+		FilePath file1 = createFilePath(cmd.getArg(1));
 		cm.insertPath(file1);
 	}
 
@@ -94,7 +94,7 @@ public class Compiler {
 		}
 
 		// create the directory to insert
-		FilePath directory = createFilePath(cmd.getArg(1), true);
+		FilePath directory = createFilePath(cmd.getArg(1));
 		cm.insertPath(directory);
 	}
 
@@ -117,14 +117,14 @@ public class Compiler {
 
 		// instantiate the source file
 		FilePath source = createFilePath(cmd.getArg(1));
-		
+
 		// instantiate the destination file
 		FilePath dest = createFilePath(cmd.getArg(2));
-		
+
 		cm.copyPath(source, dest);
-		
+
 	}
-	
+
 	private void mv(Command cmd) throws CompilerException {
 		if (cmd.getSize() != 3) {
 			throw new CompilerException(
@@ -133,34 +133,12 @@ public class Compiler {
 
 		// instantiate the source file
 		FilePath source = createFilePath(cmd.getArg(1));
-		
+
 		// instantiate the destination file
 		FilePath dest = createFilePath(cmd.getArg(2));
-		
+
 		cm.copyPath(source, dest);
 		cm.removePath(source);
-	}
-
-	/**
-	 * Wrapper method for instantiating new file paths. This is to avoid a mess
-	 * of repetitive exception handling in compiler methods that require a file
-	 * path to be constructed.
-	 * 
-	 * @param path
-	 *            a string representing the file path to create
-	 * @param isdir
-	 *            true if the file path points to a directory; false if it
-	 *            points to a regular file
-	 * @return the new file path
-	 * @throws CompilerException
-	 *             if the file path is invalid
-	 */
-	private FilePath createFilePath(String path, boolean isdir) throws CompilerException {
-		try {
-			return new FilePath(path, isdir);
-		} catch (InvalidFilePathException e) {
-			throw new CompilerException(e.getMessage());
-		}
 	}
 
 	/**

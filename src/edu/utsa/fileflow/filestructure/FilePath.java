@@ -27,16 +27,16 @@ public class FilePath {
 			SEPARATOR);
 
 	private String path;
-	private boolean isdir;
+	private FileStructureType type;
 
 	public FilePath(String path) throws InvalidFilePathException {
 		// check for an ending separator to determine if it is a slash
-		this(path, path.matches(REGEX_ENDING_PATH));
+		this(path, path.matches(REGEX_ENDING_PATH) ? FileStructureType.DIRECTORY : FileStructureType.UNKNOWN);
 	}
 
-	public FilePath(String path, boolean isdir) throws InvalidFilePathException {
+	public FilePath(String path, FileStructureType type) throws InvalidFilePathException {
 		this.path = clean(path);
-		this.isdir = isdir;
+		this.type = type;
 	}
 
 	/**
@@ -58,7 +58,7 @@ public class FilePath {
 		if (path.matches("[^" + SEPARATOR + "]+"))
 			return this;
 		try {
-			return new FilePath(path.replaceFirst(REGEX_REPLACE_FIRST, ""), true);
+			return new FilePath(path.replaceFirst(REGEX_REPLACE_FIRST, ""), FileStructureType.DIRECTORY);
 		} catch (InvalidFilePathException e) {
 			// this will never happen
 			// return null to silence compiler error
@@ -77,10 +77,10 @@ public class FilePath {
 	 * @return a new file path with the two paths combined
 	 */
 	public static FilePath concat(FilePath fp1, FilePath fp2) {
-		String path = fp1.toString() + SEPARATOR + fp2.toString();
+		String path = fp1.path + SEPARATOR + fp2.path;
 		FilePath fpNew = null;
 		try {
-			fpNew = new FilePath(path);
+			fpNew = new FilePath(path, fp2.getType());
 		} catch (InvalidFilePathException e) {
 			// this will never happen
 			e.printStackTrace();
@@ -92,19 +92,26 @@ public class FilePath {
 	 * 
 	 * @return true if the path points to a directory
 	 */
-	public boolean isDir() {
-		return isdir;
+	public boolean isDirectory() {
+		return type == FileStructureType.DIRECTORY;
 	}
 
 	/**
-	 * Sets the file path to be a directory or regular file
 	 * 
-	 * @param isdir
-	 *            true if the path should represent a directory; false if it
-	 *            should represent a regular file
+	 * @return the type that this file path represents
 	 */
-	public void setDir(boolean isdir) {
-		this.isdir = isdir;
+	public FileStructureType getType() {
+		return type;
+	}
+
+	/**
+	 * Sets the type that this file path should represent
+	 * 
+	 * @param type
+	 *            the type that this file path should represent
+	 */
+	public void setType(FileStructureType type) {
+		this.type = type;
 	}
 
 	/**
@@ -133,8 +140,10 @@ public class FilePath {
 
 	@Override
 	public String toString() {
-		if (isdir) {
+		if (isDirectory()) {
 			return path + File.separator;
+		} else if (type == FileStructureType.UNKNOWN) {
+			return path + "?";
 		}
 		return path;
 	}

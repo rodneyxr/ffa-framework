@@ -15,7 +15,7 @@ public class FileStructure implements Cloneable {
 	private TreeMap<String, FileStructure> files;
 	private String name;
 	private FileStructure parent;
-	
+
 	// TODO: consider UNKNOWN types
 	private FileStructureType type;
 
@@ -73,7 +73,7 @@ public class FileStructure implements Cloneable {
 			// cp = next;
 			// issue a warning that the file already exists
 			throw new FileFlowWarning(String.format("touch: '%s': File or directory already exists", path));
-		} else if (path.isDir()) {
+		} else if (path.isDirectory()) {
 			// if it doesn't exist but is a directory throw an exception
 			throw new FileStructureException(
 					String.format("touch: setting times of '%s': No such file or directory", path));
@@ -155,7 +155,7 @@ public class FileStructure implements Cloneable {
 		FileStructure cp = this; // save the current pointer
 		String[] tokens = path.tokens();
 		int dirPathSize = tokens.length;
-		if (!path.isDir())
+		if (!path.isDirectory())
 			dirPathSize -= 1;
 
 		// create the directory path first
@@ -176,7 +176,7 @@ public class FileStructure implements Cloneable {
 		}
 
 		// insert the last token if the path is a file
-		if (!path.isDir()) {
+		if (!path.isDirectory()) {
 			cp = cp.insertFile(tokens[tokens.length - 1], FileStructureType.REGULAR_FILE);
 		}
 
@@ -219,7 +219,7 @@ public class FileStructure implements Cloneable {
 			throw new FileStructureException(
 					String.format("cp: cannot stat '%s': No such file or directory", sourcePath));
 		}
-		
+
 		// check if the paths point to the same file
 		if (sourcePath.equals(destinationPath)) {
 			throw new FileStructureException(
@@ -365,7 +365,7 @@ public class FileStructure implements Cloneable {
 		// convert the string to a file path and return
 		FilePath fp = null;
 		try {
-			fp = new FilePath(sj.toString(), isDirectory());
+			fp = new FilePath(sj.toString(), type);
 		} catch (InvalidFilePathException e) {
 			// this will never happen
 			e.printStackTrace();
@@ -430,6 +430,14 @@ public class FileStructure implements Cloneable {
 		if (isDirectory())
 			return prefix + name + File.separator;
 		return prefix + name;
+	}
+
+	/**
+	 * 
+	 * @return the type of this file structure
+	 */
+	public FileStructureType getType() {
+		return type;
 	}
 
 	/**
@@ -607,7 +615,7 @@ public class FileStructure implements Cloneable {
 			file = entry.getValue();
 			if (file == this || file == parent)
 				continue;
-			paths.add(new FilePath(file.getAllFilePathsImpl(joinPath(path, name), paths), file.isDirectory()));
+			paths.add(new FilePath(file.getAllFilePathsImpl(joinPath(path, name), paths), file.getType()));
 		}
 		return joinPath(path, name);
 	}

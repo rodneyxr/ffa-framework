@@ -36,7 +36,7 @@ public class Condition {
 	 * @throws FileFlowWarning
 	 */
 	public FileStructure insertPositive(FilePath path) throws FileStructureException, FileFlowWarning {
-		if (path.isDir())
+		if (path.isDirectory())
 			return positive.insertDirectory(path);
 		return positive.insertRegularFile(path);
 	}
@@ -94,7 +94,7 @@ public class Condition {
 	 * @throws FileFlowWarning
 	 */
 	public FileStructure insertNegative(FilePath path) throws FileStructureException, FileFlowWarning {
-		if (path.isDir())
+		if (path.isDirectory())
 			return negative.insertDirectory(path);
 		return negative.insertRegularFile(path);
 	}

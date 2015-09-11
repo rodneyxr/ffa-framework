@@ -43,7 +43,7 @@ public class ConditionManager {
 
 		// only do this for regular files because if it is a directory then
 		// mkdir will make the path to that directory
-		if (!path.isDir()) {
+		if (!path.isDirectory()) {
 			FilePath pathToFile = path.pathToFile();
 			if (pathToFile != path)
 				if (assume(pathToFile) == null) {
@@ -85,7 +85,8 @@ public class ConditionManager {
 		FileStructure fileToRemove = assume(path);
 		if (fileToRemove != null) {
 			// if it does exist then correct the file path to match isDirectory
-			path.setDir(fileToRemove.isDirectory());
+			path.setType(fileToRemove.getType());
+			
 			// remove the file
 			postcondition.removePositive(path);
 			try {
@@ -118,7 +119,7 @@ public class ConditionManager {
 		// if the destination file does not exist, set destination file to
 		// match isDir in order to avoid copying dir into file
 		if (!dpost) {
-			dest.setDir(sourceFile.isDirectory());
+			dest.setType(sourceFile.getType());
 		}
 
 		// assume the path to the destination exists
