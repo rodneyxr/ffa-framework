@@ -97,7 +97,7 @@ public class ConditionManager {
 				e.printStackTrace();
 			}
 		} else {
-			throw new CompilerException(String.format("rm: cannot remove '%s': No such file or directory", path));
+			throw new CompilerException(String.format("rm: cannot remove '%s': No such file or directory", path.getPath()));
 		}
 
 	}
@@ -109,7 +109,7 @@ public class ConditionManager {
 
 		// if the source file does not exist then we must assume it exists
 		if (assume(source) == null) {
-			throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", source));
+			throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", source.getPath()));
 		}
 
 		// sourceFile will exist here
@@ -129,10 +129,10 @@ public class ConditionManager {
 			if (fs == null) {
 				if (sourceFile.isRegularFile()) {
 					throw new CompilerException(
-							String.format("cp: cannot create regular file '%s': No such file or directory", dest));
+							String.format("cp: cannot create regular file '%s': No such file or directory", dest.getPath()));
 				} else {
 					throw new CompilerException(
-							String.format("cp: cannot create directory '%s': No such file or directory", dest));
+							String.format("cp: cannot create directory '%s': No such file or directory", dest.getPath()));
 				}
 			}
 		}
@@ -142,7 +142,7 @@ public class ConditionManager {
 		for (FilePath path : sourceFile.getAllFilePaths()) {
 			FilePath fullPath = FilePath.concat(dest, path);
 			if (!assumeNot(fullPath)) {
-				throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", fullPath));
+				throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", fullPath.getPath()));
 			}
 		}
 

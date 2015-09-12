@@ -57,12 +57,12 @@ public class FileStructure implements Cloneable {
 			FileStructure next = cp.files.get(tokens[i]);
 			if (next != null) {
 				if (!next.isDirectory()) {
-					throw new FileStructureException(String.format("touch: cannot touch '%s': Not a directory", path));
+					throw new FileStructureException(String.format("touch: cannot touch '%s': Not a directory", path.getPath()));
 				}
 				cp = next;
 			} else {
 				throw new FileStructureException(
-						String.format("touch: cannot touch '%s': No such file or directory", path));
+						String.format("touch: cannot touch '%s': No such file or directory", path.getPath()));
 			}
 		}
 
@@ -72,11 +72,11 @@ public class FileStructure implements Cloneable {
 		if (next != null) {
 			// cp = next;
 			// issue a warning that the file already exists
-			throw new FileFlowWarning(String.format("touch: '%s': File or directory already exists", path));
+			throw new FileFlowWarning(String.format("touch: '%s': File or directory already exists", path.getPath()));
 		} else if (path.isDirectory()) {
 			// if it doesn't exist but is a directory throw an exception
 			throw new FileStructureException(
-					String.format("touch: setting times of '%s': No such file or directory", path));
+					String.format("touch: setting times of '%s': No such file or directory", path.getPath()));
 		} else {
 			cp = cp.insertFile(tokens[tokens.length - 1], FileStructureType.REGULAR_FILE);
 		}
@@ -97,7 +97,7 @@ public class FileStructure implements Cloneable {
 		if (!isDirectory())
 			throw new FileStructureException("cannot insert: not a directory");
 		if (fileExists(path)) {
-			throw new FileStructureException(String.format("mkdir: cannot create directory '%s': File exists", path));
+			throw new FileStructureException(String.format("mkdir: cannot create directory '%s': File exists", path.getPath()));
 		}
 
 		FileStructure cp = this; // save the current pointer
@@ -106,14 +106,14 @@ public class FileStructure implements Cloneable {
 		for (String token : path.tokens()) {
 			if (!cp.isDirectory())
 				throw new FileStructureException(
-						String.format("mkdir: cannot create directory '%s': Not a directory", path));
+						String.format("mkdir: cannot create directory '%s': Not a directory", path.getPath()));
 			// peek ahead to check if next level exists
 			FileStructure next = cp.files.get(token);
 			if (next != null) {
 				// move to next level if a directory
 				if (!next.isDirectory())
 					throw new FileStructureException(
-							String.format("mkdir: cannot create directory '%s': Not a directory", path));
+							String.format("mkdir: cannot create directory '%s': Not a directory", path.getPath()));
 				cp = next;
 			} else {
 				// create the next level and move pointer to the next level
@@ -150,7 +150,7 @@ public class FileStructure implements Cloneable {
 	 */
 	public FileStructure insertForce(FilePath path) throws FileStructureException {
 		if (!isDirectory())
-			throw new FileStructureException(String.format("cannot touch '%s': Not a directory", path));
+			throw new FileStructureException(String.format("cannot touch '%s': Not a directory", path.getPath()));
 
 		FileStructure cp = this; // save the current pointer
 		String[] tokens = path.tokens();
@@ -161,13 +161,13 @@ public class FileStructure implements Cloneable {
 		// create the directory path first
 		for (int i = 0; i < dirPathSize; i++) {
 			if (!cp.isDirectory())
-				throw new FileStructureException(String.format("cannot touch '%s': Not a directory", path));
+				throw new FileStructureException(String.format("cannot touch '%s': Not a directory", path.getPath()));
 			// peek ahead to check if next level exists
 			FileStructure peek = cp.files.get(tokens[i]);
 			if (peek != null) {
 				// move to next level if a directory
 				if (!peek.isDirectory())
-					throw new FileStructureException(String.format("cannot touch '%s': Not a directory", path));
+					throw new FileStructureException(String.format("cannot touch '%s': Not a directory", path.getPath()));
 				cp = peek;
 			} else {
 				// create the next level and move pointer to the next level
@@ -399,6 +399,7 @@ public class FileStructure implements Cloneable {
 	 * @param path
 	 *            the path to the file to be returned
 	 * @return the file that the path points to or null if it does not exist
+		}
 	 */
 	public FileStructure getFile(FilePath path) {
 		FileStructure cp = this;

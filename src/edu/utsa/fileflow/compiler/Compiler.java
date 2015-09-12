@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.Scanner;
 
 import edu.utsa.fileflow.filestructure.FilePath;
+import edu.utsa.fileflow.filestructure.FileStructureType;
 import edu.utsa.fileflow.filestructure.InvalidFilePathException;
 
 public class Compiler {
@@ -83,7 +84,7 @@ public class Compiler {
 		}
 
 		// create the file to insert
-		FilePath file1 = createFilePath(cmd.getArg(1));
+		FilePath file1 = createFilePath(cmd.getArg(1), FileStructureType.REGULAR_FILE);
 		cm.insertPath(file1);
 	}
 
@@ -94,7 +95,7 @@ public class Compiler {
 		}
 
 		// create the directory to insert
-		FilePath directory = createFilePath(cmd.getArg(1));
+		FilePath directory = createFilePath(cmd.getArg(1), FileStructureType.DIRECTORY);
 		cm.insertPath(directory);
 	}
 
@@ -155,6 +156,27 @@ public class Compiler {
 	private FilePath createFilePath(String path) throws CompilerException {
 		try {
 			return new FilePath(path);
+		} catch (InvalidFilePathException e) {
+			throw new CompilerException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Wrapper method for instantiating new file paths. This is to avoid a mess
+	 * of repetitive exception handling in compiler methods that require a file
+	 * path to be constructed.
+	 * 
+	 * @param path
+	 *            a string representing the file path to create
+	 * @param type
+	 *            the type the file path should represent
+	 * @return the new file path
+	 * @throws CompilerException
+	 *             if the file path is invalid
+	 */
+	private FilePath createFilePath(String path, FileStructureType type) throws CompilerException {
+		try {
+			return new FilePath(path, type);
 		} catch (InvalidFilePathException e) {
 			throw new CompilerException(e.getMessage());
 		}
