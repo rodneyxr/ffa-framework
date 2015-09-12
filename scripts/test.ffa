@@ -1,2 +1,2 @@
-touch file1
-cp file1 dir1/dir2/
+rm file1
+cp file1 file2

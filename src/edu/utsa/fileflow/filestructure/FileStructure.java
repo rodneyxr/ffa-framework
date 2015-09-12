@@ -161,13 +161,13 @@ public class FileStructure implements Cloneable {
 		// create the directory path first
 		for (int i = 0; i < dirPathSize; i++) {
 			if (!cp.isDirectory())
-				throw new FileStructureException(String.format("cannot touch ‘%s’: Not a directory", path));
+				throw new FileStructureException(String.format("cannot touch '%s': Not a directory", path));
 			// peek ahead to check if next level exists
 			FileStructure peek = cp.files.get(tokens[i]);
 			if (peek != null) {
 				// move to next level if a directory
 				if (!peek.isDirectory())
-					throw new FileStructureException(String.format("cannot touch ‘%s’: Not a directory", path));
+					throw new FileStructureException(String.format("cannot touch '%s': Not a directory", path));
 				cp = peek;
 			} else {
 				// create the next level and move pointer to the next level
@@ -217,13 +217,13 @@ public class FileStructure implements Cloneable {
 		FileStructure src = getFile(sourcePath);
 		if (src == null) {
 			throw new FileStructureException(
-					String.format("cp: cannot stat '%s': No such file or directory", sourcePath));
+					String.format("cp: cannot stat '%s': No such file or directory", sourcePath.getPath()));
 		}
 
 		// check if the paths point to the same file
 		if (sourcePath.equals(destinationPath)) {
 			throw new FileStructureException(
-					String.format("cp: '%s' and '%s' are the same file", sourcePath, sourcePath));
+					String.format("cp: '%s' and '%s' are the same file", sourcePath.getPath(), sourcePath.getPath()));
 		}
 
 		// find the node to insert at
@@ -251,10 +251,10 @@ public class FileStructure implements Cloneable {
 					// structure
 					if (src.isDirectory()) {
 						throw new FileStructureException(String.format(
-								"cp: cannot create directory '%s': No such file or directory", destinationPath));
+								"cp: cannot create directory '%s': No such file or directory", destinationPath.getPath()));
 					} else {
 						throw new FileStructureException(String.format(
-								"cp: cannot create regular file '%s': No such file or directory", destinationPath));
+								"cp: cannot create regular file '%s': No such file or directory", destinationPath.getPath()));
 					}
 				}
 			}
@@ -291,7 +291,7 @@ public class FileStructure implements Cloneable {
 			// dir1 to file2: cp: cannot overwrite non-directory 'file2' with
 			// directory 'dir1'
 			throw new FileStructureException(String.format(
-					"cp: cannot overwrite non-directory '%s' with directory '%s'", destinationPath, sourcePath));
+					"cp: cannot overwrite non-directory '%s' with directory '%s'", destinationPath.getPath(), sourcePath.getPath()));
 
 		}
 

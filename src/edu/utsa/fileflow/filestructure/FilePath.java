@@ -130,12 +130,20 @@ public class FilePath {
 		}
 		return path;
 	}
+	
+	/**
+	 * 
+	 * @return a string representation of the file path
+	 */
+	public String getPath() {
+		return path;
+	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof FilePath))
 			return false;
-		return ((FilePath) o).toString().equals(toString());
+		return ((FilePath) o).path.equals(path);
 	}
 
 	@Override
