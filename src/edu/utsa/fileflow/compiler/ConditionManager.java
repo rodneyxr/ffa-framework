@@ -78,12 +78,16 @@ public class ConditionManager {
 	 *             exist
 	 */
 	public void removePath(FilePath path) throws CompilerException {
+		boolean post = postcondition.existsInPositive(path);
+		
 		// first assume that the file exists
 		FileStructure fileToRemove = assume(path);
 		if (fileToRemove != null) {
 			// if it does exist then correct the file path to match isDirectory
-			path.setType(fileToRemove.getType());
-
+			if (post) {
+				path.setType(fileToRemove.getType());
+			}
+			
 			// remove the file
 			postcondition.removePositive(path);
 			try {
