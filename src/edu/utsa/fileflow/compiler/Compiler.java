@@ -123,7 +123,6 @@ public class Compiler {
 		FilePath dest = createFilePath(cmd.getArg(2));
 
 		cm.copyPath(source, dest);
-
 	}
 
 	private void mv(Command cmd) throws CompilerException {

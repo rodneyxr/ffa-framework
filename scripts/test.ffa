@@ -1,4 +1,1 @@
-mkdir dira/dirb/dirc
-mkdir z
-touch dira/dirb/dirc/file1
-cp dira/dirb z
+rm file1

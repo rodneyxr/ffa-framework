@@ -29,10 +29,8 @@ public class ConditionManager {
 
 	/**
 	 * Inserts a path to the post condition. If the file exists it will be
-	 * overwritten. If the file does not exist it will be
-	 * 
-	 * FIXME: when inserting a file to a path that doesn't exist the path to
-	 * that file should be marked as existing
+	 * overwritten. If the file does not exist then it will be assumed that it
+	 * does exist.
 	 * 
 	 * @param path
 	 * @throws CompilerException
@@ -57,7 +55,6 @@ public class ConditionManager {
 			postcondition.insertPositive(path);
 			postcondition.removeNegative(path);
 
-			// TODO: try assumeNot here
 			// if no exceptions then assume it does not exist
 			if (!pre && !$pre) { // unnecessary warnings
 				precondition.insertNegativeForce(path);
@@ -86,7 +83,7 @@ public class ConditionManager {
 		if (fileToRemove != null) {
 			// if it does exist then correct the file path to match isDirectory
 			path.setType(fileToRemove.getType());
-			
+
 			// remove the file
 			postcondition.removePositive(path);
 			try {
@@ -97,7 +94,8 @@ public class ConditionManager {
 				e.printStackTrace();
 			}
 		} else {
-			throw new CompilerException(String.format("rm: cannot remove '%s': No such file or directory", path.getPath()));
+			throw new CompilerException(
+					String.format("rm: cannot remove '%s': No such file or directory", path.getPath()));
 		}
 
 	}
@@ -109,7 +107,8 @@ public class ConditionManager {
 
 		// if the source file does not exist then we must assume it exists
 		if (assume(source) == null) {
-			throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", source.getPath()));
+			throw new CompilerException(
+					String.format("cp: cannot stat '%s': No such file or directory", source.getPath()));
 		}
 
 		// sourceFile will exist here
@@ -128,11 +127,11 @@ public class ConditionManager {
 			FileStructure fs = assume(dest.pathToFile());
 			if (fs == null) {
 				if (sourceFile.isRegularFile()) {
-					throw new CompilerException(
-							String.format("cp: cannot create regular file '%s': No such file or directory", dest.getPath()));
+					throw new CompilerException(String
+							.format("cp: cannot create regular file '%s': No such file or directory", dest.getPath()));
 				} else {
-					throw new CompilerException(
-							String.format("cp: cannot create directory '%s': No such file or directory", dest.getPath()));
+					throw new CompilerException(String
+							.format("cp: cannot create directory '%s': No such file or directory", dest.getPath()));
 				}
 			}
 		}
@@ -142,7 +141,8 @@ public class ConditionManager {
 		for (FilePath path : sourceFile.getAllFilePaths()) {
 			FilePath fullPath = FilePath.concat(dest, path);
 			if (!assumeNot(fullPath)) {
-				throw new CompilerException(String.format("cp: cannot stat '%s': No such file or directory", fullPath.getPath()));
+				throw new CompilerException(
+						String.format("cp: cannot stat '%s': No such file or directory", fullPath.getPath()));
 			}
 		}
 
