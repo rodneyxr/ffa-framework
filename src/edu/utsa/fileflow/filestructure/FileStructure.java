@@ -11,13 +11,15 @@ import java.util.TreeMap;
 import edu.utsa.fileflow.utilities.Strings;
 
 public class FileStructure implements Cloneable {
-
 	private TreeMap<String, FileStructure> files;
 	private String name;
 	private FileStructure parent;
 
-	// TODO: consider UNKNOWN types
+	// the type of the this file
 	private FileStructureType type;
+	// this makes the file structure tree non-concrete
+	// TODO: find a way to make optional nodes in this tree
+	private boolean optional;
 
 	public String prefix;
 
