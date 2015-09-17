@@ -182,7 +182,7 @@ EXPECTS
 		+dir2/
 }
 
-TEST case10
+TEST case11
 {
 	mkdir dir1
 	touch file1
