@@ -142,6 +142,23 @@ public class Condition {
 		return negative.fileExists(path);
 	}
 
+	/**
+	 * Merges condition1 into condition2 and leaves the two conditions
+	 * untouched.
+	 * 
+	 * @param condition1
+	 *            the condition to be merged into condition2
+	 * @param condition2
+	 *            condition1 will be merged into this one
+	 * @return a new condition object with condition1 merged into condition2
+	 */
+	public static Condition merge(Condition condition1, Condition condition2) {
+		Condition mergedCondition = new Condition();
+		mergedCondition.positive = condition2.positive.merge(condition1.positive);
+		mergedCondition.negative = condition2.negative.merge(condition1.negative);
+		return mergedCondition;
+	}
+
 	public void print() {
 		if (MERGED_PRINT) {
 			positive.merge(negative).print();
