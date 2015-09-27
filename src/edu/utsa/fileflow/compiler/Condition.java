@@ -159,6 +159,25 @@ public class Condition {
 		return mergedCondition;
 	}
 
+	/**
+	 * Merges condition1 into condition2 leaving both parameters untouched.
+	 * Takes the difference between two conditions and marks them as optional
+	 * nodes.
+	 * 
+	 * @param condition1
+	 *            A condition to be merged
+	 * @param condition2
+	 *            A condition to be merged
+	 * 
+	 * @return the merged condition
+	 */
+	public static Condition abstractMerge(Condition condition1, Condition condition2) {
+		Condition mergedCondition = new Condition();
+		mergedCondition.positive = FileStructure.abstractMerge(condition1.positive, condition2.positive);
+		mergedCondition.negative = FileStructure.abstractMerge(condition1.negative, condition2.negative);
+		return mergedCondition;
+	}
+
 	public void print() {
 		if (MERGED_PRINT) {
 			positive.merge(negative).print();

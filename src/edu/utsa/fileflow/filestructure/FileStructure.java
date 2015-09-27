@@ -318,8 +318,24 @@ public class FileStructure implements Cloneable {
 	 *            invoking file structure.
 	 * @return a new FileStructure object with both file structures merged
 	 */
-	public FileStructure merge(FileStructure source) {
+	public FileStructure merge(final FileStructure source) {
 		return clone().mergeImpl(source.clone());
+	}
+
+	/**
+	 * Merges two file structures together creating making differences as
+	 * optional nodes resulting in an abstract file structure. Both file
+	 * structure parameters will not be modified
+	 * 
+	 * @param fs1
+	 *            The file structure to merge with fs2
+	 * @param fs2
+	 *            The file structure to merge with fs1
+	 * @return the merged file structure
+	 */
+	public static FileStructure abstractMerge(final FileStructure fs1, final FileStructure fs2) {
+		// FIXME: Implement this method
+		return fs1.clone().mergeImpl(fs2.clone());
 	}
 
 	/**
@@ -435,11 +451,16 @@ public class FileStructure implements Cloneable {
 	 * @return the name with an ending slash if the file is a directory
 	 */
 	public String displayName() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(prefix);
+		sb.append(name);
 		if (isDirectory())
-			return prefix + name + File.separator;
-		if (type == FileStructureType.UNKNOWN)
-			return prefix + name + "?";
-		return prefix + name;
+			sb.append(File.separator);
+		else if (type == FileStructureType.UNKNOWN)
+			sb.append("?");
+		if (optional)
+			sb.append(" (opt.)");
+		return sb.toString();
 	}
 
 	/**

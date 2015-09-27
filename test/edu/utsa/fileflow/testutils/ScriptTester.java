@@ -202,7 +202,7 @@ public class ScriptTester {
 	}
 
 	public static ConditionManager script(String data) throws CompilerException {
-		return compiler.compile(new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8)));
+		return new Compiler().compile(new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8)));
 	}
 
 	/**
