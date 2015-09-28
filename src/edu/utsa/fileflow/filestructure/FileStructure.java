@@ -11,6 +11,8 @@ import java.util.TreeMap;
 import edu.utsa.fileflow.utilities.Strings;
 
 public class FileStructure implements Cloneable {
+	private static final String ROOT = "root" + FilePath.SEPARATOR;
+	
 	private TreeMap<String, FileStructure> files;
 	private String name;
 	private FileStructure parent;
@@ -18,7 +20,6 @@ public class FileStructure implements Cloneable {
 	// the type of the this file
 	private FileStructureType type;
 	// this makes the file structure tree non-concrete
-	// TODO: find a way to make optional nodes in this tree
 	private boolean optional;
 
 	public String prefix;
@@ -334,8 +335,45 @@ public class FileStructure implements Cloneable {
 	 * @return the merged file structure
 	 */
 	public static FileStructure abstractMerge(final FileStructure fs1, final FileStructure fs2) {
-		// FIXME: Implement this method
-		return fs1.clone().mergeImpl(fs2.clone());
+		// TODO: Test this method
+		// merge the 2 file structures
+		FileStructure merged = fs1.clone().mergeImpl(fs2.clone());
+		ArrayList<FilePath> fp1 = fs1.getAllFilePaths();
+		ArrayList<FilePath> fp2 = fs2.getAllFilePaths();
+		ArrayList<FileStructure> diff = new ArrayList<FileStructure>();
+
+		while (fp1.size() > 0 && fp2.size() > 0) {
+			FilePath path1 = fp1.get(0);
+			FilePath path2 = fp2.get(0);
+			if (path1.equals(path2)) {
+				fp1.remove(0);
+				fp2.remove(0);
+			} else if (path1.compareTo(path2) < 0) {
+				// path2 only in fp2
+				try {
+					FilePath diffPath = new FilePath(fp2.remove(0).getPath().replaceFirst(ROOT, ""), path2.getType());
+					FileStructure diffFS = merged.getFile(diffPath);
+					diffFS.optional = true;
+					diff.add(diffFS);
+				} catch (InvalidFilePathException e) {
+					// this will never happen
+					e.printStackTrace();
+				}
+			} else {
+				// path1 only in fp1
+				try {
+					FilePath diffPath = new FilePath(fp1.remove(0).getPath().replaceFirst(ROOT, ""), path1.getType());
+					FileStructure diffFS = merged.getFile(diffPath);
+					diffFS.optional = true;
+					diff.add(diffFS);
+				} catch (InvalidFilePathException e) {
+					// this will never happen
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return merged;
 	}
 
 	/**

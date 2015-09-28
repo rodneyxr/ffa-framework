@@ -269,5 +269,31 @@ public class FileStructureTest {
 		
 		assertEquals(root.getAbsolutePath(), new FilePath("root/"));
 	}
+	
+	@Test
+	public void testAbstractMerge() throws Exception {
+		FileStructure fs1 = new FileStructure();
+		FileStructure fs2 = new FileStructure();
+		
+		FilePath a = new FilePath("a");
+		FilePath b = new FilePath("b");
+		FilePath c = new FilePath("c");
+		FilePath z = new FilePath("z");
+		
+		fs1.insertRegularFile(a);
+		fs1.insertRegularFile(b);
+		fs1.insertRegularFile(z);
+		System.out.println("\n[fs1]");
+		fs1.print();
+		
+		fs2.insertRegularFile(a);
+		fs2.insertRegularFile(c);
+		System.out.println("\n[fs2]");
+		fs2.print();
+		
+		FileStructure merged = FileStructure.abstractMerge(fs1, fs2);
+		System.out.println("\n[Merged]");
+		merged.print();
+	}
 
 }

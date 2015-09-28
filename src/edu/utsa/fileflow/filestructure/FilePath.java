@@ -10,10 +10,10 @@ import java.io.File;
  * @author Rodney Rodriguez
  *
  */
-public class FilePath {
+public class FilePath implements Comparable<FilePath> {
 
+	public static final String SEPARATOR;
 	private static final String REGEX_ENDING_PATH = ".*[/\\\\]\\s*$";
-	private static final String SEPARATOR;
 
 	static {
 		String regex = File.separator;
@@ -154,6 +154,11 @@ public class FilePath {
 			return path + "?";
 		}
 		return path;
+	}
+
+	@Override
+	public int compareTo(FilePath other) {
+		return path.compareTo(other.path);
 	}
 
 }
