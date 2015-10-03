@@ -254,46 +254,56 @@ public class FileStructureTest {
 		ArrayList<FilePath> paths = root.getFile(new FilePath("dir1")).getAllFilePaths();
 		assertTrue(paths.contains(new FilePath("dir1/dir2/")));
 		assertTrue(paths.contains(new FilePath("dir1/file1")));
-		
+
 		root = new FileStructure();
 		paths = root.getAllFilePaths();
 		assertTrue(paths.isEmpty());
 	}
-	
+
 	@Test
 	public void testGetAbsolutePath() throws Exception {
 		FileStructure root = new FileStructure();
 		root.insertForce(new FilePath("dir1/dir2/dir3/file1"));
 		FileStructure file1 = root.getFile(new FilePath("dir1/dir2/dir3/file1"));
 		assertEquals(file1.getAbsolutePath(), new FilePath("root/dir1/dir2/dir3/file1"));
-		
+
 		assertEquals(root.getAbsolutePath(), new FilePath("root/"));
 	}
-	
+
 	@Test
 	public void testAbstractMerge() throws Exception {
 		FileStructure fs1 = new FileStructure();
 		FileStructure fs2 = new FileStructure();
-		
+
 		FilePath a = new FilePath("a");
 		FilePath b = new FilePath("b");
 		FilePath c = new FilePath("c");
 		FilePath z = new FilePath("z");
-		
+
 		fs1.insertRegularFile(a);
 		fs1.insertRegularFile(b);
 		fs1.insertRegularFile(z);
-		System.out.println("\n[fs1]");
-		fs1.print();
-		
+
 		fs2.insertRegularFile(a);
 		fs2.insertRegularFile(c);
-		System.out.println("\n[fs2]");
-		fs2.print();
-		
+
+		// merge fs1 and fs2, any differences should be marked optional
 		FileStructure merged = FileStructure.abstractMerge(fs1, fs2);
-		System.out.println("\n[Merged]");
-		merged.print();
+		
+		assertFalse(merged.getFile(a).isOptional());
+		assertTrue(merged.getFile(b).isOptional());
+		assertTrue(merged.getFile(c).isOptional());
+		assertTrue(merged.getFile(z).isOptional());
+
+		// ensure two identical optional nodes stay optional because abstract
+		// merge should not see them as different, but it should still mark them
+		// different so that the file will be optional
+		merged = FileStructure.abstractMerge(merged, fs2);
+
+		assertFalse(merged.getFile(a).isOptional());
+		assertTrue(merged.getFile(b).isOptional());
+		assertTrue(merged.getFile(c).isOptional());
+		assertTrue(merged.getFile(z).isOptional());
 	}
 
 }

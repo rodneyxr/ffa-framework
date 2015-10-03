@@ -32,7 +32,6 @@ public class ScriptTester {
 	private static final Pattern SYM_BRACE_OPEN = Pattern.compile("\\{");
 	private static final Pattern SYM_BRACE_CLOSE = Pattern.compile("\\}");
 
-	private static Compiler compiler;
 	private static Scanner scanner;
 	private static String token;
 	private static String caseName;
@@ -42,7 +41,6 @@ public class ScriptTester {
 		scanner = new Scanner(new FileInputStream(file));
 
 		while (scanner.hasNext()) {
-			compiler = new Compiler();
 			token = "";
 
 			token = next();

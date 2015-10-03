@@ -28,6 +28,7 @@ public class FilePath implements Comparable<FilePath> {
 
 	private String path;
 	private FileStructureType type;
+	public FileStructure fileStructure = null;
 
 	public FilePath(String path) throws InvalidFilePathException {
 		// check for an ending separator to determine if it is a slash
@@ -37,6 +38,12 @@ public class FilePath implements Comparable<FilePath> {
 	public FilePath(String path, FileStructureType type) throws InvalidFilePathException {
 		this.path = clean(path);
 		this.type = type;
+	}
+	
+	public FilePath(String path, FileStructure fileStructure) throws InvalidFilePathException {
+		this.path = clean(path);
+		this.fileStructure = fileStructure;
+		this.type = fileStructure.getType();
 	}
 
 	/**

@@ -12,7 +12,7 @@ import edu.utsa.fileflow.utilities.Strings;
 
 public class FileStructure implements Cloneable {
 	private static final String ROOT = "root" + FilePath.SEPARATOR;
-	
+
 	private TreeMap<String, FileStructure> files;
 	private String name;
 	private FileStructure parent;
@@ -335,37 +335,40 @@ public class FileStructure implements Cloneable {
 	 * @return the merged file structure
 	 */
 	public static FileStructure abstractMerge(final FileStructure fs1, final FileStructure fs2) {
-		// TODO: Test this method
 		// merge the 2 file structures
 		FileStructure merged = fs1.clone().mergeImpl(fs2.clone());
 		ArrayList<FilePath> fp1 = fs1.getAllFilePaths();
 		ArrayList<FilePath> fp2 = fs2.getAllFilePaths();
-		ArrayList<FileStructure> diff = new ArrayList<FileStructure>();
 
 		while (fp1.size() > 0 && fp2.size() > 0) {
 			FilePath path1 = fp1.get(0);
 			FilePath path2 = fp2.get(0);
+			FilePath diffPath = null;
+
 			if (path1.equals(path2)) {
+				// if file paths are equal but one path is optional then both
+				// paths must be optional
+				if ((path1.fileStructure != null && path1.fileStructure.optional)
+						|| (path2.fileStructure != null && path2.fileStructure.optional)) {
+					diffPath = path1;
+				}
 				fp1.remove(0);
 				fp2.remove(0);
 			} else if (path1.compareTo(path2) < 0) {
 				// path2 only in fp2
-				try {
-					FilePath diffPath = new FilePath(fp2.remove(0).getPath().replaceFirst(ROOT, ""), path2.getType());
-					FileStructure diffFS = merged.getFile(diffPath);
-					diffFS.optional = true;
-					diff.add(diffFS);
-				} catch (InvalidFilePathException e) {
-					// this will never happen
-					e.printStackTrace();
-				}
+				diffPath = path2;
+				fp2.remove(0);
 			} else {
 				// path1 only in fp1
+				diffPath = path1;
+				fp1.remove(0);
+			}
+
+			if (diffPath != null) {
 				try {
-					FilePath diffPath = new FilePath(fp1.remove(0).getPath().replaceFirst(ROOT, ""), path1.getType());
+					diffPath = new FilePath(diffPath.getPath().replaceFirst(ROOT, ""), diffPath.fileStructure);
 					FileStructure diffFS = merged.getFile(diffPath);
 					diffFS.optional = true;
-					diff.add(diffFS);
 				} catch (InvalidFilePathException e) {
 					// this will never happen
 					e.printStackTrace();
@@ -521,6 +524,13 @@ public class FileStructure implements Cloneable {
 	 */
 	public boolean isRegularFile() {
 		return type == FileStructureType.REGULAR_FILE;
+	}
+
+	/**
+	 * @return true if this file is optional; false otherwise
+	 */
+	public boolean isOptional() {
+		return optional;
 	}
 
 	/**
@@ -684,7 +694,7 @@ public class FileStructure implements Cloneable {
 			file = entry.getValue();
 			if (file == this || file == parent)
 				continue;
-			paths.add(new FilePath(file.getAllFilePathsImpl(joinPath(path, name), paths), file.getType()));
+			paths.add(new FilePath(file.getAllFilePathsImpl(joinPath(path, name), paths), file));
 		}
 		return joinPath(path, name);
 	}
