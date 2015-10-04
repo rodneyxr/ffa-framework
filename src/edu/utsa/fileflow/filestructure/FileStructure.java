@@ -32,6 +32,7 @@ public class FileStructure implements Cloneable {
 		this.name = name;
 		this.type = type;
 		this.prefix = "";
+		this.optional = false;
 		parent = this;
 		if (isDirectory()) {
 			files = new TreeMap<String, FileStructure>();
@@ -346,6 +347,7 @@ public class FileStructure implements Cloneable {
 			FilePath diffPath = null;
 
 			if (path1.equals(path2)) {
+				// System.out.printf("%s == %s\n", path1, path2); // DEBUG
 				// if file paths are equal but one path is optional then both
 				// paths must be optional
 				if ((path1.fileStructure != null && path1.fileStructure.optional)
@@ -355,10 +357,12 @@ public class FileStructure implements Cloneable {
 				fp1.remove(0);
 				fp2.remove(0);
 			} else if (path1.compareTo(path2) < 0) {
+				// System.out.printf("%s < %s\n", path1, path2); // DEBUG
 				// path2 only in fp2
 				diffPath = path2;
 				fp2.remove(0);
 			} else {
+				// System.out.printf("%s > %s\n", path1, path2); // DEBUG
 				// path1 only in fp1
 				diffPath = path1;
 				fp1.remove(0);
@@ -373,6 +377,31 @@ public class FileStructure implements Cloneable {
 					// this will never happen
 					e.printStackTrace();
 				}
+			}
+		}
+
+		// all left overs are differences
+		while (fp1.size() > 0) {
+			try {
+				FilePath path1 = fp1.remove(0);
+				FilePath diffPath = new FilePath(path1.getPath().replaceFirst(ROOT, ""), path1.fileStructure);
+				FileStructure diffFS = merged.getFile(diffPath);
+				diffFS.optional = true;
+			} catch (InvalidFilePathException e) {
+				// this will never happen
+				e.printStackTrace();
+			}
+		}
+
+		while (fp2.size() > 0) {
+			try {
+				FilePath path2 = fp2.remove(0);
+				FilePath diffPath = new FilePath(path2.getPath().replaceFirst(ROOT, ""), path2.fileStructure);
+				FileStructure diffFS = merged.getFile(diffPath);
+				diffFS.optional = true;
+			} catch (InvalidFilePathException e) {
+				// this will never happen
+				e.printStackTrace();
 			}
 		}
 
@@ -549,6 +578,7 @@ public class FileStructure implements Cloneable {
 	public FileStructure clone() {
 		FileStructure clone = new FileStructure(name, type);
 		clone.prefix = prefix;
+		clone.optional = optional;
 
 		if (!isDirectory()) {
 			return clone;
@@ -586,6 +616,7 @@ public class FileStructure implements Cloneable {
 		// create the node to insert
 		FileStructure child = new FileStructure(name, type);
 		child.prefix = prefix;
+		child.optional = optional;
 
 		// set the parent
 		child.parent = this;

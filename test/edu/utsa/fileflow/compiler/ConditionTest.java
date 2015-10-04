@@ -47,39 +47,59 @@ public class ConditionTest {
 		assertTrue(mergedPost.negative.fileExists(file1));
 	}
 
-	@Test // TODO: Implement this test method
+	@Test
 	public void testAbstractMerge() throws Exception {
-		ConditionManager cm1 = ScriptTester.script("touch a");
+		FilePath a = new FilePath("a");
+		FilePath b = new FilePath("b");
+		FilePath c = new FilePath("c");
+		ConditionManager init = ScriptTester.script("touch a");
 		// pre:
 		// -a
 		// post:
 		// +a
+		assertTrue(init.getPrecondition().existsInNegative(a));
+		assertTrue(init.getPostcondition().existsInPositive(a));
 
-		// if (X)
-		ConditionManager cm2 = ScriptTester.script("touch b");
-		// pre:
-		// -b
-		// post:
-		// +b
-		
-		// MERGE
-		// pre:
-		// -a (opt.)
-		// -b (opt.)
-		// post:
-		// +a (opt.)
-		// +b (opt.)
-		
-		// test precondition merge
-		Condition pre1 = cm1.getPrecondition();
-		Condition pre2 = cm2.getPrecondition();
-		Condition merged = Condition.abstractMerge(pre1, pre2);
-		merged.print();
-		
-
+		// if (X) <- branch here so we consider all possible paths and merge
+		// branch1 -> pre: -a -b | post: +a +b
+		ConditionManager branch1 = ScriptTester.script("touch a\ntouch b");
+		assertTrue(branch1.getPrecondition().existsInNegative(a));
+		assertTrue(branch1.getPrecondition().existsInNegative(b));
+		assertTrue(branch1.getPostcondition().existsInPositive(a));
+		assertTrue(branch1.getPostcondition().existsInPositive(b));
 		// else
-//		ConditionManager cm3 = ScriptTester.script("touch c");
+		// branch2 -> pre: -a -c | post: +a +c
+		ConditionManager branch2 = ScriptTester.script("touch a\ntouch c");
+		assertTrue(branch2.getPrecondition().existsInNegative(a));
+		assertTrue(branch2.getPrecondition().existsInNegative(c));
+		assertTrue(branch2.getPostcondition().existsInPositive(a));
+		assertTrue(branch2.getPostcondition().existsInPositive(c));
 
+		// merge branch1 and branch2
+		Condition mergedPre = Condition.abstractMerge(branch1.getPrecondition(), branch2.getPrecondition());
+		Condition mergedPost = Condition.abstractMerge(branch1.getPostcondition(), branch2.getPostcondition());
+
+		// DEBUG
+		// System.out.println("Precondition");
+		// mergedPre.print();
+		// System.out.println("\nPostcondition");
+		// mergedPost.print();
+
+		// pre:
+		// -a
+		// -b (opt.)
+		// -c (opt.)
+		assertTrue(mergedPre.existsInNegative(a) && !mergedPre.negative.getFile(a).isOptional());
+		assertTrue(mergedPre.existsInNegative(b) && mergedPre.negative.getFile(b).isOptional());
+		assertTrue(mergedPre.existsInNegative(c) && mergedPre.negative.getFile(c).isOptional());
+
+		// post:
+		// +a
+		// +b (opt.)
+		// +c (opt.)
+		assertTrue(mergedPost.existsInPositive(a) && !mergedPost.positive.getFile(a).isOptional());
+		assertTrue(mergedPost.existsInPositive(b) && mergedPost.positive.getFile(b).isOptional());
+		assertTrue(mergedPost.existsInPositive(c) && mergedPost.positive.getFile(c).isOptional());
 	}
 
 }

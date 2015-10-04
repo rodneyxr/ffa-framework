@@ -305,5 +305,22 @@ public class FileStructureTest {
 		assertTrue(merged.getFile(c).isOptional());
 		assertTrue(merged.getFile(z).isOptional());
 	}
+	
+	@Test
+	public void testAbstractMergeSimple() throws Exception {
+		FileStructure fs1 = new FileStructure();
+		FileStructure fs2 = new FileStructure();
+
+		FilePath a = new FilePath("a");
+		FilePath b = new FilePath("b");
+		
+		fs1.insertRegularFile(a);
+		fs2.insertRegularFile(b);
+		
+		FileStructure merged = FileStructure.abstractMerge(fs1, fs2);
+		
+		assertTrue(merged.getFile(a).isOptional());
+		assertTrue(merged.getFile(b).isOptional());
+	}
 
 }
