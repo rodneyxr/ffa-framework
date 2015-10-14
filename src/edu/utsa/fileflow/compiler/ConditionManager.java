@@ -14,8 +14,12 @@ public class ConditionManager {
 	private final ArrayList<String> log;
 
 	public ConditionManager() {
-		precondition = new Condition();
-		postcondition = new Condition();
+		this(new Condition(), new Condition());
+	}
+
+	public ConditionManager(Condition precondition, Condition postcondition) {
+		this.precondition = precondition;
+		this.postcondition = postcondition;
 		log = new ArrayList<String>();
 	}
 
@@ -79,7 +83,7 @@ public class ConditionManager {
 	 */
 	public void removePath(FilePath path) throws CompilerException {
 		boolean post = postcondition.existsInPositive(path);
-		
+
 		// first assume that the file exists
 		FileStructure fileToRemove = assume(path);
 		if (fileToRemove != null) {
@@ -87,7 +91,7 @@ public class ConditionManager {
 			if (post) {
 				path.setType(fileToRemove.getType());
 			}
-			
+
 			// remove the file
 			postcondition.removePositive(path);
 			try {
@@ -142,7 +146,7 @@ public class ConditionManager {
 
 		// assume all sub-directories and files do not exist if dest is a
 		// directory
-		for (FilePath path : sourceFile.getAllFilePaths()) {
+		for (FilePath path : sourceFile.getAllFilePaths(true)) {
 			FilePath fullPath = FilePath.concat(dest, path);
 			if (!assumeNot(fullPath)) {
 				throw new CompilerException(
@@ -229,6 +233,25 @@ public class ConditionManager {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Merges two condition managers by calling the underlying abstractMerge
+	 * method of its class level condition object.
+	 * 
+	 * @param cm1
+	 *            A condition manager to be merged
+	 * @param cm2
+	 *            A condition manager to be merged
+	 * @return A new ConditionManager object with the two ConditionManager
+	 *         parameters merged.
+	 * @throws FileStructureException
+	 *             if a merge conflict occurs
+	 */
+	public static ConditionManager abstractMerge(ConditionManager cm1, ConditionManager cm2)
+			throws FileStructureException {
+		return new ConditionManager(Condition.abstractMerge(cm1.precondition, cm2.precondition),
+				Condition.abstractMerge(cm1.postcondition, cm2.postcondition));
 	}
 
 	/**

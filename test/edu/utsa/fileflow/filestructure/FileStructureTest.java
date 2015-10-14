@@ -251,13 +251,19 @@ public class FileStructureTest {
 		root.insertRegularFile(new FilePath("dir1/file1"));
 		root.insertDirectory(new FilePath("dir1/dir2/"));
 
-		ArrayList<FilePath> paths = root.getFile(new FilePath("dir1")).getAllFilePaths();
+		ArrayList<FilePath> paths = root.getFile(new FilePath("dir1")).getAllFilePaths(true);
 		assertTrue(paths.contains(new FilePath("dir1/dir2/")));
 		assertTrue(paths.contains(new FilePath("dir1/file1")));
+		paths = root.getFile(new FilePath("dir1")).getAllFilePaths(false);
+		assertFalse(paths.contains(new FilePath("dir1/dir2/")));
+		assertFalse(paths.contains(new FilePath("dir1/file1")));
+		assertTrue(paths.contains(new FilePath("dir2")));
+		assertTrue(paths.contains(new FilePath("file1")));
 
 		root = new FileStructure();
-		paths = root.getAllFilePaths();
+		paths = root.getAllFilePaths(false);
 		assertTrue(paths.isEmpty());
+
 	}
 
 	@Test
@@ -289,7 +295,7 @@ public class FileStructureTest {
 
 		// merge fs1 and fs2, any differences should be marked optional
 		FileStructure merged = FileStructure.abstractMerge(fs1, fs2);
-		
+
 		assertFalse(merged.getFile(a).isOptional());
 		assertTrue(merged.getFile(b).isOptional());
 		assertTrue(merged.getFile(c).isOptional());
@@ -305,7 +311,7 @@ public class FileStructureTest {
 		assertTrue(merged.getFile(c).isOptional());
 		assertTrue(merged.getFile(z).isOptional());
 	}
-	
+
 	@Test
 	public void testAbstractMergeSimple() throws Exception {
 		FileStructure fs1 = new FileStructure();
@@ -313,12 +319,12 @@ public class FileStructureTest {
 
 		FilePath a = new FilePath("a");
 		FilePath b = new FilePath("b");
-		
+
 		fs1.insertRegularFile(a);
 		fs2.insertRegularFile(b);
-		
+
 		FileStructure merged = FileStructure.abstractMerge(fs1, fs2);
-		
+
 		assertTrue(merged.getFile(a).isOptional());
 		assertTrue(merged.getFile(b).isOptional());
 	}

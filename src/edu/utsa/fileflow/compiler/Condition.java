@@ -7,7 +7,7 @@ import edu.utsa.fileflow.filestructure.FileStructureException;
 
 public class Condition {
 
-	public static boolean MERGED_PRINT = true;
+	public static boolean MERGED_PRINT = false;
 
 	// existing file structure
 	protected FileStructure positive;
@@ -170,11 +170,22 @@ public class Condition {
 	 *            A condition to be merged
 	 * 
 	 * @return the merged condition
+	 * @throws FileStructureException
+	 *             if a merge conflict occurs
 	 */
-	public static Condition abstractMerge(Condition condition1, Condition condition2) {
+	public static Condition abstractMerge(Condition condition1, Condition condition2) throws FileStructureException {
 		Condition mergedCondition = new Condition();
 		mergedCondition.positive = FileStructure.abstractMerge(condition1.positive, condition2.positive);
 		mergedCondition.negative = FileStructure.abstractMerge(condition1.negative, condition2.negative);
+
+		// verify that there is no merge conflicts. That is that the same
+		// file does not appear in both the positive and negative file structure
+		for (FilePath path : mergedCondition.positive.getAllFilePaths(false)) {
+			if (mergedCondition.negative.fileExists(path)) {
+				throw new FileStructureException(String.format("Merge Conflict: '%s'", path));
+			}
+		}
+
 		return mergedCondition;
 	}
 

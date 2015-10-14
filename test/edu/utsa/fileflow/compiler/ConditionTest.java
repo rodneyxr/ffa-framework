@@ -1,10 +1,13 @@
 package edu.utsa.fileflow.compiler;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import edu.utsa.fileflow.filestructure.FilePath;
 import edu.utsa.fileflow.testutils.ScriptTester;
@@ -14,6 +17,9 @@ import edu.utsa.fileflow.testutils.ScriptTester;
  *
  */
 public class ConditionTest {
+
+	@Rule
+	public ExpectedException expectException = ExpectedException.none();
 
 	/**
 	 * @throws java.lang.Exception
@@ -76,8 +82,9 @@ public class ConditionTest {
 		assertTrue(branch2.getPostcondition().existsInPositive(c));
 
 		// merge branch1 and branch2
-		Condition mergedPre = Condition.abstractMerge(branch1.getPrecondition(), branch2.getPrecondition());
-		Condition mergedPost = Condition.abstractMerge(branch1.getPostcondition(), branch2.getPostcondition());
+		ConditionManager mergedCM = ConditionManager.abstractMerge(branch1, branch2);
+		Condition mergedPre = mergedCM.getPrecondition();
+		Condition mergedPost = mergedCM.getPostcondition();
 
 		// DEBUG
 		// System.out.println("Precondition");
@@ -100,6 +107,25 @@ public class ConditionTest {
 		assertTrue(mergedPost.existsInPositive(a) && !mergedPost.positive.getFile(a).isOptional());
 		assertTrue(mergedPost.existsInPositive(b) && mergedPost.positive.getFile(b).isOptional());
 		assertTrue(mergedPost.existsInPositive(c) && mergedPost.positive.getFile(c).isOptional());
+	}
+
+	@Test
+	public void testAbstractMergeConflict() throws Exception {
+		// if (a) {
+		// rm a
+		// touch a
+		// } else {
+		// touch a
+		// }
+
+		ConditionManager branch1 = ScriptTester.script("rm a\ntouch a");
+		ConditionManager branch2 = ScriptTester.script("touch a");
+
+		expectException.expectMessage("Merge Conflict");
+		ConditionManager merged = ConditionManager.abstractMerge(branch1, branch2);
+		// conflicting merge should result in error
+		assertEquals(merged, null);
+
 	}
 
 }

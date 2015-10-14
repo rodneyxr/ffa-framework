@@ -338,8 +338,8 @@ public class FileStructure implements Cloneable {
 	public static FileStructure abstractMerge(final FileStructure fs1, final FileStructure fs2) {
 		// merge the 2 file structures
 		FileStructure merged = fs1.clone().mergeImpl(fs2.clone());
-		ArrayList<FilePath> fp1 = fs1.getAllFilePaths();
-		ArrayList<FilePath> fp2 = fs2.getAllFilePaths();
+		ArrayList<FilePath> fp1 = fs1.getAllFilePaths(true);
+		ArrayList<FilePath> fp2 = fs2.getAllFilePaths(true);
 
 		while (fp1.size() > 0 && fp2.size() > 0) {
 			FilePath path1 = fp1.get(0);
@@ -354,6 +354,7 @@ public class FileStructure implements Cloneable {
 						|| (path2.fileStructure != null && path2.fileStructure.optional)) {
 					diffPath = path1;
 				}
+
 				fp1.remove(0);
 				fp2.remove(0);
 			} else if (path1.compareTo(path2) < 0) {
@@ -413,13 +414,35 @@ public class FileStructure implements Cloneable {
 	 * directory will be returned. If it is a regular file then its name will be
 	 * returned
 	 * 
+	 * @param inclusive
+	 *            true if the invoking file structure should be included in the
+	 *            file path
 	 * @return an ArrayList of all file paths under this file
 	 */
-	public ArrayList<FilePath> getAllFilePaths() {
+	public ArrayList<FilePath> getAllFilePaths(boolean inclusive) {
 		ArrayList<FilePath> paths = new ArrayList<FilePath>();
+		ArrayList<FileStructure> children = new ArrayList<FileStructure>();
+
+		if (inclusive) {
+			children.add(this);
+		} else {
+			for (Map.Entry<String, FileStructure> entry : files.entrySet()) {
+				FileStructure file = entry.getValue();
+				if (file == this || file == parent)
+					continue;
+				children.add(file);
+			}
+		}
+
 		try {
-			// call to recursive method that will get all paths under this file
-			getAllFilePathsImpl("", paths);
+			for (FileStructure file : children) {
+				if (!inclusive && (file.files == null || file.files.size() == 2)) {
+					paths.add(new FilePath(file.name, file));
+				} else {
+					// recursive method that will get all paths under this file
+					file.getAllFilePathsImpl("", paths);
+				}
+			}
 		} catch (InvalidFilePathException e) {
 			// this will never happen
 			e.printStackTrace();
@@ -716,9 +739,9 @@ public class FileStructure implements Cloneable {
 	 * @throws InvalidFilePathException
 	 */
 	private String getAllFilePathsImpl(String path, ArrayList<FilePath> paths) throws InvalidFilePathException {
-		if (files == null)
+		if (files == null) {
 			return joinPath(path, name);
-
+		}
 		// iterate over all files in the file structure
 		FileStructure file;
 		for (Map.Entry<String, FileStructure> entry : files.entrySet()) {
