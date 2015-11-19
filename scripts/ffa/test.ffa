@@ -1,0 +1,39 @@
+/**
+ * This is a test program for File Flow Analysis. Modify this test script and
+ * execute 'ant test' at the same level as 'build.xml'.
+ */
+
+touch 'a';
+
+if (exists 'a') {
+    cp 'a' 'a(copy)';
+} else if (exists 'b') {
+    cp 'b' 'b(copy)';
+} else {
+    touch 'a';
+    touch 'b';
+}
+
+// assign variable $x0 to be 'dira'
+$x0 = 'dira';
+mkdir $x0; // make 'dira'
+
+// testing concatination here
+$x1 = $x1.'file1';
+
+// create the concatinated variable
+touch $x1;
+
+// if 'file1' exists move to tmp else if some condition we don't care about
+// is true then remove 'dira'
+if (exists $x1) {
+    cp $x1 'tmp';
+} else if (other) {
+    rm $x0;
+}
+
+// random junk to test arrays
+$x99[0] = $x0;
+$x99[0][99] = $x99.'/tmp';
+mkdir $x99[0][99];
+touch $x99[0];
