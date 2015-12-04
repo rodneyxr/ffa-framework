@@ -11,11 +11,18 @@ import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import edu.utsa.fileflow.antlr.FileFlowBaseListener;
 import edu.utsa.fileflow.antlr.FileFlowLexer;
-import edu.utsa.fileflow.antlr.FileFlowListener;
 import edu.utsa.fileflow.antlr.FileFlowParser;
+import edu.utsa.fileflow.cfg.FlowPoint;
+import edu.utsa.fileflow.compiler.FileFlowListenerImpl;
 
+/**
+ * This class is a temporary main class for the development of the Control Flow
+ * Graph implementation for the File Flow Analysis project.
+ * 
+ * @author Rodney Rodriguez
+ *
+ */
 public class Main2 {
 
 	static final String TEST_SCRIPT = "scripts/ffa/test.ffa";
@@ -25,18 +32,13 @@ public class Main2 {
 		TokenStream tokens = new CommonTokenStream(new FileFlowLexer(input));
 		FileFlowParser parser = new FileFlowParser(tokens);
 		ParseTree tree = parser.prog();
-		ParseTreeWalker walker = new ParseTreeWalker();
-		FileFlowListener listener = new FileFlowListener1();
+		// ParseTreeWalker walker = new ParseTreeWalker();
+		FileFlowListenerImpl listener = new FileFlowListenerImpl();
 		ParseTreeWalker.DEFAULT.walk(listener, tree);
-		// System.out.println(listener);
 
-	}
-
-}
-
-class FileFlowListener1 extends FileFlowBaseListener {
-	@Override
-	public void enterBlock(FileFlowParser.BlockContext ctx) {
-		System.out.println(ctx.getText());
+		// print the blocks created by the listener
+		for (FlowPoint block : listener.getFlowPoints()) {
+			block.printBlock();
+		}
 	}
 }

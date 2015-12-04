@@ -3,37 +3,13 @@
  * execute 'ant test' at the same level as 'build.xml'.
  */
 
+// test a consecutive/sequential block
 touch 'a';
+mkdir 'dira';
+cp 'a' 'dira/';
+rm 'dira';
 
-if (exists 'a') {
-    cp 'a' 'a(copy)';
-} else if (exists 'b') {
-    cp 'b' 'b(copy)';
-} else {
-    touch 'a';
-    touch 'b';
+// simple if statement test
+if (other) {
+	rm 'a';
 }
-
-// assign variable $x0 to be 'dira'
-$x0 = 'dira';
-mkdir $x0; // make 'dira'
-
-// testing concatination here
-$x1 = $x1.'file1';
-
-// create the concatinated variable
-touch $x1;
-
-// if 'file1' exists move to tmp else if some condition we don't care about
-// is true then remove 'dira'
-if (exists $x1) {
-    cp $x1 'tmp';
-} else if (other) {
-    rm $x0;
-}
-
-// random junk to test arrays
-$x99[0] = $x0;
-$x99[0][99] = $x99.'/tmp';
-mkdir $x99[0][99];
-touch $x99[0];
