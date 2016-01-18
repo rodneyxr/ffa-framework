@@ -13,8 +13,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import edu.utsa.fileflow.antlr.FileFlowLexer;
 import edu.utsa.fileflow.antlr.FileFlowParser;
-import edu.utsa.fileflow.cfg.FlowPoint;
-import edu.utsa.fileflow.compiler.FileFlowListenerImpl;
+import edu.utsa.fileflow.cfg.FileFlowListenerImpl;
 
 /**
  * This class is a temporary main class for the development of the Control Flow
@@ -25,20 +24,21 @@ import edu.utsa.fileflow.compiler.FileFlowListenerImpl;
  */
 public class Main2 {
 
-	static final String TEST_SCRIPT = "scripts/ffa/test.ffa";
+	static final String TEST_SCRIPT = "scripts/ffa/script.ffa";
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
 		CharStream input = new ANTLRInputStream(new FileInputStream(TEST_SCRIPT));
 		TokenStream tokens = new CommonTokenStream(new FileFlowLexer(input));
 		FileFlowParser parser = new FileFlowParser(tokens);
 		ParseTree tree = parser.prog();
-		// ParseTreeWalker walker = new ParseTreeWalker();
 		FileFlowListenerImpl listener = new FileFlowListenerImpl();
 		ParseTreeWalker.DEFAULT.walk(listener, tree);
 
 		// print the blocks created by the listener
-		for (FlowPoint block : listener.getFlowPoints()) {
-			block.printBlock();
-		}
+		// for (FlowPoint flowpoint : listener.getCFG()) {
+		// flowpoint.printBlock();
+		// }
+
+		 listener.cfg.print();
 	}
 }

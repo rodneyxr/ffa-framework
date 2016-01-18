@@ -18,10 +18,10 @@ if (exists 'a') {
 $x0 = 'dira';
 mkdir $x0; // make 'dira'
 
-// testing concatination here
+// testing concatenation here
 $x1 = $x1.'file1';
 
-// create the concatinated variable
+// create the concatenated variable
 touch $x1;
 
 // if 'file1' exists move to tmp else if some condition we don't care about

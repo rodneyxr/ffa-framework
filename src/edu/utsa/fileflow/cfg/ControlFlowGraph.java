@@ -8,15 +8,21 @@ package edu.utsa.fileflow.cfg;
  *
  */
 public class ControlFlowGraph extends FlowPoint {
-	
-	private FlowPoint root;
-	
-	public ControlFlowGraph(FlowPoint root) {
-		this.root = root;
+
+	public ControlFlowGraph() {
+		super(null);
 	}
-	
-	public FlowPoint getRoot() {
-		return root;
+
+	@Override
+	public void print() {
+		for (FlowPointEdge edge : getOutgoingEdgeList()) {
+			edge.getTarget().print(1);
+		}
 	}
-	
+
+//	@Override
+//	protected void print(int level) {
+//		System.out.printf("Level %d: %s\n", level, getContext().getText());
+//	}
+
 }

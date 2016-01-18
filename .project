@@ -3,6 +3,7 @@
 	<name>FileFlowAnalysis</name>
 	<comment></comment>
 	<projects>
+		<project>FileFlowGrammar</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
