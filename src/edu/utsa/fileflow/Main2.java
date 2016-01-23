@@ -24,7 +24,7 @@ import edu.utsa.fileflow.cfg.FileFlowListenerImpl;
  */
 public class Main2 {
 
-	static final String TEST_SCRIPT = "scripts/ffa/script.ffa";
+	static final String TEST_SCRIPT = "scripts/ffa/script1.ffa";
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
 		CharStream input = new ANTLRInputStream(new FileInputStream(TEST_SCRIPT));
@@ -34,11 +34,6 @@ public class Main2 {
 		FileFlowListenerImpl listener = new FileFlowListenerImpl();
 		ParseTreeWalker.DEFAULT.walk(listener, tree);
 
-		// print the blocks created by the listener
-		// for (FlowPoint flowpoint : listener.getCFG()) {
-		// flowpoint.printBlock();
-		// }
-
-		 listener.cfg.print();
+		listener.cfg.print();
 	}
 }

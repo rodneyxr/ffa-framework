@@ -35,8 +35,8 @@ public class FlowPointTest {
 
 	@Test
 	public void testAddFlowPoint() throws Exception {
-		FlowPoint flowpoint1 = new FlowPoint(null);
-		FlowPoint flowpoint2 = new FlowPoint(null);
+		FlowPoint flowpoint1 = new FlowPoint("fp1");
+		FlowPoint flowpoint2 = new FlowPoint("fp2");
 
 		flowpoint1.addFlowPoint(flowpoint2);
 		assertTrue("flowpoint1's outgoing target should be flowpoint2",

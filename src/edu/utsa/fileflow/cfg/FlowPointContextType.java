@@ -1,5 +1,5 @@
 package edu.utsa.fileflow.cfg;
 
 public enum FlowPointContextType {
-	FlowPoint, Assignment, FunctionCall, IfStatement, ElseIfStatement, ElseStatement, WhileStatement
+	FlowPoint, Prog, Assignment, FunctionCall, IfStat, ElseIfStatement, ElseStatement, WhileStatement
 }

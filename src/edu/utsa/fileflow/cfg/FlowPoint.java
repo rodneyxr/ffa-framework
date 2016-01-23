@@ -1,7 +1,5 @@
 package edu.utsa.fileflow.cfg;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 /**
  * 
  * A FlowPoint represents a node in the {@link ControlFlowGraph}. It can have
@@ -13,13 +11,21 @@ import org.antlr.v4.runtime.ParserRuleContext;
  */
 public class FlowPoint {
 
-	private FlowPointContext ctx; // holds information from the parser
+	private FlowPointContext fpctx; // holds information from the parser
 
 	private FlowPointEdgeList incoming; // a list of incoming edges
 	private FlowPointEdgeList outgoing; // a list of outgoing edges
 
-	public FlowPoint(FlowPointContext ctx) {
-		this.ctx = ctx;
+	public FlowPoint(String text) {
+		this(new FlowPointContext(text));
+	}
+
+	public FlowPoint(FlowPointContext fpctx) {
+		if (fpctx == null) {
+			this.fpctx = new FlowPointContext("Flow Point");
+		} else {
+			this.fpctx = fpctx;
+		}
 		incoming = new FlowPointEdgeList();
 		outgoing = new FlowPointEdgeList();
 	}
@@ -30,7 +36,7 @@ public class FlowPoint {
 	 * @return The context of this flow point.
 	 */
 	public FlowPointContext getContext() {
-		return ctx;
+		return fpctx;
 	}
 
 	/**
@@ -51,26 +57,48 @@ public class FlowPoint {
 		return outgoing;
 	}
 
-	public void addFlowPoint(FlowPoint flowpoint) {
+	public FlowPoint addFlowPoint(FlowPoint flowpoint) {
 		FlowPointEdge edge = new FlowPointEdge(this, flowpoint);
 		outgoing.add(edge);
 		flowpoint.incoming.add(edge);
+		return flowpoint;
 	}
 
+	boolean printed = false;
+
 	public void print() {
-		print(0);
+		printImpl();
+		resetPrint();
+	}
+
+	private void printImpl() {
+		if (printed == true)
+			return;
+
+		// print parent followed by all its children flow points
+		System.out.printf("%s => { ", this);
+		for (FlowPointEdge edge : getOutgoingEdgeList()) {
+			System.out.printf("%s, ", edge.getTarget());
+		}
+		System.out.println("}");
+		printed = true;
+
+		// recursive print for children
+		for (FlowPointEdge edge : getOutgoingEdgeList()) {
+			edge.getTarget().printImpl();
+		}
+	}
+
+	private void resetPrint() {
+		printed = false;
+		for (FlowPointEdge edge : getOutgoingEdgeList()) {
+			edge.getTarget().resetPrint();
+		}
 	}
 
 	@Override
 	public String toString() {
-		return ctx.getText();
-	}
-
-	protected void print(int level) {
-		System.out.printf("Level %d: %s\n", level, this);
-		for (FlowPointEdge edge : getOutgoingEdgeList()) {
-			edge.getTarget().print(level + 1);
-		}
+		return fpctx.getText();
 	}
 
 }

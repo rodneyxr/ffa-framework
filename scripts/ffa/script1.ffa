@@ -1,0 +1,11 @@
+touch 'a';
+touch 'b';
+if (other) {
+ touch 'c';
+}
+
+//if (other) {
+//	touch 'a';
+//} else {
+//	touch 'b';
+//}

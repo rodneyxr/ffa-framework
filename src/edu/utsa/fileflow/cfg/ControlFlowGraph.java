@@ -7,22 +7,14 @@ package edu.utsa.fileflow.cfg;
  * @author Rodney Rodriguez
  *
  */
-public class ControlFlowGraph extends FlowPoint {
+public class ControlFlowGraph extends Scope {
 
 	public ControlFlowGraph() {
-		super(null);
+		super(new FlowPointContext("START CFG"), new FlowPointContext("END CFG"));
 	}
 
-	@Override
 	public void print() {
-		for (FlowPointEdge edge : getOutgoingEdgeList()) {
-			edge.getTarget().print(1);
-		}
+		getEnter().print();
 	}
-
-//	@Override
-//	protected void print(int level) {
-//		System.out.printf("Level %d: %s\n", level, getContext().getText());
-//	}
 
 }
