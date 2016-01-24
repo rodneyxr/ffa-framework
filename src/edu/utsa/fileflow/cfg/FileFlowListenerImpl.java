@@ -68,14 +68,13 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 				new FlowPointContext("Exit IfStat"));
 		scopes.push(newScope);
 
-		// if the ifStat is false we skip this scope
-		newScope.getEnter().addFlowPoint(newScope.getExit());
-
 		last = last.addFlowPoint(newScope.getEnter());
 	}
 
 	@Override
 	public void exitIfStat(IfStatContext ctx) {
+		// if the ifStat is false we skip this scope
+		scopes.peek().getEnter().addFlowPoint(scopes.peek().getExit());
 		last = last.addFlowPoint(scopes.pop().getExit());
 	}
 
