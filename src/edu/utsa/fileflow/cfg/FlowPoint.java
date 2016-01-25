@@ -92,6 +92,14 @@ public class FlowPoint {
 	private void resetPrint() {
 		printed = false;
 		for (FlowPointEdge edge : getOutgoingEdgeList()) {
+			/**
+			 * FIXME: Technically this is correct because it prevents stack
+			 * overflows when traversing through a graph with a loop. This is
+			 * disabled right now because I know if there is a stack overflow
+			 * that there is something wrong with my CFG because there should be
+			 * no loops at the moment.
+			 */
+			// if (printed == false) continue;
 			edge.getTarget().resetPrint();
 		}
 	}

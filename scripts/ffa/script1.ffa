@@ -1,11 +1,6 @@
-touch 'a';
-touch 'b';
 if (other) {
- touch 'c';
+	if (exists 'b') {
+		touch 'c';
+	}
+	touch 'z';
 }
-
-//if (other) {
-//	touch 'a';
-//} else {
-//	touch 'b';
-//}
