@@ -28,9 +28,9 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 
 	// the last flow point visited
 	private FlowPoint last;
-	private Stack<SwitchBlock> switches = new Stack<SwitchBlock>();
+	private Stack<SwitchBlock> currentSwitchBlocks = new Stack<SwitchBlock>();
+	private Stack<SwitchBlock> oldSwitchBlocks = new Stack<SwitchBlock>();
 	private Delegate delegate = new Delegate();
-	private SwitchBlock lastSwitchBlock;
 
 	public FileFlowListenerImpl() {
 	}
@@ -44,13 +44,12 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 	@Override
 	public void exitProg(ProgContext ctx) {
 		updateLast(new FlowPoint("CFG_EXIT"));
-		checkDelegate();
 	}
 
 	@Override
 	public void enterIfStatement(IfStatementContext ctx) {
 		// create and push a new SwitchBlock onto the stack
-		switches.add(new SwitchBlock());
+		currentSwitchBlocks.add(new SwitchBlock());
 	}
 
 	@Override
@@ -59,15 +58,14 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 		// SwitchBlock to be created. If another SwitchBlock is pushed to the
 		// stack then the delegate would be referencing the new SwitchBlock
 		// rather than the one current within this scope.
-		lastSwitchBlock = switches.peek();
-		switches.pop();
+		oldSwitchBlocks.push(currentSwitchBlocks.pop());
 
 		// point all break points to switch block end
 		delegate.add(() -> {
-			ArrayList<FlowPoint> breaks = lastSwitchBlock.getBreaks();
-			// remove the last break flow point because it will already be
-			// pointing to the next flow point
+			ArrayList<FlowPoint> breaks = oldSwitchBlocks.pop().getBreaks();
 			if (breaks.size() > 0) {
+				// remove the last break flow point because it will already be
+				// pointing to the next flow point
 				breaks.remove(breaks.size() - 1);
 
 				for (FlowPoint brk : breaks) {
@@ -80,14 +78,13 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 	@Override
 	public void enterIfStat(IfStatContext ctx) {
 		FlowPoint ifStat = new FlowPoint(new FlowPointContext(ctx.condition(), FlowPointContextType.IfStat));
-		switches.peek().setLastCondition(ifStat); // set last condition
+		currentSwitchBlocks.peek().setLastCondition(ifStat);
 		updateLast(ifStat);
-		checkDelegate();
 	}
 
 	@Override
 	public void exitIfStat(IfStatContext ctx) {
-		lastSwitchBlock = switches.peek();
+		SwitchBlock lastSwitchBlock = currentSwitchBlocks.peek();
 
 		// queue last to point to exit if
 		lastSwitchBlock.addBreak(last);
@@ -102,7 +99,6 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 	@Override
 	public void enterFunctionCall(FunctionCallContext ctx) {
 		updateLast(new FlowPoint(new FlowPointContext(ctx, FlowPointContextType.FunctionCall)));
-		checkDelegate();
 	}
 
 	/**
@@ -120,14 +116,15 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 		}
 
 		switch (last.getContext().getType()) {
-//		case IfStat:
-//		case ElseIfStatement:
-//		case ElseStatement:
-//			last = newLast;
-//			break;
+		// case IfStat:
+		// case ElseIfStatement:
+		// case ElseStatement:
+		// last = newLast;
+		// break;
 		default:
 			last = last.addFlowPoint(newLast);
 		}
+		checkDelegate();
 	}
 
 	private void checkDelegate() {

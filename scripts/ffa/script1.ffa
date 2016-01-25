@@ -1,6 +1,14 @@
-if (other) {
+if (exists 'a') {
 	if (exists 'b') {
-		touch 'c';
+		rm 'b';
+		if (exists 'c') {
+			rm 'c';
+		}
+		if (exists 'd') {
+			rm 'd';
+		}
 	}
-	touch 'z';
+	if (other) {
+		touch 'a';
+	}
 }
