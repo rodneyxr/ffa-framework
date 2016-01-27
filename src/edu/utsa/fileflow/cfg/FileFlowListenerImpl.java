@@ -6,6 +6,7 @@ import java.util.Stack;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import edu.utsa.fileflow.antlr.FileFlowBaseListener;
+import edu.utsa.fileflow.antlr.FileFlowParser.AssignmentContext;
 import edu.utsa.fileflow.antlr.FileFlowParser.FunctionCallContext;
 import edu.utsa.fileflow.antlr.FileFlowParser.IfStatContext;
 import edu.utsa.fileflow.antlr.FileFlowParser.IfStatementContext;
@@ -101,6 +102,11 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 		updateLast(new FlowPoint(new FlowPointContext(ctx, FlowPointContextType.FunctionCall)));
 	}
 
+	@Override
+	public void enterAssignment(AssignmentContext ctx) {
+		updateLast(new FlowPoint(new FlowPointContext(ctx, FlowPointContextType.Assignment)));
+	}
+	
 	/**
 	 * Updates class global last variable. If the last was of type If, Else-if
 	 * or Else, then it will not point to the new last. This is because IfType
