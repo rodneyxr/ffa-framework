@@ -14,6 +14,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import edu.utsa.fileflow.antlr.FileFlowLexer;
 import edu.utsa.fileflow.antlr.FileFlowParser;
 import edu.utsa.fileflow.cfg.FileFlowListenerImpl;
+import edu.utsa.fileflow.testutils.GraphvizGenerator;
 
 /**
  * This class is a temporary main class for the development of the Control Flow
@@ -34,6 +35,8 @@ public class Main2 {
 		FileFlowListenerImpl listener = new FileFlowListenerImpl();
 		ParseTreeWalker.DEFAULT.walk(listener, tree);
 
-		listener.cfg.print();
+		// listener.cfg.print();
+		String dot = GraphvizGenerator.generateDOT(listener.cfg);
+		GraphvizGenerator.saveDOTToFile(dot, TEST_SCRIPT.replaceAll("\\.ffa$", ".dot"));
 	}
 }

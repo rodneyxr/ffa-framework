@@ -1,5 +1,8 @@
 package edu.utsa.fileflow.cfg;
 
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * 
  * A FlowPoint represents a node in the {@link ControlFlowGraph}. It can have
@@ -10,6 +13,11 @@ package edu.utsa.fileflow.cfg;
  *
  */
 public class FlowPoint {
+
+	private static final AtomicInteger ID_GENERATOR = new AtomicInteger();
+
+	private int id; // unique ID to be used when creating Graphviz DOT file
+	private boolean printed = false; // used for graph traversal
 
 	private FlowPointContext fpctx; // holds information from the parser
 
@@ -28,6 +36,7 @@ public class FlowPoint {
 		}
 		incoming = new FlowPointEdgeList();
 		outgoing = new FlowPointEdgeList();
+		id = ID_GENERATOR.getAndIncrement();
 	}
 
 	/**
@@ -64,13 +73,61 @@ public class FlowPoint {
 		return flowpoint;
 	}
 
-	boolean printed = false;
+	/**
+	 * Gets the unique ID of this flow point object.
+	 * 
+	 * @return The ID of this flow point.
+	 */
+	public int getID() {
+		return id;
+	}
 
+	/**
+	 * Get all flow points under this flow point. The list returned will also
+	 * include itself.
+	 * 
+	 * @return A list of all flow points.
+	 */
+	public ArrayList<FlowPoint> getAllFlowPoints() {
+		ArrayList<FlowPoint> children = new ArrayList<FlowPoint>();
+		getAllFlowPointsImpl(children);
+		resetPrint();
+		return children;
+	}
+
+	/**
+	 * Implementation of getAllFlowPoints(). This private method is used to hide
+	 * the parameter that is used by the recursion.
+	 * 
+	 * @param children
+	 *            The list that holds all flow points.
+	 * @return The list that holds all flow points.
+	 */
+	private ArrayList<FlowPoint> getAllFlowPointsImpl(ArrayList<FlowPoint> children) {
+		if (printed == true)
+			return children;
+
+		children.add(this);
+		printed = true;
+		for (FlowPointEdge edge : getOutgoingEdgeList()) {
+			edge.getTarget().getAllFlowPointsImpl(children);
+		}
+
+		return children;
+	}
+
+	/**
+	 * Prints a text representation of this flow point and its children
+	 * recursively.
+	 */
 	public void print() {
 		printImpl();
 		resetPrint();
 	}
 
+	/*
+	 * Implementation of print().
+	 */
 	private void printImpl() {
 		if (printed == true)
 			return;
@@ -89,6 +146,10 @@ public class FlowPoint {
 		}
 	}
 
+	/*
+	 * Sets the boolean printed to false for all flow points under this instance
+	 * of flow point.
+	 */
 	private void resetPrint() {
 		printed = false;
 		for (FlowPointEdge edge : getOutgoingEdgeList()) {

@@ -1,5 +1,7 @@
 package edu.utsa.fileflow.cfg;
 
+import java.io.FileInputStream;
+
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -14,6 +16,7 @@ import org.junit.rules.ExpectedException;
 
 import edu.utsa.fileflow.antlr.FileFlowLexer;
 import edu.utsa.fileflow.antlr.FileFlowParser;
+import edu.utsa.fileflow.testutils.GraphvizGenerator;
 
 /**
  * This class tests the functionality of the FlowPoint class.
@@ -22,6 +25,8 @@ import edu.utsa.fileflow.antlr.FileFlowParser;
  *
  */
 public class ControlFlowGraphTest {
+
+	static final String TEST_SCRIPT = "scripts/ffa/script1.ffa";
 
 	@Rule
 	public ExpectedException expectException = ExpectedException.none();
@@ -42,15 +47,15 @@ public class ControlFlowGraphTest {
 
 	@Test
 	public void testControlFlowGraph() throws Exception {
-		CharStream input = new ANTLRInputStream("touch 'a';touch 'b';if (other) {touch 'c';}");
+		CharStream input = new ANTLRInputStream(new FileInputStream(TEST_SCRIPT));
 		TokenStream tokens = new CommonTokenStream(new FileFlowLexer(input));
 		FileFlowParser parser = new FileFlowParser(tokens);
 		ParseTree tree = parser.prog();
 		FileFlowListenerImpl listener = new FileFlowListenerImpl();
 		ParseTreeWalker.DEFAULT.walk(listener, tree);
 
-		// ControlFlowGraph cfg = listener.cfg;
-		// cfg.print();
+		String dot = GraphvizGenerator.generateDOT(listener.cfg);
+		GraphvizGenerator.saveDOTToFile(dot, TEST_SCRIPT.replaceAll("\\.ffa$", ".dot"));
 	}
 
 }

@@ -1,0 +1,18 @@
+digraph G {
+    0[label="CFG_ENTER",shape=box];
+    1[label="exists'a'",shape=diamond];
+    2[label="rm'a'"];
+    3[label="touch'b'"];
+    6[label="CFG_EXIT",shape=box];
+    4[label="exists'b'",shape=diamond];
+    5[label="rm'b'"];
+
+    0 -> 1;
+    1 -> 2;
+    1 -> 4;
+    2 -> 3;
+    3 -> 6;
+    4 -> 5;
+    4 -> 6;
+    5 -> 6;
+}
