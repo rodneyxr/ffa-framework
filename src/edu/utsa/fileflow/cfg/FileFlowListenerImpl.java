@@ -28,8 +28,8 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 	// the control flow graph
 	public FlowPoint cfg;
 
-	// the last flow point visited
-	private FlowPoint last;
+	private FlowPoint last; // the last flow point visited
+	private FlowPoint lastlast; // the flow point visited before last
 	private Stack<SwitchBlock> currentSwitchBlocks = new Stack<SwitchBlock>();
 	private Stack<SwitchBlock> oldSwitchBlocks = new Stack<SwitchBlock>();
 	private Delegate delegate = new Delegate();
@@ -60,15 +60,37 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 		// SwitchBlock to be created. If another SwitchBlock is pushed to the
 		// stack then the delegate would be referencing the new SwitchBlock
 		// rather than the one current within this scope.
+		currentSwitchBlocks.peek().last = last; // save last in the block
 		oldSwitchBlocks.push(currentSwitchBlocks.pop());
+		delegate.clear();
 
 		// point all break points to switch block end
 		delegate.add(() -> {
-			ArrayList<FlowPoint> breaks = oldSwitchBlocks.pop().getBreaks();
+			SwitchBlock oldBlock = oldSwitchBlocks.pop();
+
+			// if a switch block happens to be a break point, copy all break
+			// points to the outer scope's break point list.
+			if (!currentSwitchBlocks.isEmpty() && oldBlock.last == lastlast /*&& last.getContext().getType() != FlowPointContextType.IfStat*/) {
+				System.out.println(true);
+				ArrayList<FlowPoint> outerBreaks = currentSwitchBlocks.peek().getBreaks();
+				outerBreaks.addAll(oldBlock.getBreaks());
+
+				// remove the last break flow point because it will already be
+				// pointing to the next flow point
+				if (outerBreaks.size() > 0)
+					outerBreaks.remove(outerBreaks.size() - 1);
+				// last condition in if block will always be a break point
+				outerBreaks.add(oldBlock.getLastCondition());
+				return;
+			}
+
+			ArrayList<FlowPoint> breaks = oldBlock.getBreaks();
 			if (breaks.size() > 0) {
 				// remove the last break flow point because it will already be
 				// pointing to the next flow point
 				breaks.remove(breaks.size() - 1);
+				// last condition in if block will always be a break point
+				oldBlock.addBreak(oldBlock.getLastCondition());
 
 				for (FlowPoint brk : breaks) {
 					brk.addFlowPoint(last);
@@ -140,22 +162,12 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 	 *            The last flow point created.
 	 */
 	private void updateLast(FlowPoint newLast) {
+		lastlast = last;
 		if (last == null) {
 			last = newLast;
 			return;
 		}
 
-		// switch (last.getContext().getType()) {
-		// case IfStat:
-		// case ElseIfStat:
-		// case ElseStatement:
-		// last = newLast;
-		// break;
-		// default:
-		// last = last.addFlowPoint(newLast);
-		// }
-
-//		FlowPointContextType newLastType = newLast.getContext().getType();
 		switch (newLast.getContext().getType()) {
 		case ElseIfStat:
 			last = newLast;
@@ -163,11 +175,6 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 		default:
 			last = last.addFlowPoint(newLast);
 		}
-		// if (newLastType != FlowPointContextType.ElseIfStat) {
-		// last = last.addFlowPoint(newLast);
-		// } else {
-		// last = newLast;
-		// }
 
 		checkDelegate();
 	}

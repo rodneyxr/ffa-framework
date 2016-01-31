@@ -1,6 +1,58 @@
+if (exists '1' && exists '2') {
+		touch 'a';
+} else if (other) {
+	touch 'a';
+}
+
+
+/*
+// FAILING - third level nested break points not working
 if (exists 'a') {
 	rm 'a';
-	touch 'b';
+	if (exists 'aa') {
+		rm 'aa';
+	} else if (exists 'bb') {
+		rm 'bb';
+		if (exists 'aaa') {
+			rm 'aaa';
+		} else if (other) {
+			rm 'z';
+		}
+	}
+} else if (exists 'b') {
+	rm 'b';
+} else if (exists 'c') {
+	rm 'c';
+}*/
+
+/***************************
+// PASSING
+if (exists 'a') {
+	if (exists 'a/aa') {
+		rm 'a/aa';
+	} 
+	else if (exists 'a/bb') {
+		rm 'a/bb';
+	}
+} else if (exists 'b') {
+	rm 'b';
+} else if (exists 'c') {
+	rm 'c';
+}
+
+if (exists 'tmp/') {
+	rm 'tmp/';
+}
+****************************/
+
+/***************************
+// PASSING
+touch 'a';
+if (exists 'a') {
+	rm 'a';
 } else if (exists 'b') {
 	rm 'b';
 }
+
+if (exists 'z') { rm 'z'; }
+****************************/
