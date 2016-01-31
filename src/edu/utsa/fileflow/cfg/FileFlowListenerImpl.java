@@ -32,7 +32,8 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 	private FlowPoint lastlast; // the flow point visited before last
 	private Stack<SwitchBlock> currentSwitchBlocks = new Stack<SwitchBlock>();
 	private Stack<SwitchBlock> oldSwitchBlocks = new Stack<SwitchBlock>();
-	private Delegate delegate = new Delegate();
+	private Delegate nextDelegate = new Delegate();
+	private Delegate exitDelegate = new Delegate();
 
 	public FileFlowListenerImpl() {
 	}
@@ -62,16 +63,16 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 		// rather than the one current within this scope.
 		currentSwitchBlocks.peek().last = last; // save last in the block
 		oldSwitchBlocks.push(currentSwitchBlocks.pop());
-		delegate.clear();
+		nextDelegate.clear();
 
 		// point all break points to switch block end
-		delegate.add(() -> {
+		exitDelegate.add(() -> {
 			SwitchBlock oldBlock = oldSwitchBlocks.pop();
 
 			// if a switch block happens to be a break point, copy all break
 			// points to the outer scope's break point list.
-			if (!currentSwitchBlocks.isEmpty() && oldBlock.last == lastlast /*&& last.getContext().getType() != FlowPointContextType.IfStat*/) {
-				System.out.println(true);
+			if (!currentSwitchBlocks.isEmpty() && oldBlock.last == lastlast
+					&& last.getContext().getType() != FlowPointContextType.IfStat) {
 				ArrayList<FlowPoint> outerBreaks = currentSwitchBlocks.peek().getBreaks();
 				outerBreaks.addAll(oldBlock.getBreaks());
 
@@ -114,7 +115,7 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 		lastSwitchBlock.addBreak(last);
 
 		// last condition -> next
-		delegate.add(() -> {
+		nextDelegate.add(() -> {
 			FlowPoint ifCond = lastSwitchBlock.getLastCondition();
 			ifCond.addFlowPoint(last);
 		});
@@ -137,7 +138,7 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 		lastSwitchBlock.addBreak(last);
 
 		// last condition -> next
-		delegate.add(() -> {
+		nextDelegate.add(() -> {
 			FlowPoint elseIfCond = lastSwitchBlock.getLastCondition();
 			elseIfCond.addFlowPoint(last);
 		});
@@ -180,8 +181,10 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 	}
 
 	private void checkDelegate() {
-		delegate.run();
-		delegate.clear();
+		nextDelegate.run();
+		nextDelegate.clear();
+		exitDelegate.run();
+		exitDelegate.clear();
 	}
 
 }
