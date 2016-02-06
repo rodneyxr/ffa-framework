@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import edu.utsa.fileflow.antlr.FileFlowBaseListener;
 import edu.utsa.fileflow.antlr.FileFlowParser.AssignmentContext;
 import edu.utsa.fileflow.antlr.FileFlowParser.ElseIfStatContext;
+import edu.utsa.fileflow.antlr.FileFlowParser.ElseStatContext;
 import edu.utsa.fileflow.antlr.FileFlowParser.FunctionCallContext;
 import edu.utsa.fileflow.antlr.FileFlowParser.IfStatContext;
 import edu.utsa.fileflow.antlr.FileFlowParser.IfStatementContext;
@@ -25,6 +26,8 @@ import edu.utsa.fileflow.utilities.Delegate;
  */
 public class FileFlowListenerImpl extends FileFlowBaseListener {
 
+	private static final boolean ENABLE_EXIT_IF_NODES = false;
+
 	// the control flow graph
 	public FlowPoint cfg;
 
@@ -40,15 +43,18 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 
 	@Override
 	public void enterProg(ProgContext ctx) {
-		cfg = new FlowPoint("CFG_ENTER");
+		cfg = new FlowPoint(new FlowPointContext("PROG_ENTER", FlowPointContextType.ProgEnter));
 		updateLast(cfg);
 	}
 
 	@Override
 	public void exitProg(ProgContext ctx) {
-		updateLast(new FlowPoint("CFG_EXIT"));
+		updateLast(new FlowPoint(new FlowPointContext("PROG_EXIT", FlowPointContextType.ProgExit)));
 	}
 
+	/**
+	 * Start IfStatement
+	 */
 	@Override
 	public void enterIfStatement(IfStatementContext ctx) {
 		// create and push a new SwitchBlock onto the stack
@@ -69,20 +75,25 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 		exitDelegate.add(() -> {
 			SwitchBlock oldBlock = oldSwitchBlocks.pop();
 
-			// if a switch block happens to be a break point, copy all break
-			// points to the outer scope's break point list.
-			if (!currentSwitchBlocks.isEmpty() && oldBlock.last == lastlast
-					&& last.getContext().getType() != FlowPointContextType.IfStat) {
-				ArrayList<FlowPoint> outerBreaks = currentSwitchBlocks.peek().getBreaks();
-				outerBreaks.addAll(oldBlock.getBreaks());
+			if (ENABLE_EXIT_IF_NODES) {
+				// if a switch block happens to be a break point, copy all break
+				// points to the outer scope's break point list.
+				if (!currentSwitchBlocks.isEmpty() && oldBlock.last == lastlast
+						&& last.getContext().getType() != FlowPointContextType.IfStat) {
+					ArrayList<FlowPoint> outerBreaks = currentSwitchBlocks.peek().getBreaks();
+					outerBreaks.addAll(oldBlock.getBreaks());
 
-				// remove the last break flow point because it will already be
-				// pointing to the next flow point
-				if (outerBreaks.size() > 0)
-					outerBreaks.remove(outerBreaks.size() - 1);
-				// last condition in if block will always be a break point
-				outerBreaks.add(oldBlock.getLastCondition());
-				return;
+					// remove the last break flow point because it will already
+					// be
+					// pointing to the next flow point
+					if (outerBreaks.size() > 0)
+						outerBreaks.remove(outerBreaks.size() - 1);
+					// last condition in if block will always be a break point
+					// unless it is an elseStat
+					if (oldBlock.getLastCondition().getContext().getType() != FlowPointContextType.ElseStat)
+						outerBreaks.add(oldBlock.getLastCondition());
+					return;
+				}
 			}
 
 			ArrayList<FlowPoint> breaks = oldBlock.getBreaks();
@@ -91,15 +102,26 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 				// pointing to the next flow point
 				breaks.remove(breaks.size() - 1);
 				// last condition in if block will always be a break point
-				oldBlock.addBreak(oldBlock.getLastCondition());
+				// unless it is an elseStat
+				if (oldBlock.getLastCondition().getContext().getType() != FlowPointContextType.ElseStat)
+					oldBlock.addBreak(oldBlock.getLastCondition());
 
 				for (FlowPoint brk : breaks) {
 					brk.addFlowPoint(last);
 				}
 			}
 		});
+
+		if (ENABLE_EXIT_IF_NODES) {
+			// add exit if node
+			FlowPoint exitIf = new FlowPoint(new FlowPointContext("EXIT_IF"));
+			updateLast(exitIf);
+		}
 	}
 
+	/**
+	 * Start ifStat
+	 */
 	@Override
 	public void enterIfStat(IfStatContext ctx) {
 		FlowPoint ifStat = new FlowPoint(new FlowPointContext(ctx.condition(), FlowPointContextType.IfStat));
@@ -121,6 +143,9 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 		});
 	}
 
+	/**
+	 * Start elseIfStat
+	 */
 	@Override
 	public void enterElseIfStat(ElseIfStatContext ctx) {
 		FlowPoint elseIfStat = new FlowPoint(new FlowPointContext(ctx.condition(), FlowPointContextType.ElseIfStat));
@@ -144,6 +169,35 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 		});
 	}
 
+	/**
+	 * Start elseStat
+	 */
+	@Override
+	public void enterElseStat(ElseStatContext ctx) {
+		FlowPoint elseStat = new FlowPoint(new FlowPointContext("else", FlowPointContextType.ElseStat));
+		updateLast(elseStat);
+
+		// this needs to be done after updating last
+		currentSwitchBlocks.peek().setLastCondition(elseStat);
+	}
+
+	@Override
+	public void exitElseStat(ElseStatContext ctx) {
+		SwitchBlock lastSwitchBlock = currentSwitchBlocks.peek();
+
+		// queue last to point to exit if
+		lastSwitchBlock.addBreak(last);
+
+		// last condition -> next
+		nextDelegate.add(() -> {
+			FlowPoint elseCond = lastSwitchBlock.getLastCondition();
+			elseCond.addFlowPoint(last);
+		});
+	}
+
+	/**
+	 * Start non-conditional statements
+	 */
 	@Override
 	public void enterFunctionCall(FunctionCallContext ctx) {
 		updateLast(new FlowPoint(new FlowPointContext(ctx, FlowPointContextType.FunctionCall)));
@@ -171,6 +225,7 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 
 		switch (newLast.getContext().getType()) {
 		case ElseIfStat:
+		case ElseStat:
 			last = newLast;
 			break;
 		default:

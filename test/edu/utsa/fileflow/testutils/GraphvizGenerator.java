@@ -35,11 +35,21 @@ public class GraphvizGenerator {
 			case FlowPoint:
 				dot.append(",shape=box");
 				break;
+			case ProgEnter:
+				dot.append(",shape=mbox,fillcolor=green,style=filled");
+				break;
+			case ProgExit:
+				dot.append(",shape=mbox,fillcolor=red,style=filled");
+				break;
 			case IfStat:
 			case ElseIfStat:
-				dot.append(",shape=diamond");
+				dot.append(",shape=diamond,fillcolor=yellow,style=filled");
+				break;
+			case ElseStat:
+				dot.append(",shape=circle,fillcolor=yellow,style=filled");
 				break;
 			default:
+				dot.append(",shape=box,fillcolor=gray,style=filled");
 				break;
 			}
 

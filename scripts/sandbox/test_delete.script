@@ -1,7 +1,0 @@
-rm file1
-rm file2
-rm file0/file.txt
-rm file0
-
-# this will fail because it has already been assumed and removed
-rm file2

@@ -35,8 +35,8 @@ public class Main2 {
 		FileFlowListenerImpl listener = new FileFlowListenerImpl();
 		ParseTreeWalker.DEFAULT.walk(listener, tree);
 
-		// listener.cfg.print();
 		String dot = GraphvizGenerator.generateDOT(listener.cfg);
-		GraphvizGenerator.saveDOTToFile(dot, TEST_SCRIPT.replaceAll("\\.ffa$", ".dot"));
+		GraphvizGenerator.saveDOTToFile(dot, TEST_SCRIPT.concat(".dot"));
+		System.out.println("File '" + TEST_SCRIPT.concat(".dot") + "' created.");
 	}
 }
