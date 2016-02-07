@@ -160,7 +160,7 @@ public class FlowPoint {
 			 * that there is something wrong with my CFG because there should be
 			 * no loops at the moment.
 			 */
-			// if (printed == false) continue;
+			 if (printed == false) continue;
 			edge.getTarget().resetPrint();
 		}
 	}

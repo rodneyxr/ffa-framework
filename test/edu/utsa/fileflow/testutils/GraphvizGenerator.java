@@ -48,6 +48,9 @@ public class GraphvizGenerator {
 			case ElseStat:
 				dot.append(",shape=circle,fillcolor=yellow,style=filled");
 				break;
+			case WhileStatement:
+				dot.append(",shape=diamond,fillcolor=orange,style=filled");
+				break;
 			default:
 				dot.append(",shape=box,fillcolor=gray,style=filled");
 				break;

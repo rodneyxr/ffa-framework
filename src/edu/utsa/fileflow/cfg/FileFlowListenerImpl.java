@@ -13,6 +13,7 @@ import edu.utsa.fileflow.antlr.FileFlowParser.FunctionCallContext;
 import edu.utsa.fileflow.antlr.FileFlowParser.IfStatContext;
 import edu.utsa.fileflow.antlr.FileFlowParser.IfStatementContext;
 import edu.utsa.fileflow.antlr.FileFlowParser.ProgContext;
+import edu.utsa.fileflow.antlr.FileFlowParser.WhileStatementContext;
 import edu.utsa.fileflow.utilities.Delegate;
 
 /**
@@ -26,13 +27,10 @@ import edu.utsa.fileflow.utilities.Delegate;
  */
 public class FileFlowListenerImpl extends FileFlowBaseListener {
 
-	private static final boolean ENABLE_EXIT_IF_NODES = false;
-
 	// the control flow graph
 	public FlowPoint cfg;
 
 	private FlowPoint last; // the last flow point visited
-	private FlowPoint lastlast; // the flow point visited before last
 	private Stack<SwitchBlock> currentSwitchBlocks = new Stack<SwitchBlock>();
 	private Stack<SwitchBlock> oldSwitchBlocks = new Stack<SwitchBlock>();
 	private Delegate nextDelegate = new Delegate();
@@ -63,60 +61,7 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 
 	@Override
 	public void exitIfStatement(IfStatementContext ctx) {
-		// Save lastSwitchBlock in case next statement causes another
-		// SwitchBlock to be created. If another SwitchBlock is pushed to the
-		// stack then the delegate would be referencing the new SwitchBlock
-		// rather than the one current within this scope.
-		currentSwitchBlocks.peek().last = last; // save last in the block
-		oldSwitchBlocks.push(currentSwitchBlocks.pop());
-		nextDelegate.clear();
-
-		// point all break points to switch block end
-		exitDelegate.add(() -> {
-			SwitchBlock oldBlock = oldSwitchBlocks.pop();
-
-			if (ENABLE_EXIT_IF_NODES) {
-				// if a switch block happens to be a break point, copy all break
-				// points to the outer scope's break point list.
-				if (!currentSwitchBlocks.isEmpty() && oldBlock.last == lastlast
-						&& last.getContext().getType() != FlowPointContextType.IfStat) {
-					ArrayList<FlowPoint> outerBreaks = currentSwitchBlocks.peek().getBreaks();
-					outerBreaks.addAll(oldBlock.getBreaks());
-
-					// remove the last break flow point because it will already
-					// be
-					// pointing to the next flow point
-					if (outerBreaks.size() > 0)
-						outerBreaks.remove(outerBreaks.size() - 1);
-					// last condition in if block will always be a break point
-					// unless it is an elseStat
-					if (oldBlock.getLastCondition().getContext().getType() != FlowPointContextType.ElseStat)
-						outerBreaks.add(oldBlock.getLastCondition());
-					return;
-				}
-			}
-
-			ArrayList<FlowPoint> breaks = oldBlock.getBreaks();
-			if (breaks.size() > 0) {
-				// remove the last break flow point because it will already be
-				// pointing to the next flow point
-				breaks.remove(breaks.size() - 1);
-				// last condition in if block will always be a break point
-				// unless it is an elseStat
-				if (oldBlock.getLastCondition().getContext().getType() != FlowPointContextType.ElseStat)
-					oldBlock.addBreak(oldBlock.getLastCondition());
-
-				for (FlowPoint brk : breaks) {
-					brk.addFlowPoint(last);
-				}
-			}
-		});
-
-		if (ENABLE_EXIT_IF_NODES) {
-			// add exit if node
-			FlowPoint exitIf = new FlowPoint(new FlowPointContext("EXIT_IF"));
-			updateLast(exitIf);
-		}
+		exitSwitchBlock(FlowPointContextType.IfStatement);
 	}
 
 	/**
@@ -196,6 +141,22 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 	}
 
 	/**
+	 * Start while statements
+	 */
+	@Override
+	public void enterWhileStatement(WhileStatementContext ctx) {
+		currentSwitchBlocks.add(new SwitchBlock());
+		FlowPoint whileStat = new FlowPoint(new FlowPointContext(ctx.condition(), FlowPointContextType.WhileStatement));
+		updateLast(whileStat);
+		currentSwitchBlocks.peek().setLastCondition(whileStat);
+	}
+
+	@Override
+	public void exitWhileStatement(WhileStatementContext ctx) {
+		exitSwitchBlock(FlowPointContextType.WhileStatement);
+	}
+
+	/**
 	 * Start non-conditional statements
 	 */
 	@Override
@@ -209,6 +170,60 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 	}
 
 	/**
+	 * Makes the necessary modifications to make the correct flow point links
+	 * after exiting a conditional scope.
+	 * 
+	 * @param type
+	 *            The context type of the switch block.
+	 */
+	private void exitSwitchBlock(FlowPointContextType type) {
+		// Save lastSwitchBlock in case next statement causes another
+		// SwitchBlock to be created. If another SwitchBlock is pushed to the
+		// stack then the delegate would be referencing the new SwitchBlock
+		// rather than the one current within this scope.
+		oldSwitchBlocks.push(currentSwitchBlocks.pop());
+		nextDelegate.clear();
+
+		// point all break points to switch block end
+		// this code will be called later
+		exitDelegate.add(() -> {
+			SwitchBlock oldBlock = oldSwitchBlocks.pop();
+
+			ArrayList<FlowPoint> breaks = oldBlock.getBreaks();
+			if (breaks.size() > 0) {
+				// remove the last break flow point because it will already be
+				// pointing to the next flow point
+				breaks.remove(breaks.size() - 1);
+				// last condition in if block will always be a break point
+				// unless it is an elseStat
+				if (oldBlock.getLastCondition().getContext().getType() != FlowPointContextType.ElseStat)
+					oldBlock.addBreak(oldBlock.getLastCondition());
+
+				for (FlowPoint brk : breaks) {
+					brk.addFlowPoint(last);
+				}
+			}
+		});
+
+		if (type == FlowPointContextType.WhileStatement) {
+			// add exit while node
+			FlowPoint whileStart = oldSwitchBlocks.peek().getLastCondition();
+			FlowPoint whileEnd = new FlowPoint(new FlowPointContext("EXIT_WHILE"));
+			// link exit while node back to loop start
+			// these three lines will treat the end of the while loop as the
+			// exit point
+			whileEnd.addFlowPoint(whileStart);
+			whileStart.addFlowPoint(whileEnd);
+			updateLast(whileEnd);
+
+			// these two lines will treat the condition of the while loop as the
+			// exit point
+			// updateLast(whileEnd);
+			// updateLast(whileStart);
+		}
+	}
+
+	/**
 	 * Updates class global last variable. If the last was of type If, Else-if
 	 * or Else, then it will not point to the new last. This is because IfType
 	 * flow points have their own way of connecting flow points.
@@ -217,7 +232,6 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 	 *            The last flow point created.
 	 */
 	private void updateLast(FlowPoint newLast) {
-		lastlast = last;
 		if (last == null) {
 			last = newLast;
 			return;

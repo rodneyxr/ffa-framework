@@ -6,7 +6,6 @@ public class SwitchBlock {
 
 	// list of flow points that should exit the switch block
 	private ArrayList<FlowPoint> breakPoints = new ArrayList<FlowPoint>();
-	FlowPoint last;
 
 	// the last condition flow point visited
 	private FlowPoint lastCondition;
