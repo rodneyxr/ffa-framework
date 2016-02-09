@@ -210,16 +210,10 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 			FlowPoint whileStart = oldSwitchBlocks.peek().getLastCondition();
 			FlowPoint whileEnd = new FlowPoint(new FlowPointContext("EXIT_WHILE"));
 			// link exit while node back to loop start
-			// these three lines will treat the end of the while loop as the
-			// exit point
-			whileEnd.addFlowPoint(whileStart);
-			whileStart.addFlowPoint(whileEnd);
-			updateLast(whileEnd);
-
 			// these two lines will treat the condition of the while loop as the
 			// exit point
-			// updateLast(whileEnd);
-			// updateLast(whileStart);
+			updateLast(whileEnd);
+			updateLast(whileStart);
 		}
 	}
 
