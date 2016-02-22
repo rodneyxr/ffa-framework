@@ -1,0 +1,26 @@
+// PASSING
+// declare some variables
+$x0 = 'tmp/';
+$x1 = 'src/';
+$x2 = 'bin/';
+
+// create tmp/ if it doesn't exist
+if (exists $x0) {
+	rm $x0;
+}
+mkdir $x0;
+
+// create bin/ if it doesn't exist
+if (!exists $x2) {
+	mkdir $x2;
+} else {
+	// else, it does exist, so empty it
+	rm $x2;
+	mkdir $x2;
+}
+
+// Compile everything in src
+// assume compilation creates stuff in tmp
+
+// clean up our mess
+rm $x0;

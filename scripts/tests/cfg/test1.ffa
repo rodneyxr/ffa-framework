@@ -1,0 +1,11 @@
+// PASSING
+touch 'a';
+if (exists 'a') {
+	rm 'a';
+} else if (exists 'b') {
+	rm 'b';
+}
+
+if (exists 'z') {
+	rm 'z';
+}

@@ -1,0 +1,22 @@
+// PASSING
+if (exists 'a') {
+	rm 'a';
+	if (exists 'aa') {
+		rm 'aa';
+	} else if (exists 'bb') {
+		rm 'bb';
+		if (exists 'aaa') {
+			rm 'aaa';
+		} else if (other) {
+			rm 'z';
+		}
+	}
+} else if (exists 'b') {
+	rm 'b';
+} else if (exists 'c') {
+	rm 'c';
+}
+
+if (exists 'tmp/') {
+	rm 'tmp/';
+}

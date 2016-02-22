@@ -1,6 +1,11 @@
 package edu.utsa.fileflow.cfg;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.util.Scanner;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CharStream;
@@ -26,7 +31,7 @@ import edu.utsa.fileflow.testutils.GraphvizGenerator;
  */
 public class ControlFlowGraphTest {
 
-	static final String TEST_SCRIPT = "scripts/ffa/script1.ffa";
+	static final String TEST_SCRIPT_DIR = "scripts/tests/cfg/";
 
 	@Rule
 	public ExpectedException expectException = ExpectedException.none();
@@ -47,15 +52,32 @@ public class ControlFlowGraphTest {
 
 	@Test
 	public void testControlFlowGraph() throws Exception {
-		CharStream input = new ANTLRInputStream(new FileInputStream(TEST_SCRIPT));
-		TokenStream tokens = new CommonTokenStream(new FileFlowLexer(input));
-		FileFlowParser parser = new FileFlowParser(tokens);
-		ParseTree tree = parser.prog();
-		FileFlowListenerImpl listener = new FileFlowListenerImpl();
-		ParseTreeWalker.DEFAULT.walk(listener, tree);
+		File dir = new File(TEST_SCRIPT_DIR);
 
-		String dot = GraphvizGenerator.generateDOT(listener.cfg);
-		GraphvizGenerator.saveDOTToFile(dot, TEST_SCRIPT.replaceAll("\\.ffa$", ".dot"));
+		File[] ffaList = dir.listFiles(new FilenameFilter() {
+			public boolean accept(File dir, String filename) {
+				return filename.endsWith(".ffa");
+			}
+		});
+
+		for (File file : ffaList) {
+			CharStream input = new ANTLRInputStream(new FileInputStream(file));
+			TokenStream tokens = new CommonTokenStream(new FileFlowLexer(input));
+			FileFlowParser parser = new FileFlowParser(tokens);
+			ParseTree tree = parser.prog();
+			FileFlowListenerImpl listener = new FileFlowListenerImpl();
+			ParseTreeWalker.DEFAULT.walk(listener, tree);
+
+			String dot = GraphvizGenerator.generateDOT(listener.cfg);
+			String dotFilepath = TEST_SCRIPT_DIR + "/" + file.getName().concat(".dot");
+			File dotOrigFile = new File(dotFilepath);
+			Scanner dotScanner = new Scanner(dotOrigFile);
+			String dotOrig = dotScanner.useDelimiter("\\Z").next();
+			dotScanner.close();
+			assertEquals(dot, dotOrig);
+
+			// GraphvizGenerator.saveDOTToFile(dot, dotFilepath);
+		}
 	}
 
 }

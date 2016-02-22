@@ -1,0 +1,30 @@
+// PASSING
+if (!exists 'tmp') {
+	mkdir 'tmp';
+} else {
+	rm 'tmp';
+	mkdir 'tmp';
+}
+
+$x0 = 'tmp/a';
+while (!exists $x0) {
+	mkdir $x0;
+	$x0 = $x0.'/a';
+	while (exists 'tmp') {
+		if (!exists 'tmp') {
+			touch 'tmp1';
+		} else if (!exists 'tmp') {
+			touch 'tmp2';
+		} else {
+			if (exists '1') {
+				while (other) {
+					touch 'tmpother';
+				}
+			} else if (exists '2') {
+				while (exists '3') {
+					touch 'tmp3';
+				}
+			}
+		}
+	}
+}

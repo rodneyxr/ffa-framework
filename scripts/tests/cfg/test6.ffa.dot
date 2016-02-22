@@ -1,0 +1,32 @@
+digraph G {
+    55[label="PROG_ENTER",shape=mbox,fillcolor=green,style=filled];
+    56[label="$x0='tmp/'",shape=box,fillcolor=gray,style=filled];
+    57[label="$x1='src/'",shape=box,fillcolor=gray,style=filled];
+    58[label="$x2='bin/'",shape=box,fillcolor=gray,style=filled];
+    59[label="exists$x0",shape=diamond,fillcolor=yellow,style=filled];
+    60[label="rm$x0",shape=box,fillcolor=gray,style=filled];
+    61[label="mkdir$x0",shape=box,fillcolor=gray,style=filled];
+    62[label="!exists$x2",shape=diamond,fillcolor=yellow,style=filled];
+    63[label="mkdir$x2",shape=box,fillcolor=gray,style=filled];
+    67[label="rm$x0",shape=box,fillcolor=gray,style=filled];
+    68[label="PROG_EXIT",shape=mbox,fillcolor=red,style=filled];
+    64[label="else",shape=circle,fillcolor=yellow,style=filled];
+    65[label="rm$x2",shape=box,fillcolor=gray,style=filled];
+    66[label="mkdir$x2",shape=box,fillcolor=gray,style=filled];
+
+    55 -> 56;
+    56 -> 57;
+    57 -> 58;
+    58 -> 59;
+    59 -> 60;
+    59 -> 61;
+    60 -> 61;
+    61 -> 62;
+    62 -> 63;
+    62 -> 64;
+    63 -> 67;
+    67 -> 68;
+    64 -> 65;
+    65 -> 66;
+    66 -> 67;
+}

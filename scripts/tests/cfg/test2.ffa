@@ -1,0 +1,17 @@
+// PASSING
+if (exists 'a') {
+	if (exists 'a/aa') {
+		rm 'a/aa';
+	} 
+	else if (exists 'a/bb') {
+		rm 'a/bb';
+	}
+} else if (exists 'b') {
+	rm 'b';
+} else if (exists 'c') {
+	rm 'c';
+}
+
+if (exists 'tmp/') {
+	rm 'tmp/';
+}

@@ -1,0 +1,6 @@
+// PASSING
+if (exists '1') {
+	if (exists '2') {
+		touch 'a';
+	}
+}
