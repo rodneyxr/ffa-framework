@@ -152,7 +152,7 @@ public class Condition {
 	 *            condition1 will be merged into this one
 	 * @return a new condition object with condition1 merged into condition2
 	 */
-	public static Condition merge(Condition condition1, Condition condition2) {
+	public static Condition mergeOld(Condition condition1, Condition condition2) {
 		Condition mergedCondition = new Condition();
 		mergedCondition.positive = condition2.positive.merge(condition1.positive);
 		mergedCondition.negative = condition2.negative.merge(condition1.negative);

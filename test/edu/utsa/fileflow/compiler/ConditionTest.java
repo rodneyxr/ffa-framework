@@ -47,7 +47,7 @@ public class ConditionTest {
 		post2.insertNegative(file1);
 		assertTrue(post2.negative.fileExists(file1));
 
-		Condition mergedPost = Condition.merge(post2, post1);
+		Condition mergedPost = Condition.mergeOld(post2, post1);
 		// FIXME: Condition.MERGE_PRINT hides positive file
 		assertTrue(mergedPost.positive.fileExists(file1));
 		assertTrue(mergedPost.negative.fileExists(file1));
