@@ -68,7 +68,7 @@ public class ControlFlowGraphTest {
 			FileFlowListenerImpl listener = new FileFlowListenerImpl();
 			ParseTreeWalker.DEFAULT.walk(listener, tree);
 
-			String dot = GraphvizGenerator.generateDOT(listener.cfg);
+			String dot = GraphvizGenerator.generateDOT(listener.getControlFlowGraph());
 			String dotFilepath = TEST_SCRIPT_DIR + "/" + file.getName().concat(".dot");
 			File dotOrigFile = new File(dotFilepath);
 			Scanner dotScanner = new Scanner(dotOrigFile);

@@ -1,16 +1,18 @@
 package edu.utsa.fileflow.analysis;
 
-public interface Analysis<T> {
+import edu.utsa.fileflow.cfg.FlowPointContext;
 
-	void touch(AnalysisDomain<T> domain, AnalysisContext context);
+public interface Analysis {
 
-	void mkdir(AnalysisDomain<T> domain, AnalysisContext context);
+	void touch(AnalysisDomain<?> domain, FlowPointContext context);
 
-	void copy(AnalysisDomain<T> domain, AnalysisContext context);
+	void mkdir(AnalysisDomain<?> domain, FlowPointContext context);
 
-	void remove(AnalysisDomain<T> domain, AnalysisContext context);
+	void copy(AnalysisDomain<?> domain, FlowPointContext context);
 
-	// void enterProg(AnalysisDomain<T> domain, AnalysisContext context);
+	void remove(AnalysisDomain<?> domain, FlowPointContext context);
+
+	void enterProg(AnalysisDomain<?> domain, FlowPointContext context);
 	//
 	// void exitProg(AnalysisDomain<T> domain, AnalysisContext context);
 	//
