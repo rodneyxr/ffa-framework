@@ -3,6 +3,8 @@ package edu.utsa.fileflow.cfg;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import edu.utsa.fileflow.analysis.AnalysisDomain;
+
 /**
  * 
  * A FlowPoint represents a node in the {@link ControlFlowGraph}. It can have
@@ -23,6 +25,9 @@ public class FlowPoint {
 
 	private FlowPointEdgeList incoming; // a list of incoming edges
 	private FlowPointEdgeList outgoing; // a list of outgoing edges
+
+	// Analysis variables
+	public AnalysisDomain<?> domain;
 
 	public FlowPoint(String text) {
 		this(new FlowPointContext(text));
@@ -153,7 +158,8 @@ public class FlowPoint {
 	private void resetPrint() {
 		printed = false;
 		for (FlowPointEdge edge : getOutgoingEdgeList()) {
-			 if (printed == false) continue;
+			if (printed == false)
+				continue;
 			edge.getTarget().resetPrint();
 		}
 	}

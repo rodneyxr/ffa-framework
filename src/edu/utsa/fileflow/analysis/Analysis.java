@@ -4,15 +4,15 @@ import edu.utsa.fileflow.cfg.FlowPointContext;
 
 public interface Analysis {
 
-	void touch(AnalysisDomain<?> domain, FlowPointContext context);
+	AnalysisDomain<?> touch(AnalysisDomain<?> domain, FlowPointContext context);
 
-	void mkdir(AnalysisDomain<?> domain, FlowPointContext context);
+	AnalysisDomain<?> mkdir(AnalysisDomain<?> domain, FlowPointContext context);
 
-	void copy(AnalysisDomain<?> domain, FlowPointContext context);
+	AnalysisDomain<?> copy(AnalysisDomain<?> domain, FlowPointContext context);
 
-	void remove(AnalysisDomain<?> domain, FlowPointContext context);
+	AnalysisDomain<?> remove(AnalysisDomain<?> domain, FlowPointContext context);
 
-	void enterProg(AnalysisDomain<?> domain, FlowPointContext context);
+	AnalysisDomain<?> enterProg(AnalysisDomain<?> domain, FlowPointContext context);
 	//
 	// void exitProg(AnalysisDomain<T> domain, AnalysisContext context);
 	//

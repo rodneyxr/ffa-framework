@@ -11,41 +11,52 @@ public class Analyzer {
 	public static void analyze(FlowPoint cfg, Analysis analysis) {
 		AnalysisDomain<?> domain = new TestAnalysisDomainImpl();
 
-		// TODO: traverse CFG and update analysis domain along the way
 		FlowPointContext fpctx = cfg.getContext();
 		FlowPointContextType type = fpctx.getType();
+
+		// perform analysis on root
 		updateAnalysis(type, domain, analysis, fpctx);
 
-		FlowPoint c = cfg;
-		for (FlowPointEdge edge : c.getOutgoingEdgeList()) {
-			FlowPoint fp = edge.getTarget();
-			fpctx = fp.getContext();
-			type = fpctx.getType();
+		// recursive analysis on CFG
+		// TODO: handle loops
+		analyzeRec(cfg, analysis, domain);
+	}
+
+	private static void analyzeRec(FlowPoint fp, Analysis analysis, AnalysisDomain<?> domain) {
+		for (FlowPointEdge edge : fp.getOutgoingEdgeList()) {
+			FlowPointContext fpctx = edge.getTarget().getContext();
+			FlowPointContextType type = fpctx.getType();
 			updateAnalysis(type, domain, analysis, fpctx);
 		}
 
+		// recursive analysis for children
+		for (FlowPointEdge edge : fp.getOutgoingEdgeList()) {
+			analyzeRec(edge.getTarget(), analysis, domain);
+		}
 	}
 
-	private static void updateAnalysis(FlowPointContextType type, final AnalysisDomain<?> domain, Analysis analysis,
-			FlowPointContext fpctx) {
+	private static AnalysisDomain<?> updateAnalysis(FlowPointContextType type, final AnalysisDomain<?> domain,
+			Analysis analysis, FlowPointContext fpctx) {
+		AnalysisDomain<?> result = null;
 		switch (type) {
 		case ProgEnter:
-			analysis.enterProg(domain, fpctx);
+			result = analysis.enterProg(domain, fpctx);
 			break;
 		case FunctionCall:
 			if (fpctx.getText().startsWith("touch")) {
-				analysis.touch(domain, fpctx);
+				result = analysis.touch(domain, fpctx);
 			} else if (fpctx.getText().startsWith("mkdir")) {
-				analysis.mkdir(domain, fpctx);
+				result = analysis.mkdir(domain, fpctx);
 			} else if (fpctx.getText().startsWith("rm")) {
-				analysis.remove(domain, fpctx);
+				result = analysis.remove(domain, fpctx);
 			} else if (fpctx.getText().startsWith("copy")) {
-				analysis.copy(domain, fpctx);
+				result = analysis.copy(domain, fpctx);
 			}
 			break;
 		default:
 			break;
 		}
+		return result;
 	}
 
 }
