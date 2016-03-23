@@ -1,6 +1,7 @@
 package edu.utsa.fileflow.analysis;
 
-import edu.utsa.fileflow.TestAnalysisDomainImpl;
+import java.util.PriorityQueue;
+
 import edu.utsa.fileflow.cfg.FlowPoint;
 import edu.utsa.fileflow.cfg.FlowPointContext;
 import edu.utsa.fileflow.cfg.FlowPointContextType;
@@ -9,51 +10,61 @@ import edu.utsa.fileflow.cfg.FlowPointEdge;
 public class Analyzer {
 
 	public static void analyze(FlowPoint cfg, Analysis analysis) {
-		AnalysisDomain<?> domain = new TestAnalysisDomainImpl();
+		// initialize the workset
+		PriorityQueue<FlowPoint> workset = new PriorityQueue<>();
 
-		FlowPointContext fpctx = cfg.getContext();
+		// add the start node to the workset
+		updateAnalysis(cfg, new DummyAnalysisDomain(), analysis);
+		workset.add(cfg);
+
+		while (!workset.isEmpty()) {
+			FlowPoint flowpoint = workset.poll();
+
+			// add all children to the workset
+			for (FlowPointEdge edge : flowpoint.getOutgoingEdgeList()) {
+				FlowPoint child = edge.getTarget();
+				// for each outgoing edge, compute y (new domain)
+				// then check if y is different from the old domain
+				// if so, update domain and target to workset
+				AnalysisDomain y = updateAnalysis(child, flowpoint.domain, analysis);
+				if (y.compareTo(child.domain) != 0) {
+					child.domain = y;
+					workset.add(child);
+				}
+			}
+
+		}
+	}
+
+	private static AnalysisDomain updateAnalysis(FlowPoint target, AnalysisDomain inputDomain, Analysis analysis) {
+		AnalysisDomain result = null;
+		FlowPointContext fpctx = target.getContext();
 		FlowPointContextType type = fpctx.getType();
 
-		// perform analysis on root
-		updateAnalysis(type, domain, analysis, fpctx);
-
-		// recursive analysis on CFG
-		// TODO: handle loops
-		analyzeRec(cfg, analysis, domain);
-	}
-
-	private static void analyzeRec(FlowPoint fp, Analysis analysis, AnalysisDomain<?> domain) {
-		for (FlowPointEdge edge : fp.getOutgoingEdgeList()) {
-			FlowPointContext fpctx = edge.getTarget().getContext();
-			FlowPointContextType type = fpctx.getType();
-			updateAnalysis(type, domain, analysis, fpctx);
+		// FIXME: find an alternative to this
+		if (target.domain == null) {
+			target.domain = new DummyAnalysisDomain();
 		}
 
-		// recursive analysis for children
-		for (FlowPointEdge edge : fp.getOutgoingEdgeList()) {
-			analyzeRec(edge.getTarget(), analysis, domain);
-		}
-	}
-
-	private static AnalysisDomain<?> updateAnalysis(FlowPointContextType type, final AnalysisDomain<?> domain,
-			Analysis analysis, FlowPointContext fpctx) {
-		AnalysisDomain<?> result = null;
 		switch (type) {
 		case ProgEnter:
-			result = analysis.enterProg(domain, fpctx);
+			result = analysis.enterProg(inputDomain, fpctx);
 			break;
+		case ProgExit:
+			result = analysis.exitProg(inputDomain, fpctx);
 		case FunctionCall:
 			if (fpctx.getText().startsWith("touch")) {
-				result = analysis.touch(domain, fpctx);
+				result = analysis.touch(inputDomain, fpctx);
 			} else if (fpctx.getText().startsWith("mkdir")) {
-				result = analysis.mkdir(domain, fpctx);
+				result = analysis.mkdir(inputDomain, fpctx);
 			} else if (fpctx.getText().startsWith("rm")) {
-				result = analysis.remove(domain, fpctx);
+				result = analysis.remove(inputDomain, fpctx);
 			} else if (fpctx.getText().startsWith("copy")) {
-				result = analysis.copy(domain, fpctx);
+				result = analysis.copy(inputDomain, fpctx);
 			}
 			break;
 		default:
+			System.err.println("Not implemented: " + target);
 			break;
 		}
 		return result;

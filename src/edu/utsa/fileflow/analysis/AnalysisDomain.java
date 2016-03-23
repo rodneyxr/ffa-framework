@@ -1,10 +1,15 @@
 package edu.utsa.fileflow.analysis;
 
-public abstract class AnalysisDomain<T> implements Comparable<T> {
+public abstract class AnalysisDomain implements Comparable<AnalysisDomain> {
+
+	public abstract AnalysisDomain merge(AnalysisDomain domain);
+
+	public abstract AnalysisDomain top();
+
+	public abstract AnalysisDomain bottom();
+
+	public abstract int compareTo(AnalysisDomain o);
 	
-	public abstract void merge();
-	public abstract T top();
-	public abstract T bottom();
-	public abstract int compareTo(T o);
+	public abstract AnalysisDomain clone();
 
 }
