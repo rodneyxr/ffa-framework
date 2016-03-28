@@ -50,6 +50,13 @@ public class DummyAnalysis implements Analysis {
 		return domain;
 	}
 
+	@Override
+	public AnalysisDomain enterWhileStatement(AnalysisDomain domain, FlowPointContext context) {
+		System.out.println("while");
+		cast(domain).flag = 1;
+		return domain;
+	}
+
 	private DummyAnalysisDomain cast(AnalysisDomain domain) {
 		return (DummyAnalysisDomain) domain;
 	}

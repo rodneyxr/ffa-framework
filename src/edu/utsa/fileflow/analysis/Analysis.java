@@ -53,8 +53,7 @@ public interface Analysis {
 	//
 	// void exitElseStat(AnalysisDomain<T> domain, AnalysisContext context);
 	//
-	// void enterWhileStatement(AnalysisDomain<T> domain, AnalysisContext
-	// context);
+	AnalysisDomain enterWhileStatement(AnalysisDomain domain, FlowPointContext context);
 	//
 	// void exitWhileStatement(AnalysisDomain<T> domain, AnalysisContext
 	// context);

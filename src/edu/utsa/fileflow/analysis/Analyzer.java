@@ -63,6 +63,9 @@ public class Analyzer {
 				result = analysis.copy(inputDomain, fpctx);
 			}
 			break;
+		case WhileStatement:
+			result = analysis.enterWhileStatement(inputDomain, fpctx);
+			break;
 		default:
 			System.err.println("Not implemented: " + target);
 			break;
