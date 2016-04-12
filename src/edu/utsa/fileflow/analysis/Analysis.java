@@ -2,19 +2,20 @@ package edu.utsa.fileflow.analysis;
 
 import edu.utsa.fileflow.cfg.FlowPointContext;
 
-public interface Analysis {
+public interface Analysis<T extends AnalysisDomain> {
 
-	AnalysisDomain touch(AnalysisDomain domain, FlowPointContext context);
+	AnalysisDomain touch(T domain, FlowPointContext context);
 
-	AnalysisDomain mkdir(AnalysisDomain domain, FlowPointContext context);
+	AnalysisDomain mkdir(T domain, FlowPointContext context);
 
-	AnalysisDomain copy(AnalysisDomain domain, FlowPointContext context);
+	AnalysisDomain copy(T domain, FlowPointContext context);
 
-	AnalysisDomain remove(AnalysisDomain domain, FlowPointContext context);
+	AnalysisDomain remove(T domain, FlowPointContext context);
 
-	AnalysisDomain enterProg(AnalysisDomain domain, FlowPointContext context);
+	AnalysisDomain enterProg(T domain, FlowPointContext context);
 
-	AnalysisDomain exitProg(AnalysisDomain domain, FlowPointContext context);
+	AnalysisDomain exitProg(T domain, FlowPointContext context);
+
 	//
 	// void enterBlock(AnalysisDomain<T> domain, AnalysisContext context);
 	//
@@ -53,10 +54,9 @@ public interface Analysis {
 	//
 	// void exitElseStat(AnalysisDomain<T> domain, AnalysisContext context);
 	//
-	AnalysisDomain enterWhileStatement(AnalysisDomain domain, FlowPointContext context);
-	//
-	// void exitWhileStatement(AnalysisDomain<T> domain, AnalysisContext
-	// context);
+	AnalysisDomain enterWhileStatement(T domain, FlowPointContext context);
+
+	AnalysisDomain exitWhileStatement(T domain, FlowPointContext context);
 	//
 	// void enterCondition(AnalysisDomain<T> domain, AnalysisContext context);
 	//

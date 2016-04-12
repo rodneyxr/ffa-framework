@@ -2,6 +2,13 @@ package edu.utsa.fileflow.analysis;
 
 public class DummyAnalysisDomain extends AnalysisDomain {
 
+	private static final DummyAnalysisDomain TOP = new DummyAnalysisDomain();
+	private static final DummyAnalysisDomain BOTTOM = new DummyAnalysisDomain();
+	static {
+		TOP.flag = 1;
+		BOTTOM.flag = 0;
+	}
+
 	int flag = 0;
 
 	@Override
@@ -15,14 +22,12 @@ public class DummyAnalysisDomain extends AnalysisDomain {
 
 	@Override
 	public DummyAnalysisDomain top() {
-		// TODO Auto-generated method stub
-		return null;
+		return TOP.clone();
 	}
 
 	@Override
 	public DummyAnalysisDomain bottom() {
-		// TODO Auto-generated method stub
-		return null;
+		return BOTTOM.clone();
 	}
 
 	@Override
@@ -34,7 +39,7 @@ public class DummyAnalysisDomain extends AnalysisDomain {
 			return 1;
 		return 0;
 	}
-	
+
 	@Override
 	public String toString() {
 		return Integer.toString(flag);

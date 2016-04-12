@@ -1,5 +1,5 @@
-touch 'a';
-rm 'a';
-while (other) {
-	mkdir 'dir';
-}
+ touch 'a';
+ rm 'a';
+ while (other) {
+ 	mkdir 'dir';
+ } 
