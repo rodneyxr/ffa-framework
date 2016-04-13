@@ -5,6 +5,16 @@ import edu.utsa.fileflow.cfg.FlowPointContext;
 public class DummyAnalysis implements Analysis<DummyAnalysisDomain> {
 
 	@Override
+	public AnalysisDomain onBefore(DummyAnalysisDomain domain, FlowPointContext context) {
+		return domain;
+	}
+
+	@Override
+	public AnalysisDomain onAfter(DummyAnalysisDomain domain, FlowPointContext context) {
+		return domain;
+	}
+
+	@Override
 	public AnalysisDomain enterProg(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("enterProg");
 		domain.flag = 1;

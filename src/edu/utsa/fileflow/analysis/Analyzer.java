@@ -64,6 +64,8 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 			target.domain = inputDomain.bottom();
 		}
 
+		analysis.onBefore(inputDomain, fpctx);
+
 		switch (type) {
 		case ProgEnter:
 			result = analysis.enterProg(inputDomain, fpctx);
@@ -94,6 +96,9 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 			System.err.println("Not implemented: " + target);
 			break;
 		}
+
+		analysis.onAfter(inputDomain, fpctx);
+
 		return result;
 	}
 
