@@ -62,6 +62,10 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 		// TODO: find an alternative to this
 		if (target.domain == null) {
 			target.domain = inputDomain.bottom();
+			if (target.domain == null) {
+				System.err.println("Error: " + inputDomain.getClass().getSimpleName() + ".bottom() cannot return null.");
+				System.exit(1);
+			}
 		}
 
 		analysis.onBefore(inputDomain, fpctx);
