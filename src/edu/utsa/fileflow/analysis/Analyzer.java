@@ -63,7 +63,8 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 		if (target.domain == null) {
 			target.domain = inputDomain.bottom();
 			if (target.domain == null) {
-				System.err.println("Error: " + inputDomain.getClass().getSimpleName() + ".bottom() cannot return null.");
+				System.err
+						.println("Error: " + inputDomain.getClass().getSimpleName() + ".bottom() cannot return null.");
 				System.exit(1);
 			}
 		}
@@ -89,6 +90,9 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 			break;
 		case WhileStatement:
 			result = analysis.enterWhileStatement(inputDomain, fpctx);
+			break;
+		case Assignment:
+			result = analysis.enterAssignment(inputDomain, fpctx);
 			break;
 		case FlowPoint:
 			if (fpctx.getText().equals("EXIT_WHILE")) {

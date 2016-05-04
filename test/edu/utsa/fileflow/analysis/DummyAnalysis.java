@@ -61,6 +61,13 @@ public class DummyAnalysis implements Analysis<DummyAnalysisDomain> {
 	}
 
 	@Override
+	public AnalysisDomain enterAssignment(DummyAnalysisDomain domain, FlowPointContext context) {
+		System.out.println("enter assignment");
+		domain.flag = 1;
+		return domain;
+	}
+	
+	@Override
 	public AnalysisDomain enterWhileStatement(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("while");
 		domain.flag = 1;

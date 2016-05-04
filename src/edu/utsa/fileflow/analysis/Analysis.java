@@ -29,9 +29,9 @@ public interface Analysis<T extends AnalysisDomain> {
 	//
 	// void exitStatement(AnalysisDomain<T> domain, AnalysisContext context);
 	//
-	// void enterAssignment(AnalysisDomain<T> domain, AnalysisContext context);
-	//
-	// void exitAssignment(AnalysisDomain<T> domain, AnalysisContext context);
+	AnalysisDomain enterAssignment(T domain, FlowPointContext context);
+
+	// AnalysisDomain exitAssignment(T domain, FlowPointContext context);
 	//
 	// void enterFunctionCall(AnalysisDomain<T> domain, AnalysisContext
 	// context);
