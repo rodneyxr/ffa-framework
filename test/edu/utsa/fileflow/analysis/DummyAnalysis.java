@@ -5,6 +5,16 @@ import edu.utsa.fileflow.cfg.FlowPointContext;
 public class DummyAnalysis implements Analysis<DummyAnalysisDomain> {
 
 	@Override
+	public AnalysisDomain onBegin(DummyAnalysisDomain domain) {
+		return domain;
+	}
+
+	@Override
+	public AnalysisDomain onFinish(DummyAnalysisDomain domain) {
+		return domain;
+	}
+
+	@Override
 	public AnalysisDomain onBefore(DummyAnalysisDomain domain, FlowPointContext context) {
 		return domain;
 	}
@@ -66,7 +76,7 @@ public class DummyAnalysis implements Analysis<DummyAnalysisDomain> {
 		domain.flag = 1;
 		return domain;
 	}
-	
+
 	@Override
 	public AnalysisDomain enterWhileStatement(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("while");

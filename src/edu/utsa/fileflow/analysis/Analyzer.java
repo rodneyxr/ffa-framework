@@ -12,6 +12,8 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 	D domain;
 	A analysis;
 
+	private AnalysisDomain exitDomain;
+
 	public Analyzer(Class<D> d, Class<A> a) {
 		try {
 			// TODO: create factory interface for these
@@ -26,7 +28,10 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void analyze(FlowPoint cfg) {
+		analysis.onBegin(domain);
+
 		// initialize the workset
 		Stack<FlowPoint> workset = new Stack<>();
 
@@ -43,7 +48,6 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 				// for each outgoing edge, compute y (new domain)
 				// then check if y is different from the old domain
 				// if so, update domain and target to workset
-				@SuppressWarnings("unchecked")
 				AnalysisDomain y = updateAnalysis(child, (D) flowpoint.domain);
 				if (y.compareTo(child.domain) != 0) {
 					child.domain = y;
@@ -52,6 +56,13 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 			}
 
 		}
+
+		// FIXME: this is null because analysis is not reaching prog exit
+		if (exitDomain != null) {
+			analysis.onFinish((D) exitDomain);
+		} else {
+			System.err.println("Analysis Warning: Analysis did not reach ProgExit.");
+		}
 	}
 
 	private AnalysisDomain updateAnalysis(FlowPoint target, D inputDomain) {
@@ -59,12 +70,12 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 		FlowPointContext fpctx = target.getContext();
 		FlowPointContextType type = fpctx.getType();
 
-		// TODO: find an alternative to this
+		// initialize all nodes to bottom
 		if (target.domain == null) {
 			target.domain = inputDomain.bottom();
 			if (target.domain == null) {
-				System.err
-						.println("Error: " + inputDomain.getClass().getSimpleName() + ".bottom() cannot return null.");
+				System.err.println(
+						"Analysis Error: " + inputDomain.getClass().getSimpleName() + ".bottom() cannot return null.");
 				System.exit(1);
 			}
 		}
@@ -76,7 +87,8 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 			result = analysis.enterProg(inputDomain, fpctx);
 			break;
 		case ProgExit:
-			result = analysis.exitProg(inputDomain, fpctx);
+			result = exitDomain = analysis.exitProg(inputDomain, fpctx);
+			break;
 		case FunctionCall:
 			if (fpctx.getText().startsWith("touch")) {
 				result = analysis.touch(inputDomain, fpctx);

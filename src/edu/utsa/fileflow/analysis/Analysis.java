@@ -4,6 +4,10 @@ import edu.utsa.fileflow.cfg.FlowPointContext;
 
 public interface Analysis<T extends AnalysisDomain> {
 
+	AnalysisDomain onBegin(T domain);
+
+	AnalysisDomain onFinish(T domain);
+
 	AnalysisDomain onBefore(T domain, FlowPointContext context);
 
 	AnalysisDomain onAfter(T domain, FlowPointContext context);

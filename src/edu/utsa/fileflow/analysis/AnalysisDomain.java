@@ -9,7 +9,7 @@ public abstract class AnalysisDomain implements Comparable<AnalysisDomain> {
 	public abstract AnalysisDomain bottom();
 
 	public abstract int compareTo(AnalysisDomain o);
-	
+
 	public abstract AnalysisDomain clone();
 
 }
