@@ -32,6 +32,10 @@ public class FileFlowHelper {
 		TokenStream tokens = new CommonTokenStream(new FileFlowLexer(input));
 		FileFlowParser parser = new FileFlowParser(tokens);
 		ParseTree tree = parser.prog();
+		if (parser.getNumberOfSyntaxErrors() > 0) {
+			System.err.println("Syntax Error! Exiting...");
+			System.exit(1);
+		}
 		FileFlowListenerImpl listener = new FileFlowListenerImpl();
 		ParseTreeWalker.DEFAULT.walk(listener, tree);
 		return listener.getControlFlowGraph();
