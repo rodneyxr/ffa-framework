@@ -7,12 +7,12 @@ import edu.utsa.fileflow.cfg.FlowPointContext;
 import edu.utsa.fileflow.cfg.FlowPointContextType;
 import edu.utsa.fileflow.cfg.FlowPointEdge;
 
-public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
+public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 
 	D domain;
 	A analysis;
 
-	private AnalysisDomain exitDomain;
+	private D exitDomain;
 
 	public Analyzer(Class<D> d, Class<A> a) {
 		try {
@@ -48,8 +48,8 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 				// for each outgoing edge, compute y (new domain)
 				// then check if y is different from the old domain
 				// if so, update domain and target to workset
-				AnalysisDomain y = updateAnalysis(child, (D) flowpoint.domain);
-				if (y.compareTo(child.domain) != 0) {
+				D y = updateAnalysis(child, (D) flowpoint.domain);
+				if (y.compareTo((D) child.domain) != 0) {
 					child.domain = y;
 					workset.add(child);
 				}
@@ -65,8 +65,20 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 		}
 	}
 
-	private AnalysisDomain updateAnalysis(FlowPoint target, D inputDomain) {
-		AnalysisDomain result = null;
+	/**
+	 * updateAnalysis is called each iteration of the fixed point algorithm. It
+	 * represents a visit to a single flow point in the control flow graph.
+	 * 
+	 * @param target
+	 *            The target the flow point that will be visited.
+	 * @param inputDomain
+	 *            The domain that should be modified.
+	 * @return the modified input domain. Depending on the implementation of
+	 *         Analysis, a pointer to the same object may be returned; this is
+	 *         what the framework does by default.
+	 */
+	private D updateAnalysis(FlowPoint target, D inputDomain) {
+		D result = null;
 		FlowPointContext fpctx = target.getContext();
 		FlowPointContextType type = fpctx.getType();
 
@@ -80,8 +92,10 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 			}
 		}
 
+		// call this method before visiting the flow point
 		analysis.onBefore(inputDomain, fpctx);
 
+		// visit the node depending on its type
 		switch (type) {
 		case ProgEnter:
 			result = analysis.enterProg(inputDomain, fpctx);
@@ -117,6 +131,7 @@ public class Analyzer<D extends AnalysisDomain, A extends Analysis<D>> {
 			break;
 		}
 
+		// call this method after visiting the flow point
 		analysis.onAfter(inputDomain, fpctx);
 
 		return result;

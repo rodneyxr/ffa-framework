@@ -2,7 +2,7 @@ package edu.utsa.fileflow.analysis;
 
 import edu.utsa.fileflow.cfg.FlowPointContext;
 
-public abstract class BaseAnalysis<T extends AnalysisDomain> implements Analysis<T> {
+public abstract class BaseAnalysis<T extends AnalysisDomain<T>> implements Analysis<T> {
 
 	@Override
 	public T onBegin(T domain) {

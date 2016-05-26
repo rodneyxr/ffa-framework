@@ -1,6 +1,6 @@
 package edu.utsa.fileflow.analysis;
 
-public class DummyAnalysisDomain extends AnalysisDomain {
+public class DummyAnalysisDomain extends AnalysisDomain<DummyAnalysisDomain> {
 
 	private static final DummyAnalysisDomain TOP = new DummyAnalysisDomain();
 	private static final DummyAnalysisDomain BOTTOM = new DummyAnalysisDomain();
@@ -12,8 +12,7 @@ public class DummyAnalysisDomain extends AnalysisDomain {
 	int flag = 0;
 
 	@Override
-	public DummyAnalysisDomain merge(AnalysisDomain d) {
-		DummyAnalysisDomain domain = (DummyAnalysisDomain) d;
+	public DummyAnalysisDomain merge(DummyAnalysisDomain domain) {
 		if (flag != domain.flag) {
 			flag = 1;
 		}
@@ -31,11 +30,10 @@ public class DummyAnalysisDomain extends AnalysisDomain {
 	}
 
 	@Override
-	public int compareTo(AnalysisDomain o) {
-		DummyAnalysisDomain domain = (DummyAnalysisDomain) o;
-		if (flag < domain.flag)
+	public int compareTo(DummyAnalysisDomain other) {
+		if (flag < other.flag)
 			return -1;
-		if (flag > domain.flag)
+		if (flag > other.flag)
 			return 1;
 		return 0;
 	}

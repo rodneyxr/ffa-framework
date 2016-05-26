@@ -2,27 +2,27 @@ package edu.utsa.fileflow.analysis;
 
 import edu.utsa.fileflow.cfg.FlowPointContext;
 
-public interface Analysis<T extends AnalysisDomain> {
+public interface Analysis<T extends AnalysisDomain<T>> {
 
-	AnalysisDomain onBegin(T domain);
+	T onBegin(T domain);
 
-	AnalysisDomain onFinish(T domain);
+	T onFinish(T domain);
 
-	AnalysisDomain onBefore(T domain, FlowPointContext context);
+	T onBefore(T domain, FlowPointContext context);
 
-	AnalysisDomain onAfter(T domain, FlowPointContext context);
+	T onAfter(T domain, FlowPointContext context);
 
-	AnalysisDomain touch(T domain, FlowPointContext context);
+	T touch(T domain, FlowPointContext context);
 
-	AnalysisDomain mkdir(T domain, FlowPointContext context);
+	T mkdir(T domain, FlowPointContext context);
 
-	AnalysisDomain copy(T domain, FlowPointContext context);
+	T copy(T domain, FlowPointContext context);
 
-	AnalysisDomain remove(T domain, FlowPointContext context);
+	T remove(T domain, FlowPointContext context);
 
-	AnalysisDomain enterProg(T domain, FlowPointContext context);
+	T enterProg(T domain, FlowPointContext context);
 
-	AnalysisDomain exitProg(T domain, FlowPointContext context);
+	T exitProg(T domain, FlowPointContext context);
 
 	//
 	// void enterBlock(AnalysisDomain<T> domain, AnalysisContext context);
@@ -33,7 +33,7 @@ public interface Analysis<T extends AnalysisDomain> {
 	//
 	// void exitStatement(AnalysisDomain<T> domain, AnalysisContext context);
 	//
-	AnalysisDomain enterAssignment(T domain, FlowPointContext context);
+	T enterAssignment(T domain, FlowPointContext context);
 
 	// AnalysisDomain exitAssignment(T domain, FlowPointContext context);
 	//
@@ -62,9 +62,9 @@ public interface Analysis<T extends AnalysisDomain> {
 	//
 	// void exitElseStat(AnalysisDomain<T> domain, AnalysisContext context);
 	//
-	AnalysisDomain enterWhileStatement(T domain, FlowPointContext context);
+	T enterWhileStatement(T domain, FlowPointContext context);
 
-	AnalysisDomain exitWhileStatement(T domain, FlowPointContext context);
+	T exitWhileStatement(T domain, FlowPointContext context);
 	//
 	// void enterCondition(AnalysisDomain<T> domain, AnalysisContext context);
 	//

@@ -5,41 +5,41 @@ import edu.utsa.fileflow.cfg.FlowPointContext;
 public class DummyAnalysis implements Analysis<DummyAnalysisDomain> {
 
 	@Override
-	public AnalysisDomain onBegin(DummyAnalysisDomain domain) {
+	public DummyAnalysisDomain onBegin(DummyAnalysisDomain domain) {
 		return domain;
 	}
 
 	@Override
-	public AnalysisDomain onFinish(DummyAnalysisDomain domain) {
+	public DummyAnalysisDomain onFinish(DummyAnalysisDomain domain) {
 		return domain;
 	}
 
 	@Override
-	public AnalysisDomain onBefore(DummyAnalysisDomain domain, FlowPointContext context) {
+	public DummyAnalysisDomain onBefore(DummyAnalysisDomain domain, FlowPointContext context) {
 		return domain;
 	}
 
 	@Override
-	public AnalysisDomain onAfter(DummyAnalysisDomain domain, FlowPointContext context) {
+	public DummyAnalysisDomain onAfter(DummyAnalysisDomain domain, FlowPointContext context) {
 		return domain;
 	}
 
 	@Override
-	public AnalysisDomain enterProg(DummyAnalysisDomain domain, FlowPointContext context) {
+	public DummyAnalysisDomain enterProg(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("enterProg");
 		domain.flag = 1;
 		return domain;
 	}
 
 	@Override
-	public AnalysisDomain exitProg(DummyAnalysisDomain domain, FlowPointContext context) {
+	public DummyAnalysisDomain exitProg(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("exitProg");
 		domain.flag = 1;
 		return domain;
 	}
 
 	@Override
-	public AnalysisDomain touch(DummyAnalysisDomain domain, FlowPointContext context) {
+	public DummyAnalysisDomain touch(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("touch");
 		domain.flag = 1;
 		// FunctionCallContext ctx = (FunctionCallContext) context.getContext();
@@ -50,42 +50,42 @@ public class DummyAnalysis implements Analysis<DummyAnalysisDomain> {
 	}
 
 	@Override
-	public AnalysisDomain mkdir(DummyAnalysisDomain domain, FlowPointContext context) {
+	public DummyAnalysisDomain mkdir(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("mkdir");
 		domain.flag = 1;
 		return domain;
 	}
 
 	@Override
-	public AnalysisDomain copy(DummyAnalysisDomain domain, FlowPointContext context) {
+	public DummyAnalysisDomain copy(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("copy");
 		domain.flag = 1;
 		return domain;
 	}
 
 	@Override
-	public AnalysisDomain remove(DummyAnalysisDomain domain, FlowPointContext context) {
+	public DummyAnalysisDomain remove(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("remove");
 		domain.flag = 1;
 		return domain;
 	}
 
 	@Override
-	public AnalysisDomain enterAssignment(DummyAnalysisDomain domain, FlowPointContext context) {
+	public DummyAnalysisDomain enterAssignment(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("enter assignment");
 		domain.flag = 1;
 		return domain;
 	}
 
 	@Override
-	public AnalysisDomain enterWhileStatement(DummyAnalysisDomain domain, FlowPointContext context) {
+	public DummyAnalysisDomain enterWhileStatement(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("while");
 		domain.flag = 1;
 		return domain;
 	}
 
 	@Override
-	public AnalysisDomain exitWhileStatement(DummyAnalysisDomain domain, FlowPointContext context) {
+	public DummyAnalysisDomain exitWhileStatement(DummyAnalysisDomain domain, FlowPointContext context) {
 		System.out.println("exit while");
 		domain.flag = 1;
 		return domain;
