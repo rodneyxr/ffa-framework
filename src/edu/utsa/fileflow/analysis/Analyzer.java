@@ -92,6 +92,11 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 			}
 		}
 
+		@SuppressWarnings("unchecked")
+		D targetDomain = (D) target.domain;
+		// merge previous flow point before visiting
+		targetDomain.merge(inputDomain);
+		
 		// call this method before visiting the flow point
 		analysis.onBefore(inputDomain, fpctx);
 
@@ -127,7 +132,8 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 			}
 			break;
 		default:
-			System.err.println("Not implemented: " + target);
+			System.err.println(getClass().getSimpleName() + ".java: Not implemented: " + target);
+			System.exit(1);
 			break;
 		}
 
