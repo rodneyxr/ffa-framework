@@ -57,7 +57,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 
 		}
 
-		// FIXME: this is null because analysis is not reaching prog exit
+		// this is null because analysis is not reaching prog exit
 		if (exitDomain != null) {
 			analysis.onFinish((D) exitDomain);
 		} else {
@@ -90,13 +90,13 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 						"Analysis Error: " + inputDomain.getClass().getSimpleName() + ".bottom() cannot return null.");
 				System.exit(1);
 			}
+		} else {
+			@SuppressWarnings("unchecked")
+			D targetDomain = (D) target.domain;
+			// merge previous flow point before visiting
+			targetDomain.merge(inputDomain);
 		}
 
-		@SuppressWarnings("unchecked")
-		D targetDomain = (D) target.domain;
-		// merge previous flow point before visiting
-		targetDomain.merge(inputDomain);
-		
 		// call this method before visiting the flow point
 		analysis.onBefore(inputDomain, fpctx);
 
@@ -121,6 +121,10 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 			break;
 		case WhileStatement:
 			result = analysis.enterWhileStatement(inputDomain, fpctx);
+			break;
+		case IfStat:
+			// TODO: implement exitIfStat
+			result = analysis.enterIfStat(inputDomain, fpctx);
 			break;
 		case Assignment:
 			result = analysis.enterAssignment(inputDomain, fpctx);

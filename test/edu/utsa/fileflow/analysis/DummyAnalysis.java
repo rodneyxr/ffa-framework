@@ -76,6 +76,20 @@ public class DummyAnalysis implements Analysis<DummyAnalysisDomain> {
 		domain.flag = 1;
 		return domain;
 	}
+	
+	@Override
+	public DummyAnalysisDomain enterIfStat(DummyAnalysisDomain domain, FlowPointContext context) {
+		System.out.println("enter IfStat");
+		domain.flag = 1;
+		return domain;
+	}
+
+	@Override
+	public DummyAnalysisDomain exitIfStat(DummyAnalysisDomain domain, FlowPointContext context) {
+		System.out.println("exit IfStat");
+		domain.flag = 1;
+		return domain;
+	}
 
 	@Override
 	public DummyAnalysisDomain enterWhileStatement(DummyAnalysisDomain domain, FlowPointContext context) {

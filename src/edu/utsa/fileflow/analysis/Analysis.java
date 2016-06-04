@@ -50,9 +50,10 @@ public interface Analysis<T extends AnalysisDomain<T>> {
 	//
 	// void exitIfStatement(AnalysisDomain<T> domain, AnalysisContext context);
 	//
-	// void enterIfStat(AnalysisDomain<T> domain, AnalysisContext context);
-	//
-	// void exitIfStat(AnalysisDomain<T> domain, AnalysisContext context);
+	T enterIfStat(T domain, FlowPointContext context);
+
+	T exitIfStat(T domain, FlowPointContext context);
+
 	//
 	// void enterElseIfStat(AnalysisDomain<T> domain, AnalysisContext context);
 	//
