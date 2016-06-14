@@ -19,6 +19,12 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 			// TODO: create factory interface for these
 			domain = d.newInstance();
 			analysis = a.newInstance();
+
+			if (domain.bottom() == null) {
+				System.err.println(
+						"Analysis Error: " + domain.getClass().getSimpleName() + ".bottom() cannot return null.");
+				System.exit(1);
+			}
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -30,6 +36,11 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 
 	@SuppressWarnings("unchecked")
 	public void analyze(FlowPoint cfg) {
+
+		// initialize all nodes to bottom
+		cfg.getAllFlowPoints().forEach(fp -> {
+			fp.domain = domain.bottom();
+		});
 		analysis.onBegin(domain);
 
 		// initialize the workset
@@ -48,6 +59,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 				// for each outgoing edge, compute y (new domain)
 				// then check if y is different from the old domain
 				// if so, update domain and target to workset
+				System.out.printf("Target: %s, Input: %s\n", child, flowpoint);
 				D y = updateAnalysis(child, (D) flowpoint.domain);
 				if (y.compareTo((D) child.domain) != 0) {
 					child.domain = y;
@@ -82,20 +94,11 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		FlowPointContext fpctx = target.getContext();
 		FlowPointContextType type = fpctx.getType();
 
-		// initialize all nodes to bottom
-		if (target.domain == null) {
-			target.domain = inputDomain.bottom();
-			if (target.domain == null) {
-				System.err.println(
-						"Analysis Error: " + inputDomain.getClass().getSimpleName() + ".bottom() cannot return null.");
-				System.exit(1);
-			}
-		} else {
-			@SuppressWarnings("unchecked")
-			D targetDomain = (D) target.domain;
-			// merge previous flow point before visiting
-			targetDomain.merge(inputDomain);
-		}
+		@SuppressWarnings("unchecked")
+		D targetDomain = (D) target.domain;
+		// merge previous flow point before visiting
+		targetDomain.merge(inputDomain);
+		System.out.println(target.domain == inputDomain);
 
 		// call this method before visiting the flow point
 		analysis.onBefore(inputDomain, fpctx);
