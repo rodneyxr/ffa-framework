@@ -109,7 +109,7 @@ public class FlowPoint {
 	 * @return The list that holds all flow points.
 	 */
 	private ArrayList<FlowPoint> getAllFlowPointsImpl(ArrayList<FlowPoint> children) {
-		if (printed == true)
+		if (printed)
 			return children;
 
 		children.add(this);
@@ -134,7 +134,7 @@ public class FlowPoint {
 	 * Implementation of print().
 	 */
 	private void printImpl() {
-		if (printed == true)
+		if (printed)
 			return;
 
 		// print parent followed by all its children flow points
@@ -158,8 +158,7 @@ public class FlowPoint {
 	private void resetPrint() {
 		printed = false;
 		for (FlowPointEdge edge : getOutgoingEdgeList()) {
-			if (printed == false)
-				continue;
+			if (printed)
 			edge.getTarget().resetPrint();
 		}
 	}

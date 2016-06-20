@@ -47,7 +47,9 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		Stack<FlowPoint> workset = new Stack<>();
 
 		// add the start node to the workset
-		updateAnalysis(cfg, domain);
+		System.out.printf("(%s.java): START => Target: %s\n", Analyzer.class.getSimpleName(), cfg);
+
+		updateAnalysis(domain, cfg);
 		workset.add(cfg);
 
 		while (!workset.isEmpty()) {
@@ -59,14 +61,13 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 				// for each outgoing edge, compute y (new domain)
 				// then check if y is different from the old domain
 				// if so, update domain and target to workset
-				System.out.printf("Target: %s, Input: %s\n", child, flowpoint);
-				D y = updateAnalysis(child, (D) flowpoint.domain);
+				System.out.printf("(%s.java): %s => %s\n", Analyzer.class.getSimpleName(), flowpoint, child);
+				D y = updateAnalysis((D) flowpoint.domain, child);
 				if (y.compareTo((D) child.domain) != 0) {
 					child.domain = y;
 					workset.add(child);
 				}
 			}
-
 		}
 
 		// this is null because analysis is not reaching prog exit
@@ -81,15 +82,16 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 	 * updateAnalysis is called each iteration of the fixed point algorithm. It
 	 * represents a visit to a single flow point in the control flow graph.
 	 * 
-	 * @param target
-	 *            The target the flow point that will be visited.
 	 * @param inputDomain
 	 *            The domain that should be modified.
+	 * @param target
+	 *            The target the flow point that will be visited.
+	 * 
 	 * @return the modified input domain. Depending on the implementation of
 	 *         Analysis, a pointer to the same object may be returned; this is
 	 *         what the framework does by default.
 	 */
-	private D updateAnalysis(FlowPoint target, D inputDomain) {
+	private D updateAnalysis(D inputDomain, FlowPoint target) {
 		D result = null;
 		FlowPointContext fpctx = target.getContext();
 		FlowPointContextType type = fpctx.getType();

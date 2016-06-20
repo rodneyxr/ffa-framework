@@ -1,5 +1,7 @@
 package edu.utsa.fileflow.analysis;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 
 import org.junit.After;
@@ -9,6 +11,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import edu.utsa.fileflow.cfg.FlowPoint;
+import edu.utsa.fileflow.testutils.GraphvizGenerator;
 import edu.utsa.fileflow.utilities.FileFlowHelper;
 
 /**
@@ -43,6 +46,25 @@ public class AnalysisTest {
 		Analyzer<DummyAnalysisDomain, DummyAnalysis> analyzer = new Analyzer<>(DummyAnalysisDomain.class,
 				DummyAnalysis.class);
 		analyzer.analyze(cfg);
+	}
+
+	@Test
+	public void testDotFile() throws Exception {
+		FlowPoint cfg = FileFlowHelper.generateControlFlowGraphFromScript(new File(TEST_SCRIPT));
+
+		// generate DOT file before analysis
+		String dot1 = GraphvizGenerator.generateDOT(cfg);
+
+		// perform prefix analysis
+		Analyzer<DummyAnalysisDomain, DummyAnalysis> analyzer = new Analyzer<>(DummyAnalysisDomain.class,
+				DummyAnalysis.class);
+		analyzer.analyze(cfg);
+
+		// generate DOT file after analysis
+		String dot2 = GraphvizGenerator.generateDOT(cfg);
+
+		// DOT files should be identical after analysis
+		assertEquals("CFG should not be modified by analysis.", dot1, dot2);
 	}
 
 }
