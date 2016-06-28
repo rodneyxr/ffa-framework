@@ -100,7 +100,6 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		D targetDomain = (D) target.domain;
 		// merge previous flow point before visiting
 		targetDomain.merge(inputDomain);
-		System.out.println(target.domain == inputDomain);
 
 		// call this method before visiting the flow point
 		analysis.onBefore(inputDomain, fpctx);

@@ -158,8 +158,9 @@ public class FlowPoint {
 	private void resetPrint() {
 		printed = false;
 		for (FlowPointEdge edge : getOutgoingEdgeList()) {
-			if (printed)
-			edge.getTarget().resetPrint();
+			FlowPoint target = edge.getTarget();
+			if (target.printed)
+				target.resetPrint();
 		}
 	}
 
