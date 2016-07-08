@@ -47,8 +47,6 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		Stack<FlowPoint> workset = new Stack<>();
 
 		// add the start node to the workset
-		System.out.printf("(%s.java): START => Target: %s\n", Analyzer.class.getSimpleName(), cfg);
-
 		updateAnalysis(domain, cfg);
 		workset.add(cfg);
 
@@ -99,6 +97,12 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		@SuppressWarnings("unchecked")
 		D targetDomain = (D) target.domain;
 		// merge previous flow point before visiting
+
+		// why is this true sometimes?
+		// a node should not loop back to itself
+		if (inputDomain == targetDomain) {
+			System.err.printf("(%s.java): input == target { %s }\n", this.getClass().getSimpleName(), target);
+		}
 		targetDomain.merge(inputDomain);
 
 		// call this method before visiting the flow point
