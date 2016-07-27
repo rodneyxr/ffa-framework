@@ -105,4 +105,18 @@ public class DummyAnalysis implements Analysis<DummyAnalysisDomain> {
 		return domain;
 	}
 
+	@Override
+	public DummyAnalysisDomain enterElseIfStat(DummyAnalysisDomain domain, FlowPointContext context) {
+		System.out.println("enterElseIfStat");
+		domain.flag = 1;
+		return domain;
+	}
+
+	@Override
+	public DummyAnalysisDomain exitElseIfStat(DummyAnalysisDomain domain, FlowPointContext context) {
+		System.out.println("enterElseIfStat");
+		domain.flag = 1;
+		return domain;
+	}
+
 }

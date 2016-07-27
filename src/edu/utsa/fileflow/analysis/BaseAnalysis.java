@@ -70,6 +70,16 @@ public abstract class BaseAnalysis<T extends AnalysisDomain<T>> implements Analy
 	}
 
 	@Override
+	public T enterElseIfStat(T domain, FlowPointContext context) {
+		return domain;
+	}
+
+	@Override
+	public T exitElseIfStat(T domain, FlowPointContext context) {
+		return domain;
+	}
+
+	@Override
 	public T enterWhileStatement(T domain, FlowPointContext context) {
 		return domain;
 	}

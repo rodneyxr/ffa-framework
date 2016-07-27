@@ -1,5 +1,6 @@
 package edu.utsa.fileflow.analysis;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 import edu.utsa.fileflow.cfg.FlowPoint;
@@ -103,6 +104,8 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		if (inputDomain == targetDomain) {
 			System.err.printf("(%s.java): input == target { %s }\n", this.getClass().getSimpleName(), target);
 		}
+
+		mergeParents(target);
 		targetDomain.merge(inputDomain);
 
 		// call this method before visiting the flow point
@@ -134,6 +137,9 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 			// TODO: implement exitIfStat
 			result = analysis.enterIfStat(inputDomain, fpctx);
 			break;
+		case ElseIfStat:
+			result = analysis.enterElseIfStat(inputDomain, fpctx);
+			break;
 		case Assignment:
 			result = analysis.enterAssignment(inputDomain, fpctx);
 			break;
@@ -153,6 +159,35 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		analysis.onAfter(inputDomain, fpctx);
 
 		return result;
+	}
+
+	/**
+	 * Merges all parent domains together of the target.
+	 * 
+	 * @param target
+	 *            The domain that all previous flow points' domains should be
+	 *            merged.
+	 * @return the merged target domain
+	 */
+	@SuppressWarnings("unchecked")
+	private D mergeParents(FlowPoint target) {
+		// add all parents to a list
+		ArrayList<D> parents = new ArrayList<>();
+		target.getIncomingEdgeList().forEach((e) -> {
+			D domain = (D) e.getSource().domain;
+			parents.add(domain);
+		});
+		if (parents.isEmpty())
+			return null;
+
+		// merge all parents together
+		// merge 1-2, 2-3, 3-4, 4-5, ...
+		D domain = parents.remove(0);
+		while (!parents.isEmpty()) {
+			domain = parents.remove(0).merge(domain);
+		}
+
+		return domain;
 	}
 
 }
