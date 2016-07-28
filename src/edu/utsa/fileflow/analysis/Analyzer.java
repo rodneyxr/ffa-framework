@@ -61,7 +61,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 				// then check if y is different from the old domain
 				// if so, update domain and target to workset
 				System.out.printf("(%s.java): %s => %s\n", Analyzer.class.getSimpleName(), flowpoint, child);
-				D y = updateAnalysis((D) flowpoint.domain, child);
+				D y = updateAnalysis((D) flowpoint.domain.clone(), child);
 				if (y.compareTo((D) child.domain) != 0) {
 					child.domain = y;
 					workset.add(child);
@@ -98,12 +98,6 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		@SuppressWarnings("unchecked")
 		D targetDomain = (D) target.domain;
 		// merge previous flow point before visiting
-
-		// why is this true sometimes?
-		// a node should not loop back to itself
-		if (inputDomain == targetDomain) {
-			System.err.printf("(%s.java): input == target { %s }\n", this.getClass().getSimpleName(), target);
-		}
 
 		mergeParents(target);
 		targetDomain.merge(inputDomain);
