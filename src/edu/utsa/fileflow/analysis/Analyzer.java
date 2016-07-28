@@ -48,7 +48,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		Stack<FlowPoint> workset = new Stack<>();
 
 		// add the start node to the workset
-		updateAnalysis(domain, cfg);
+		updateAnalysis(domain.clone(), cfg);
 		workset.add(cfg);
 
 		while (!workset.isEmpty()) {
@@ -178,7 +178,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		// merge 1-2, 2-3, 3-4, 4-5, ...
 		D domain = parents.remove(0);
 		while (!parents.isEmpty()) {
-			domain = parents.remove(0).merge(domain);
+			domain = domain.merge(parents.remove(0));
 		}
 
 		return domain;
