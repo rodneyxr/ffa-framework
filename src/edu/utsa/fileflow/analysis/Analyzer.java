@@ -40,7 +40,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 
 		// initialize all nodes to bottom
 		cfg.getAllFlowPoints().forEach(fp -> {
-			fp.domain = domain.bottom();
+			fp.setDomain(domain.bottom());
 		});
 		analysis.onBegin(domain);
 
@@ -61,9 +61,9 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 				// then check if y is different from the old domain
 				// if so, update domain and target to workset
 				System.out.printf("(%s.java): %s => %s\n", Analyzer.class.getSimpleName(), flowpoint, child);
-				D y = updateAnalysis((D) flowpoint.domain.clone(), child);
-				if (y.compareTo((D) child.domain) != 0) {
-					child.domain = y;
+				D y = updateAnalysis((D) flowpoint.getDomain().clone(), child);
+				if (y.compareTo((D) child.getDomain()) != 0) {
+					child.setDomain(y);
 					workset.add(child);
 				}
 			}
@@ -96,7 +96,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		FlowPointContextType type = fpctx.getType();
 
 		@SuppressWarnings("unchecked")
-		D targetDomain = (D) target.domain;
+		D targetDomain = (D) target.getDomain();
 		// merge previous flow point before visiting
 
 		mergeParents(target);
@@ -168,7 +168,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		// add all parents to a list
 		ArrayList<D> parents = new ArrayList<>();
 		target.getIncomingEdgeList().forEach((e) -> {
-			D domain = (D) e.getSource().domain;
+			D domain = (D) e.getSource().getDomain();
 			parents.add(domain);
 		});
 		if (parents.isEmpty())

@@ -27,7 +27,7 @@ public class FlowPoint {
 	private FlowPointEdgeList outgoing; // a list of outgoing edges
 
 	// Analysis variables
-	public AnalysisDomain<?> domain;
+	private AnalysisDomain<?> domain;
 
 	public FlowPoint(String text) {
 		this(new FlowPointContext(text));
@@ -42,6 +42,14 @@ public class FlowPoint {
 		incoming = new FlowPointEdgeList();
 		outgoing = new FlowPointEdgeList();
 		id = ID_GENERATOR.getAndIncrement();
+	}
+
+	public AnalysisDomain<?> getDomain() {
+		return domain;
+	}
+
+	public void setDomain(AnalysisDomain<?> domain) {
+		this.domain = domain;
 	}
 
 	/**
