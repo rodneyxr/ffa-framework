@@ -1,6 +1,5 @@
 edu.utsa.fileflow
 edu.utsa.fileflow.analysis
-edu.utsa.fileflow.analyzer
 edu.utsa.fileflow.cfg
 edu.utsa.fileflow.compiler
 edu.utsa.fileflow.filestructure
