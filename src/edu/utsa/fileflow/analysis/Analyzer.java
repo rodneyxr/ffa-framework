@@ -1,6 +1,5 @@
 package edu.utsa.fileflow.analysis;
 
-import java.util.ArrayList;
 import java.util.Stack;
 
 import edu.utsa.fileflow.cfg.FlowPoint;
@@ -57,7 +56,6 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		Stack<FlowPoint> workset = new Stack<>();
 
 		// add the start node to the workset
-		updateAnalysis(domain.clone(), cfg);
 		workset.add(cfg);
 
 		while (!workset.isEmpty()) {
@@ -70,7 +68,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 				// then check if y is different from the old domain
 				// if so, update domain and target to workset
 				System.out.printf("(%s.java): %s => %s\n", Analyzer.class.getSimpleName(), flowpoint, child);
-				D y = updateAnalysis((D) flowpoint.getDomain().clone(), child);
+				D y = updateAnalysis(flowpoint, child);
 				if (y.compareTo((D) child.getDomain()) != 0) {
 					child.setDomain(y);
 					workset.add(child);
@@ -101,17 +99,18 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 	 *         Analysis, a pointer to the same object may be returned; this is
 	 *         what the framework does by default.
 	 */
-	private D updateAnalysis(D inputDomain, FlowPoint target) {
-		D result = null;
+	@SuppressWarnings("unchecked")
+	private D updateAnalysis(FlowPoint source, FlowPoint target) {
+		D inputDomain = (D) source.getDomain().clone();
 		FlowPointContext fpctx = target.getContext();
 		FlowPointContextType type = fpctx.getType();
 
-		@SuppressWarnings("unchecked")
-		D targetDomain = (D) target.getDomain();
 		// merge previous flow point before visiting
+		mergeParents(inputDomain, source, target);
 
-		mergeParents(target);
-		targetDomain.merge(inputDomain);
+		// TODO: are these lines needed
+		D targetDomain = (D) target.getDomain();
+		inputDomain.merge(targetDomain);
 
 		// call this method before visiting the flow point
 		analysis.onBefore(inputDomain, fpctx);
@@ -119,39 +118,39 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		// visit the node depending on its type
 		switch (type) {
 		case ProgEnter:
-			result = analysis.enterProg(inputDomain, fpctx);
+			analysis.enterProg(inputDomain, fpctx);
 			break;
 		case ProgExit:
-			result = exitDomain = analysis.exitProg(inputDomain, fpctx);
+			exitDomain = analysis.exitProg(inputDomain, fpctx);
 			break;
 		case FunctionCall:
 			if (fpctx.getText().startsWith("touch")) {
-				result = analysis.touch(inputDomain, fpctx);
+				analysis.touch(inputDomain, fpctx);
 			} else if (fpctx.getText().startsWith("mkdir")) {
-				result = analysis.mkdir(inputDomain, fpctx);
+				analysis.mkdir(inputDomain, fpctx);
 			} else if (fpctx.getText().startsWith("rm")) {
-				result = analysis.remove(inputDomain, fpctx);
+				analysis.remove(inputDomain, fpctx);
 			} else if (fpctx.getText().startsWith("copy")) {
-				result = analysis.copy(inputDomain, fpctx);
+				analysis.copy(inputDomain, fpctx);
 			}
 			break;
 		case WhileStatement:
-			result = analysis.enterWhileStatement(inputDomain, fpctx);
+			analysis.enterWhileStatement(inputDomain, fpctx);
 			break;
 		case IfStat:
 			// TODO: implement exitIfStat
-			result = analysis.enterIfStat(inputDomain, fpctx);
+			analysis.enterIfStat(inputDomain, fpctx);
 			break;
 		case ElseIfStat:
-			result = analysis.enterElseIfStat(inputDomain, fpctx);
+			analysis.enterElseIfStat(inputDomain, fpctx);
 			break;
 		case Assignment:
-			result = analysis.enterAssignment(inputDomain, fpctx);
+			analysis.enterAssignment(inputDomain, fpctx);
 			break;
 		case FlowPoint:
 			if (fpctx.getText().equals("EXIT_WHILE")) {
 				// TODO: make exitWhile enum
-				result = analysis.exitWhileStatement(inputDomain, fpctx);
+				analysis.exitWhileStatement(inputDomain, fpctx);
 			}
 			break;
 		default:
@@ -163,37 +162,32 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		// call this method after visiting the flow point
 		analysis.onAfter(inputDomain, fpctx);
 
-		return result;
+		return inputDomain;
 	}
 
 	/**
 	 * Merges all parent domains together of the target.
 	 * 
+	 * @param inputDomain
+	 *            The domain from the cloned FlowPoint of source. All parents'
+	 *            domains of target should be merged into this domain (except
+	 *            for the parent that source was cloned from).
+	 * @param source
+	 *            The original FlowPoint that the transfer function originates
+	 *            from.
 	 * @param target
-	 *            The domain that all previous flow points' domains should be
-	 *            merged.
-	 * @return the merged target domain
+	 *            The FlowPoint that all previous flow points' domains should be
+	 *            merged into eventually.
+	 * @return the merged target domain.
 	 */
 	@SuppressWarnings("unchecked")
-	private D mergeParents(FlowPoint target) {
-		// FIXME: only modify the cloned domain
-		// add all parents to a list
-		ArrayList<D> parents = new ArrayList<>();
+	private D mergeParents(D inputDomain, final FlowPoint source, FlowPoint target) {
 		target.getIncomingEdgeList().forEach((e) -> {
 			D domain = (D) e.getSource().getDomain();
-			parents.add(domain);
+			if (e.getSource() != source)
+				inputDomain.merge(domain);
 		});
-		if (parents.isEmpty())
-			return null;
-
-		// merge all parents together
-		// merge 1-2, 2-3, 3-4, 4-5, ...
-		D domain = parents.remove(0);
-		while (!parents.isEmpty()) {
-			domain = domain.merge(parents.remove(0));
-		}
-
-		return domain;
+		return inputDomain;
 	}
 
 }

@@ -1,4 +1,4 @@
-package edu.utsa.fileflow.analyzer;
+package edu.utsa.fileflow.analysis;
 
 import org.junit.After;
 import org.junit.Before;
