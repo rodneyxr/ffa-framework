@@ -42,7 +42,7 @@ public class AnalysisTest {
 
 	@Test
 	public void testTraversal() throws Exception {
-		FlowPoint cfg = FileFlowHelper.generateControlFlowGraphFromScript(new File(TEST_SCRIPT));
+		FlowPoint cfg = FileFlowHelper.generateControlFlowGraphFromFile(new File(TEST_SCRIPT));
 		Analyzer<DummyAnalysisDomain, DummyAnalysis> analyzer = new Analyzer<>(DummyAnalysisDomain.class,
 				DummyAnalysis.class);
 		analyzer.analyze(cfg);
@@ -50,7 +50,7 @@ public class AnalysisTest {
 
 	@Test
 	public void testDotFile() throws Exception {
-		FlowPoint cfg = FileFlowHelper.generateControlFlowGraphFromScript(new File(TEST_SCRIPT));
+		FlowPoint cfg = FileFlowHelper.generateControlFlowGraphFromFile(new File(TEST_SCRIPT));
 
 		// generate DOT file before analysis
 		String dot1 = GraphvizGenerator.generateDOT(cfg);

@@ -16,7 +16,7 @@ public class Main2 {
 	private static final String TEST_SCRIPT = "scripts/test.ffa";
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
-		FlowPoint cfg = FileFlowHelper.generateControlFlowGraphFromScript(new File(TEST_SCRIPT));
+		FlowPoint cfg = FileFlowHelper.generateControlFlowGraphFromFile(new File(TEST_SCRIPT));
 		String dot = GraphvizGenerator.generateDOT(cfg);
 		GraphvizGenerator.saveDOTToFile(dot, TEST_SCRIPT + ".dot");
 		System.out.println("DOT file written to: '" + TEST_SCRIPT + ".dot'");

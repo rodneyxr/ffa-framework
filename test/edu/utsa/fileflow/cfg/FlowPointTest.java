@@ -59,7 +59,7 @@ public class FlowPointTest {
 	@Test
 	public void testGetAllFlowPoints() throws Exception {
 		String test1 = "scripts/tests/cfg/test1.ffa";
-		FlowPoint cfg = FileFlowHelper.generateControlFlowGraphFromScript(new File(test1));
+		FlowPoint cfg = FileFlowHelper.generateControlFlowGraphFromFile(new File(test1));
 		int initialSize = cfg.getAllFlowPoints().size();
 		int secondSize = cfg.getAllFlowPoints().size();
 		assertEquals("getAllFlowPoints() should not modify the CFG", initialSize, secondSize);

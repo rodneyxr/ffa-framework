@@ -35,8 +35,17 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		}
 	}
 
+	/**
+	 * 
+	 * @param cfg
+	 *            The FlowPoint that represents the start of the control flow
+	 *            graph.
+	 * @return the result of the AnalysisDomain after Analysis.onFinish(). This
+	 *         can also be thought of as the result of the domain at time of
+	 *         program exits.
+	 */
 	@SuppressWarnings("unchecked")
-	public void analyze(FlowPoint cfg) {
+	public D analyze(FlowPoint cfg) {
 
 		// initialize all nodes to bottom
 		cfg.getAllFlowPoints().forEach(fp -> {
@@ -73,8 +82,10 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 		if (exitDomain != null) {
 			analysis.onFinish((D) exitDomain);
 		} else {
-			System.err.println("Analysis Warning: Analysis did not reach ProgExit.");
+			System.err.println("Analysis Warning: Analysis did not reach PROG_EXIT.");
 		}
+
+		return exitDomain;
 	}
 
 	/**
@@ -165,6 +176,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 	 */
 	@SuppressWarnings("unchecked")
 	private D mergeParents(FlowPoint target) {
+		// FIXME: only modify the cloned domain
 		// add all parents to a list
 		ArrayList<D> parents = new ArrayList<>();
 		target.getIncomingEdgeList().forEach((e) -> {
