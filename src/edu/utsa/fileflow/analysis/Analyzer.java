@@ -87,30 +87,27 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 	}
 
 	/**
-	 * updateAnalysis is called each iteration of the fixed point algorithm. It
-	 * represents a visit to a single flow point in the control flow graph.
+	 * {@link updateAnalysis} is called each iteration of the fixed point
+	 * algorithm. It represents a visit to a single flow point in the control
+	 * flow graph.
 	 * 
-	 * @param inputDomain
-	 *            The domain that should be modified.
+	 * @param source
+	 *            The source {@link FlowPoint} that the transfer function
+	 *            originates from. A clone of this {@link FlowPoint} will be
+	 *            created and {@code source} will not be modified.
 	 * @param target
-	 *            The target the flow point that will be visited.
+	 *            The target the {@link FlowPoint} that will be visited.
 	 * 
-	 * @return the modified input domain. Depending on the implementation of
-	 *         Analysis, a pointer to the same object may be returned; this is
-	 *         what the framework does by default.
+	 * @return a modified clone of the input domain.
 	 */
 	@SuppressWarnings("unchecked")
-	private D updateAnalysis(FlowPoint source, FlowPoint target) {
+	private D updateAnalysis(final FlowPoint source, final FlowPoint target) {
 		D inputDomain = (D) source.getDomain().clone();
 		FlowPointContext fpctx = target.getContext();
 		FlowPointContextType type = fpctx.getType();
 
 		// merge previous flow point before visiting
 		mergeParents(inputDomain, source, target);
-
-		// TODO: are these lines needed
-		D targetDomain = (D) target.getDomain();
-		inputDomain.merge(targetDomain);
 
 		// call this method before visiting the flow point
 		analysis.onBefore(inputDomain, fpctx);
@@ -166,22 +163,22 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 	}
 
 	/**
-	 * Merges all parent domains together of the target.
+	 * Merges all parent domains of {@code target} into {@code inputDomain}.
 	 * 
 	 * @param inputDomain
-	 *            The domain from the cloned FlowPoint of source. All parents'
-	 *            domains of target should be merged into this domain (except
-	 *            for the parent that source was cloned from).
+	 *            The domain from the cloned {@code source}. All parents'
+	 *            domains of {@code target} should be merged into this domain
+	 *            (except for the parent that {@code source} was cloned from).
 	 * @param source
-	 *            The original FlowPoint that the transfer function originates
-	 *            from.
+	 *            The original {@link FlowPoint} that the transfer function
+	 *            originates from.
 	 * @param target
-	 *            The FlowPoint that all previous flow points' domains should be
-	 *            merged into eventually.
-	 * @return the merged target domain.
+	 *            The {@link FlowPoint} that all previous flow points' domains
+	 *            should be merged into eventually.
+	 * @return the modified {@code inputDomain}
 	 */
 	@SuppressWarnings("unchecked")
-	private D mergeParents(D inputDomain, final FlowPoint source, FlowPoint target) {
+	private D mergeParents(D inputDomain, final FlowPoint source, final FlowPoint target) {
 		target.getIncomingEdgeList().forEach((e) -> {
 			D domain = (D) e.getSource().getDomain();
 			if (e.getSource() != source)
