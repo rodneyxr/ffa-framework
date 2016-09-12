@@ -21,7 +21,7 @@ import edu.utsa.fileflow.utilities.FileFlowHelper;
  */
 public class AnalysisTest {
 
-	private static final String TEST_SCRIPT = "scripts/test.ffa";
+	private static final String TEST_SCRIPT = "scripts/tests/test.ffa";
 
 	@Rule
 	public ExpectedException expectException = ExpectedException.none();
