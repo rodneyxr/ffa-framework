@@ -28,7 +28,7 @@ import edu.utsa.fileflow.utilities.Delegate;
 public class FileFlowListenerImpl extends FileFlowBaseListener {
 
 	// the control flow graph
-	public FlowPoint cfg;
+	private FlowPoint cfg;
 
 	private FlowPoint last; // the last flow point visited
 	private Stack<SwitchBlock> currentSwitchBlocks = new Stack<SwitchBlock>();
@@ -37,6 +37,15 @@ public class FileFlowListenerImpl extends FileFlowBaseListener {
 	private Delegate exitDelegate = new Delegate();
 
 	public FileFlowListenerImpl() {
+	}
+
+	/**
+	 * 
+	 * @return The flow point that represents the root of the control flow
+	 *         graph.
+	 */
+	public FlowPoint getControlFlowGraph() {
+		return cfg;
 	}
 
 	@Override

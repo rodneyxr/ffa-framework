@@ -1,12 +1,17 @@
 package edu.utsa.fileflow.cfg;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import edu.utsa.fileflow.utilities.FileFlowHelper;
 
 /**
  * This class tests the functionality of the FlowPoint class.
@@ -43,6 +48,21 @@ public class FlowPointTest {
 				flowpoint1.getOutgoingEdgeList().getEdge(0).getTarget() == flowpoint2);
 		assertTrue("flowpoint2's incoming source should be flowpoint1",
 				flowpoint2.getIncomingEdgeList().getEdge(0).getSource() == flowpoint1);
+	}
+	
+	/**
+	 * Make sure that FlowPoint.getAllFlowPoints() does not modify the graph in
+	 * any way.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetAllFlowPoints() throws Exception {
+		String test1 = "scripts/tests/cfg/test1.ffa";
+		FlowPoint cfg = FileFlowHelper.generateControlFlowGraphFromFile(new File(test1));
+		int initialSize = cfg.getAllFlowPoints().size();
+		int secondSize = cfg.getAllFlowPoints().size();
+		assertEquals("getAllFlowPoints() should not modify the CFG", initialSize, secondSize);
 	}
 
 }

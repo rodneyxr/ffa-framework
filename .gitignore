@@ -1,6 +1,7 @@
 # ignore these directories
-.settings/
-bin/
+.settings
+bin
+doc
 
 # ignore these files
 *.dot

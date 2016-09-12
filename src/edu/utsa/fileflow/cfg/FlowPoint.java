@@ -3,6 +3,8 @@ package edu.utsa.fileflow.cfg;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import edu.utsa.fileflow.analysis.AnalysisDomain;
+
 /**
  * 
  * A FlowPoint represents a node in the {@link ControlFlowGraph}. It can have
@@ -24,6 +26,9 @@ public class FlowPoint {
 	private FlowPointEdgeList incoming; // a list of incoming edges
 	private FlowPointEdgeList outgoing; // a list of outgoing edges
 
+	// Analysis variables
+	private AnalysisDomain<?> domain;
+
 	public FlowPoint(String text) {
 		this(new FlowPointContext(text));
 	}
@@ -37,6 +42,14 @@ public class FlowPoint {
 		incoming = new FlowPointEdgeList();
 		outgoing = new FlowPointEdgeList();
 		id = ID_GENERATOR.getAndIncrement();
+	}
+
+	public AnalysisDomain<?> getDomain() {
+		return domain;
+	}
+
+	public void setDomain(AnalysisDomain<?> domain) {
+		this.domain = domain;
 	}
 
 	/**
@@ -104,7 +117,7 @@ public class FlowPoint {
 	 * @return The list that holds all flow points.
 	 */
 	private ArrayList<FlowPoint> getAllFlowPointsImpl(ArrayList<FlowPoint> children) {
-		if (printed == true)
+		if (printed)
 			return children;
 
 		children.add(this);
@@ -129,7 +142,7 @@ public class FlowPoint {
 	 * Implementation of print().
 	 */
 	private void printImpl() {
-		if (printed == true)
+		if (printed)
 			return;
 
 		// print parent followed by all its children flow points
@@ -153,8 +166,9 @@ public class FlowPoint {
 	private void resetPrint() {
 		printed = false;
 		for (FlowPointEdge edge : getOutgoingEdgeList()) {
-			if (printed == false) continue;
-			edge.getTarget().resetPrint();
+			FlowPoint target = edge.getTarget();
+			if (target.printed)
+				target.resetPrint();
 		}
 	}
 
