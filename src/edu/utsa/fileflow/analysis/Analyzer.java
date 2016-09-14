@@ -44,7 +44,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 	 *         program exits.
 	 */
 	@SuppressWarnings("unchecked")
-	public D analyze(FlowPoint cfg) {
+	public D analyze(FlowPoint cfg) throws AnalysisException {
 
 		// initialize all nodes to bottom
 		cfg.getAllFlowPoints().forEach(fp -> {
@@ -101,7 +101,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 	 * @return a modified clone of the input domain.
 	 */
 	@SuppressWarnings("unchecked")
-	private D updateAnalysis(final FlowPoint source, final FlowPoint target) {
+	private D updateAnalysis(final FlowPoint source, final FlowPoint target) throws AnalysisException {
 		D inputDomain = (D) source.getDomain().clone();
 		FlowPointContext fpctx = target.getContext();
 		FlowPointContextType type = fpctx.getType();
@@ -151,9 +151,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 			}
 			break;
 		default:
-			System.err.println(getClass().getSimpleName() + ".java: Not implemented: " + target);
-			System.exit(1);
-			break;
+			throw new AnalysisException(getClass().getSimpleName() + ".java: Not implemented: " + target);
 		}
 
 		// call this method after visiting the flow point
