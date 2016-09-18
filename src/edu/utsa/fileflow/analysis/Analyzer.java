@@ -24,6 +24,12 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 				System.err.println(
 						"Analysis Error: " + domain.getClass().getSimpleName() + ".bottom() cannot return null.");
 				System.exit(1);
+			} else {
+				if (domain.clone() == null) {
+					System.err.println(
+							"Analysis Error: " + domain.getClass().getSimpleName() + ".clone() cannot return null.");
+					System.exit(1);
+				}
 			}
 		} catch (InstantiationException e) {
 			// TODO Auto-generated catch block
