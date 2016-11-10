@@ -31,3 +31,4 @@ developers may write plugins and create their own analysis if they wish.
 ## Related Repositories
 [File Flow Grammar](https://github.com/rodneyxr/file-flow-grammar) - The universal grammar used in this project.  
 [Analysis](https://github.com/rodneyxr/analysis) - Collection of analyses that use this framework.  
+[BRICS Automaton](https://github.com/rodneyxr/brics-automaton) - Finite-state automaton library.  
