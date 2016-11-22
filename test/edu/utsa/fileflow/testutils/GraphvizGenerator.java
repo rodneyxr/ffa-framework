@@ -101,7 +101,7 @@ public class GraphvizGenerator {
 
 		// create the directory
 		parentDir.mkdirs();
-		try (PrintStream ps = new PrintStream(filepath)) {
+		try (PrintStream ps = new PrintStream("dot/" + filepath)) {
 			ps.println(dot);
 		} catch (FileNotFoundException e) {
 			System.err.println(e);
