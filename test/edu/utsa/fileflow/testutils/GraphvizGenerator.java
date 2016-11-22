@@ -1,5 +1,6 @@
 package edu.utsa.fileflow.testutils;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -77,8 +78,29 @@ public class GraphvizGenerator {
 		return dot.toString();
 	}
 
-	// https://github.com/abstratt/eclipsegraphviz
+	/**
+	 * Creates a DOT file within the dot/ directory for testing purposes. The
+	 * {@code filepath} is relative to the 'dot/' directory.
+	 * 
+	 * @param dot
+	 *            A String representing the dot file.
+	 * @param filepath
+	 *            The file that the dot file should be created in. This file is
+	 *            relative to the dot directory.
+	 */
 	public static void saveDOTToFile(String dot, String filepath) {
+		// clean the filepath and make sure it is a file
+		filepath = filepath.trim();
+		if (filepath.endsWith("/") || filepath.endsWith("\\"))
+			throw new RuntimeException(String.format("Dot file cannot be a directory: %s", filepath));
+		filepath = filepath.replaceAll(File.pathSeparator, "/");
+
+		// strip the file name so we are left with the parent directory
+		String parent = filepath.replaceFirst("/.*$", "");
+		File parentDir = new File(parent).getAbsoluteFile();
+
+		// create the directory
+		parentDir.mkdirs();
 		try (PrintStream ps = new PrintStream(filepath)) {
 			ps.println(dot);
 		} catch (FileNotFoundException e) {
