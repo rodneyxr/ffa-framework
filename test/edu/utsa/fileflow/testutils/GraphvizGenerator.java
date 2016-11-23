@@ -97,6 +97,11 @@ public class GraphvizGenerator {
 
 		// strip the file name so we are left with the parent directory
 		String parent = filepath.replaceFirst("/.*$", "");
+		if (parent.length() == filepath.length()) {
+			parent = "dot/";
+		} else {
+			parent = "dot/" + parent;
+		}
 		File parentDir = new File(parent).getAbsoluteFile();
 
 		// create the directory
