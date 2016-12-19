@@ -12,5 +12,9 @@ public abstract class BaseSymbolTable<T> {
 	public T get(String variable) {
 		return table.get(variable);
 	}
+	
+	public T put(String variable, T value) {
+		return table.put(variable, value);
+	}
 
 }
