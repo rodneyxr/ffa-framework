@@ -96,7 +96,7 @@ public class GraphvizGenerator {
 		filepath = filepath.replaceAll(File.pathSeparator, "/");
 
 		// strip the file name so we are left with the parent directory
-		String parent = filepath.replaceFirst("/.*$", "");
+		String parent = filepath.replaceFirst("/[^/]*$", "");
 		if (parent.length() == filepath.length()) {
 			parent = "dot/";
 		} else {
