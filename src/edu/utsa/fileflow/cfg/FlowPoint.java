@@ -28,6 +28,7 @@ public class FlowPoint {
 
 	// Analysis variables
 	private AnalysisDomain<?> domain;
+	private boolean analyzed = false;
 
 	public FlowPoint(String text) {
 		this(new FlowPointContext(text));
@@ -50,6 +51,24 @@ public class FlowPoint {
 
 	public void setDomain(AnalysisDomain<?> domain) {
 		this.domain = domain;
+	}
+
+	/**
+	 * @return True if this flow point has been visited and analyzed.
+	 */
+	public boolean getAnalyzed() {
+		return analyzed;
+	}
+
+	/**
+	 * Marks the flow point as visited to be used by the fixed point algorithm
+	 * during analysis.
+	 * 
+	 * @param analyzed
+	 *            True if this flow point was analyzed.
+	 */
+	public void setAnalyzed(boolean analyzed) {
+		this.analyzed = analyzed;
 	}
 
 	/**

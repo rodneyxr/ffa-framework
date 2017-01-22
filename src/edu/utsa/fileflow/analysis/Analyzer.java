@@ -75,8 +75,9 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 				// if so, update domain and target to workset
 				System.out.printf("(%s.java): %s => %s\n", Analyzer.class.getSimpleName(), flowpoint, child);
 				D y = updateAnalysis(flowpoint, child);
-				if (y.compareTo((D) child.getDomain()) != 0) {
+				if (y.compareTo((D) child.getDomain()) != 0 || !child.getAnalyzed()) {
 					child.setDomain(y);
+					child.setAnalyzed(true);
 					workset.add(child);
 				}
 			}
@@ -133,7 +134,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 				analysis.mkdir(inputDomain, fpctx);
 			} else if (fpctx.getText().startsWith("rm")) {
 				analysis.remove(inputDomain, fpctx);
-			} else if (fpctx.getText().startsWith("copy")) {
+			} else if (fpctx.getText().startsWith("cp")) {
 				analysis.copy(inputDomain, fpctx);
 			}
 			break;
