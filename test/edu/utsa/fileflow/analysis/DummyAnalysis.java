@@ -2,7 +2,7 @@ package edu.utsa.fileflow.analysis;
 
 import edu.utsa.fileflow.cfg.FlowPointContext;
 
-public class DummyAnalysis extends BaseAnalysis<DummyAnalysisDomain> {
+public class DummyAnalysis extends Analysis<DummyAnalysisDomain> {
 
 	@Override
 	public DummyAnalysisDomain onBefore(DummyAnalysisDomain domain, FlowPointContext context) {

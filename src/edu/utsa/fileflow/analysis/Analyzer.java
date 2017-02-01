@@ -14,29 +14,20 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 
 	private D exitDomain;
 
-	public Analyzer(Class<D> d, Class<A> a) {
-		try {
-			// TODO: create factory interface for these
-			domain = d.newInstance();
-			analysis = a.newInstance();
+	public Analyzer(D domain, A analysis) {
+		this.domain = domain;
+		this.analysis = analysis;
 
-			if (domain.bottom() == null) {
+		if (domain.bottom() == null) {
+			System.err
+					.println("Analysis Error: " + domain.getClass().getSimpleName() + ".bottom() cannot return null.");
+			System.exit(1);
+		} else {
+			if (domain.clone() == null) {
 				System.err.println(
-						"Analysis Error: " + domain.getClass().getSimpleName() + ".bottom() cannot return null.");
+						"Analysis Error: " + domain.getClass().getSimpleName() + ".clone() cannot return null.");
 				System.exit(1);
-			} else {
-				if (domain.clone() == null) {
-					System.err.println(
-							"Analysis Error: " + domain.getClass().getSimpleName() + ".clone() cannot return null.");
-					System.exit(1);
-				}
 			}
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 

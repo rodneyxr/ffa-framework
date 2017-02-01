@@ -22,8 +22,9 @@ public class AnalysisTest {
 	@Test
 	public void testTraversal() throws Exception {
 		FlowPoint cfg = FileFlowHelper.generateControlFlowGraphFromFile(new File(TEST_SCRIPT));
-		Analyzer<DummyAnalysisDomain, DummyAnalysis> analyzer = new Analyzer<>(DummyAnalysisDomain.class,
-				DummyAnalysis.class);
+		DummyAnalysisDomain domain = new DummyAnalysisDomain();
+		DummyAnalysis analysis = new DummyAnalysis();
+		Analyzer<DummyAnalysisDomain, DummyAnalysis> analyzer = new Analyzer<>(domain, analysis);
 		analyzer.analyze(cfg);
 	}
 
@@ -34,9 +35,10 @@ public class AnalysisTest {
 		// generate DOT file before analysis
 		String dot1 = GraphvizGenerator.generateDOT(cfg);
 
-		// perform prefix analysis
-		Analyzer<DummyAnalysisDomain, DummyAnalysis> analyzer = new Analyzer<>(DummyAnalysisDomain.class,
-				DummyAnalysis.class);
+		// perform dummy analysis
+		DummyAnalysisDomain domain = new DummyAnalysisDomain();
+		DummyAnalysis analysis = new DummyAnalysis();
+		Analyzer<DummyAnalysisDomain, DummyAnalysis> analyzer = new Analyzer<>(domain, analysis);
 		analyzer.analyze(cfg);
 
 		// generate DOT file after analysis
