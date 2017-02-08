@@ -1,6 +1,7 @@
 package edu.utsa.fileflow.cfg;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import edu.utsa.fileflow.analysis.AnalysisDomain;
@@ -27,7 +28,7 @@ public class FlowPoint {
 	private FlowPointEdgeList outgoing; // a list of outgoing edges
 
 	// Analysis variables
-	private AnalysisDomain<?> domain;
+	private HashMap<String, AnalysisDomain<?>> domains = new HashMap<>();
 	private boolean analyzed = false;
 
 	public FlowPoint(String text) {
@@ -43,14 +44,15 @@ public class FlowPoint {
 		incoming = new FlowPointEdgeList();
 		outgoing = new FlowPointEdgeList();
 		id = ID_GENERATOR.getAndIncrement();
+		this.fpctx.setFlowPoint(this);
 	}
 
-	public AnalysisDomain<?> getDomain() {
-		return domain;
+	public AnalysisDomain<?> getDomain(String key) {
+		return domains.get(key);
 	}
 
 	public void setDomain(AnalysisDomain<?> domain) {
-		this.domain = domain;
+		domains.put(domain.getClass().getSimpleName(), domain);
 	}
 
 	/**

@@ -66,7 +66,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 				// if so, update domain and target to workset
 				System.out.printf("(%s.java): %s => %s\n", Analyzer.class.getSimpleName(), flowpoint, child);
 				D y = updateAnalysis(flowpoint, child);
-				if (y.compareTo((D) child.getDomain()) != 0 || !child.getAnalyzed()) {
+				if (y.compareTo((D) child.getDomain(domain.getClass().getSimpleName())) != 0 || !child.getAnalyzed()) {
 					child.setDomain(y);
 					child.setAnalyzed(true);
 					workset.add(child);
@@ -100,7 +100,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 	 */
 	@SuppressWarnings("unchecked")
 	private D updateAnalysis(final FlowPoint source, final FlowPoint target) throws AnalysisException {
-		D inputDomain = (D) source.getDomain().clone();
+		D inputDomain = (D) source.getDomain(domain.getClass().getSimpleName()).clone();
 		FlowPointContext fpctx = target.getContext();
 		FlowPointContextType type = fpctx.getType();
 
@@ -176,7 +176,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 	@SuppressWarnings("unchecked")
 	private D mergeParents(D inputDomain, final FlowPoint source, final FlowPoint target) {
 		target.getIncomingEdgeList().forEach((e) -> {
-			D domain = (D) e.getSource().getDomain();
+			D domain = (D) e.getSource().getDomain(inputDomain.getClass().getSimpleName());
 			if (e.getSource() != source)
 				inputDomain.merge(domain);
 		});

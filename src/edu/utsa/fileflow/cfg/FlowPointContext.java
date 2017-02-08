@@ -18,6 +18,7 @@ public class FlowPointContext {
 	// some flow points can have ctx as null, this field replaces the
 	// ctx.getText()
 	private String text;
+	private FlowPoint flowPoint;
 
 	public FlowPointContext(String text) {
 		this.ctx = null;
@@ -36,6 +37,10 @@ public class FlowPointContext {
 		this.type = type;
 	}
 
+	public FlowPoint getFlowPoint() {
+		return flowPoint;
+	}
+
 	public ParserRuleContext getContext() {
 		return ctx;
 	}
@@ -48,6 +53,10 @@ public class FlowPointContext {
 		if (ctx == null)
 			return text;
 		return ctx.getText();
+	}
+
+	void setFlowPoint(FlowPoint flowPoint) {
+		this.flowPoint = flowPoint;
 	}
 
 }
