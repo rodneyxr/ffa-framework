@@ -15,7 +15,7 @@ import edu.utsa.fileflow.utilities.FileFlowHelper;
 
 /**
  * This class tests the functionality of the FlowPoint class.
- * 
+ *
  * @author Rodney Rodriguez
  *
  */
@@ -49,11 +49,11 @@ public class FlowPointTest {
 		assertTrue("flowpoint2's incoming source should be flowpoint1",
 				flowpoint2.getIncomingEdgeList().getEdge(0).getSource() == flowpoint1);
 	}
-	
+
 	/**
 	 * Make sure that FlowPoint.getAllFlowPoints() does not modify the graph in
 	 * any way.
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	@Test
