@@ -1,13 +1,13 @@
 digraph G {
     0[label="PROG_ENTER",shape=mbox,fillcolor=green,style=filled];
-    1[label="touch'a'",shape=box,fillcolor=gray,style=filled];
-    2[label="exists'a'",shape=diamond,fillcolor=yellow,style=filled];
-    3[label="rm'a'",shape=box,fillcolor=gray,style=filled];
-    6[label="exists'z'",shape=diamond,fillcolor=yellow,style=filled];
-    7[label="rm'z'",shape=box,fillcolor=gray,style=filled];
+    1[label="toucha",shape=box,fillcolor=gray,style=filled];
+    2[label="existsa",shape=diamond,fillcolor=yellow,style=filled];
+    3[label="rma",shape=box,fillcolor=gray,style=filled];
+    6[label="existsz",shape=diamond,fillcolor=yellow,style=filled];
+    7[label="rmz",shape=box,fillcolor=gray,style=filled];
     8[label="PROG_EXIT",shape=mbox,fillcolor=red,style=filled];
-    4[label="exists'b'",shape=diamond,fillcolor=yellow,style=filled];
-    5[label="rm'b'",shape=box,fillcolor=gray,style=filled];
+    4[label="existsb",shape=diamond,fillcolor=yellow,style=filled];
+    5[label="rmb",shape=box,fillcolor=gray,style=filled];
 
     0 -> 1;
     1 -> 2;

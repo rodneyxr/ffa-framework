@@ -1,22 +1,22 @@
 digraph G {
     22[label="PROG_ENTER",shape=mbox,fillcolor=green,style=filled];
-    23[label="exists'a'",shape=diamond,fillcolor=yellow,style=filled];
-    24[label="rm'a'",shape=box,fillcolor=gray,style=filled];
-    25[label="exists'aa'",shape=diamond,fillcolor=yellow,style=filled];
-    26[label="rm'aa'",shape=box,fillcolor=gray,style=filled];
-    33[label="exists'b'",shape=diamond,fillcolor=yellow,style=filled];
-    34[label="rm'b'",shape=box,fillcolor=gray,style=filled];
-    37[label="exists'tmp/'",shape=diamond,fillcolor=yellow,style=filled];
-    38[label="rm'tmp/'",shape=box,fillcolor=gray,style=filled];
+    23[label="existsa",shape=diamond,fillcolor=yellow,style=filled];
+    24[label="rma",shape=box,fillcolor=gray,style=filled];
+    25[label="existsaa",shape=diamond,fillcolor=yellow,style=filled];
+    26[label="rmaa",shape=box,fillcolor=gray,style=filled];
+    33[label="existsb",shape=diamond,fillcolor=yellow,style=filled];
+    34[label="rmb",shape=box,fillcolor=gray,style=filled];
+    37[label="existstmp/",shape=diamond,fillcolor=yellow,style=filled];
+    38[label="rmtmp/",shape=box,fillcolor=gray,style=filled];
     39[label="PROG_EXIT",shape=mbox,fillcolor=red,style=filled];
-    35[label="exists'c'",shape=diamond,fillcolor=yellow,style=filled];
-    36[label="rm'c'",shape=box,fillcolor=gray,style=filled];
-    27[label="exists'bb'",shape=diamond,fillcolor=yellow,style=filled];
-    28[label="rm'bb'",shape=box,fillcolor=gray,style=filled];
-    29[label="exists'aaa'",shape=diamond,fillcolor=yellow,style=filled];
-    30[label="rm'aaa'",shape=box,fillcolor=gray,style=filled];
+    35[label="existsc",shape=diamond,fillcolor=yellow,style=filled];
+    36[label="rmc",shape=box,fillcolor=gray,style=filled];
+    27[label="existsbb",shape=diamond,fillcolor=yellow,style=filled];
+    28[label="rmbb",shape=box,fillcolor=gray,style=filled];
+    29[label="existsaaa",shape=diamond,fillcolor=yellow,style=filled];
+    30[label="rmaaa",shape=box,fillcolor=gray,style=filled];
     31[label="other",shape=diamond,fillcolor=yellow,style=filled];
-    32[label="rm'z'",shape=box,fillcolor=gray,style=filled];
+    32[label="rmz",shape=box,fillcolor=gray,style=filled];
 
     22 -> 23;
     23 -> 24;

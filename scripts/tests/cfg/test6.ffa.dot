@@ -1,8 +1,8 @@
 digraph G {
     55[label="PROG_ENTER",shape=mbox,fillcolor=green,style=filled];
-    56[label="$x0='tmp/'",shape=box,fillcolor=gray,style=filled];
-    57[label="$x1='src/'",shape=box,fillcolor=gray,style=filled];
-    58[label="$x2='bin/'",shape=box,fillcolor=gray,style=filled];
+    56[label="$x0=tmp/",shape=box,fillcolor=gray,style=filled];
+    57[label="$x1=src/",shape=box,fillcolor=gray,style=filled];
+    58[label="$x2=bin/",shape=box,fillcolor=gray,style=filled];
     59[label="exists$x0",shape=diamond,fillcolor=yellow,style=filled];
     60[label="rm$x0",shape=box,fillcolor=gray,style=filled];
     61[label="mkdir$x0",shape=box,fillcolor=gray,style=filled];

@@ -1,8 +1,8 @@
 digraph G {
     40[label="PROG_ENTER",shape=mbox,fillcolor=green,style=filled];
-    41[label="exists'1'",shape=diamond,fillcolor=yellow,style=filled];
-    42[label="exists'2'",shape=diamond,fillcolor=yellow,style=filled];
-    43[label="touch'a'",shape=box,fillcolor=gray,style=filled];
+    41[label="exists1",shape=diamond,fillcolor=yellow,style=filled];
+    42[label="exists2",shape=diamond,fillcolor=yellow,style=filled];
+    43[label="toucha",shape=box,fillcolor=gray,style=filled];
     44[label="PROG_EXIT",shape=mbox,fillcolor=red,style=filled];
 
     40 -> 41;

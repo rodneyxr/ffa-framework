@@ -1,13 +1,13 @@
 digraph G {
     45[label="PROG_ENTER",shape=mbox,fillcolor=green,style=filled];
-    46[label="exists'1'",shape=diamond,fillcolor=yellow,style=filled];
-    47[label="exists'2'",shape=diamond,fillcolor=yellow,style=filled];
-    48[label="exists'3'",shape=diamond,fillcolor=yellow,style=filled];
-    49[label="exists'4'",shape=diamond,fillcolor=yellow,style=filled];
-    50[label="rm'1'",shape=box,fillcolor=gray,style=filled];
-    51[label="rm'2'",shape=box,fillcolor=gray,style=filled];
-    52[label="rm'3'",shape=box,fillcolor=gray,style=filled];
-    53[label="rm'4'",shape=box,fillcolor=gray,style=filled];
+    46[label="exists1",shape=diamond,fillcolor=yellow,style=filled];
+    47[label="exists2",shape=diamond,fillcolor=yellow,style=filled];
+    48[label="exists3",shape=diamond,fillcolor=yellow,style=filled];
+    49[label="exists4",shape=diamond,fillcolor=yellow,style=filled];
+    50[label="rm1",shape=box,fillcolor=gray,style=filled];
+    51[label="rm2",shape=box,fillcolor=gray,style=filled];
+    52[label="rm3",shape=box,fillcolor=gray,style=filled];
+    53[label="rm4",shape=box,fillcolor=gray,style=filled];
     54[label="PROG_EXIT",shape=mbox,fillcolor=red,style=filled];
 
     45 -> 46;

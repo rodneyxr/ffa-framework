@@ -7,7 +7,7 @@ import java.io.File;
 import org.junit.Test;
 
 import edu.utsa.fileflow.cfg.FlowPoint;
-import edu.utsa.fileflow.testutils.GraphvizGenerator;
+import edu.utsa.fileflow.utilities.GraphvizGenerator;
 import edu.utsa.fileflow.utilities.FileFlowHelper;
 
 /**

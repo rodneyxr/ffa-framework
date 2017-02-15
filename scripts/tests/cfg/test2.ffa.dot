@@ -1,17 +1,17 @@
 digraph G {
     9[label="PROG_ENTER",shape=mbox,fillcolor=green,style=filled];
-    10[label="exists'a'",shape=diamond,fillcolor=yellow,style=filled];
-    11[label="exists'a/aa'",shape=diamond,fillcolor=yellow,style=filled];
-    12[label="rm'a/aa'",shape=box,fillcolor=gray,style=filled];
-    15[label="exists'b'",shape=diamond,fillcolor=yellow,style=filled];
-    16[label="rm'b'",shape=box,fillcolor=gray,style=filled];
-    19[label="exists'tmp/'",shape=diamond,fillcolor=yellow,style=filled];
-    20[label="rm'tmp/'",shape=box,fillcolor=gray,style=filled];
+    10[label="existsa",shape=diamond,fillcolor=yellow,style=filled];
+    11[label="existsa/aa",shape=diamond,fillcolor=yellow,style=filled];
+    12[label="rma/aa",shape=box,fillcolor=gray,style=filled];
+    15[label="existsb",shape=diamond,fillcolor=yellow,style=filled];
+    16[label="rmb",shape=box,fillcolor=gray,style=filled];
+    19[label="existstmp/",shape=diamond,fillcolor=yellow,style=filled];
+    20[label="rmtmp/",shape=box,fillcolor=gray,style=filled];
     21[label="PROG_EXIT",shape=mbox,fillcolor=red,style=filled];
-    17[label="exists'c'",shape=diamond,fillcolor=yellow,style=filled];
-    18[label="rm'c'",shape=box,fillcolor=gray,style=filled];
-    13[label="exists'a/bb'",shape=diamond,fillcolor=yellow,style=filled];
-    14[label="rm'a/bb'",shape=box,fillcolor=gray,style=filled];
+    17[label="existsc",shape=diamond,fillcolor=yellow,style=filled];
+    18[label="rmc",shape=box,fillcolor=gray,style=filled];
+    13[label="existsa/bb",shape=diamond,fillcolor=yellow,style=filled];
+    14[label="rma/bb",shape=box,fillcolor=gray,style=filled];
 
     9 -> 10;
     10 -> 11;
