@@ -27,7 +27,7 @@ public class GraphvizGenerator {
 		// first define all nodes
 		for (FlowPoint fp : flowPoints) {
 			dot.append("    ");
-			dot.append(fp.getID());
+			dot.append(fp.id);
 			dot.append("[label=\"");
 			dot.append(fp.getContext().getText().replaceAll("\"", "\\\""));
 			dot.append("\"");
@@ -67,9 +67,9 @@ public class GraphvizGenerator {
 			for (FlowPointEdge edge : fp.getOutgoingEdgeList()) {
 				// fp -> child
 				dot.append("    ");
-				dot.append(fp.getID());
+				dot.append(fp.id);
 				dot.append(" -> ");
-				dot.append(edge.getTarget().getID());
+				dot.append(edge.getTarget().id);
 				dot.append(";\n");
 			}
 		}
