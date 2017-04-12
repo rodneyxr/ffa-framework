@@ -51,12 +51,38 @@ public class FlowPoint {
 		this.fpctx.setFlowPoint(this);
 	}
 
+	/**
+	 * Retrieves a stored domain from this FlowPoint.
+	 * Each domain is stored by their classname and are independent
+	 * of each other. If the analysis is not ran before calling this method,
+	 * null may be returned.
+	 *
+	 * @param klass The extended {@link AnalysisDomain} class.
+	 * @return the domain stored by the framework.
+	 */
 	public AnalysisDomain<?> getDomain(Class klass) {
 		return domains.get(klass.getCanonicalName());
 	}
 
 	public void setDomain(AnalysisDomain<?> domain) {
 		domains.put(domain.getClass().getCanonicalName(), domain);
+	}
+
+	/**
+	 * Retrieves the original domain set by the framework at this FlowPoint.
+	 * The original domain is the input domain of the FlowPoint. In other words,
+	 * it is the domain before it was updated by the analysis. Calling this before
+	 * running the analysis will return null.
+	 *
+	 * @param klass The extended {@link AnalysisDomain} class of the domain you want to retrieve.
+	 * @return the original domain stored by the framework.
+	 */
+	public AnalysisDomain<?> getOriginalDomain(Class klass) {
+		return domains.get(klass.getCanonicalName() + ".original");
+	}
+
+	public void setOriginalDomain(AnalysisDomain<?> domain) {
+		domains.put(domain.getClass().getCanonicalName() + ".original", domain);
 	}
 
 	/**

@@ -83,12 +83,14 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 	 */
 	@SuppressWarnings("unchecked")
 	private D updateAnalysis(final FlowPoint source, final FlowPoint target) throws AnalysisException {
-		D inputDomain = (D) source.getDomain(domain.getClass()).clone();
 		FlowPointContext fpctx = target.getContext();
 		FlowPointContextType type = fpctx.getType();
 
-		// merge previous flow point before visiting
-		mergeParents(inputDomain, source, target);
+		// merge previous parent flow points before visiting
+		D originalDomain = mergeParents((D) source.getDomain(domain.getClass()), source, target);
+		target.setOriginalDomain(originalDomain);
+
+		D inputDomain = originalDomain.clone();
 
 		// call this method before visiting the flow point
 		analysis.onBefore(inputDomain, fpctx);
