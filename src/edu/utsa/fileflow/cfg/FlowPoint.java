@@ -1,33 +1,38 @@
 package edu.utsa.fileflow.cfg;
 
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import edu.utsa.fileflow.analysis.AnalysisDomain;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
- * 
- * A FlowPoint represents a node in the {@link ControlFlowGraph}. It can have
+ * A FlowPoint represents a node in the Control Flow Graph. It can have
  * any amount of entry points and should have zero, one or two exit points since
  * there is no switch statements in the FileFlow grammar.
- * 
- * @author Rodney Rodriguez
  *
+ * @author Rodney Rodriguez
  */
 public class FlowPoint {
 
+	/* Unique ID for this FlowPoint instance */
+	public final int id;
+
+	/* Used to generate a unique id for each FlowPoint instance */
 	private static final AtomicInteger ID_GENERATOR = new AtomicInteger();
 
-	private int id; // unique ID to be used when creating Graphviz DOT file
-	private boolean printed = false; // used for graph traversal
+	/* Used for graph traversal */
+	private boolean visited = false;
 
-	private FlowPointContext fpctx; // holds information from the parser
+	/* Holds information from the parser */
+	private FlowPointContext fpctx;
 
-	private FlowPointEdgeList incoming; // a list of incoming edges
-	private FlowPointEdgeList outgoing; // a list of outgoing edges
+	/* Lists of incoming and outgoing edges */
+	private FlowPointEdgeList incoming;
+	private FlowPointEdgeList outgoing;
 
-	// Analysis variables
-	private AnalysisDomain<?> domain;
+	/* Analysis variables to be used by the analysis framework */
+	private HashMap<String, AnalysisDomain<?>> domains = new HashMap<>();
 	private boolean analyzed = false;
 
 	public FlowPoint(String text) {
@@ -43,14 +48,41 @@ public class FlowPoint {
 		incoming = new FlowPointEdgeList();
 		outgoing = new FlowPointEdgeList();
 		id = ID_GENERATOR.getAndIncrement();
+		this.fpctx.setFlowPoint(this);
 	}
 
-	public AnalysisDomain<?> getDomain() {
-		return domain;
+	/**
+	 * Retrieves a stored domain from this FlowPoint.
+	 * Each domain is stored by their classname and are independent
+	 * of each other. If the analysis is not ran before calling this method,
+	 * null may be returned.
+	 *
+	 * @param klass The extended {@link AnalysisDomain} class.
+	 * @return the domain stored by the framework.
+	 */
+	public AnalysisDomain<?> getDomain(Class klass) {
+		return domains.get(klass.getCanonicalName());
 	}
 
 	public void setDomain(AnalysisDomain<?> domain) {
-		this.domain = domain;
+		domains.put(domain.getClass().getCanonicalName(), domain);
+	}
+
+	/**
+	 * Retrieves the original domain set by the framework at this FlowPoint.
+	 * The original domain is the input domain of the FlowPoint. In other words,
+	 * it is the domain before it was updated by the analysis. Calling this before
+	 * running the analysis will return null.
+	 *
+	 * @param klass The extended {@link AnalysisDomain} class of the domain you want to retrieve.
+	 * @return the original domain stored by the framework.
+	 */
+	public AnalysisDomain<?> getOriginalDomain(Class klass) {
+		return domains.get(klass.getCanonicalName() + ".original");
+	}
+
+	public void setOriginalDomain(AnalysisDomain<?> domain) {
+		domains.put(domain.getClass().getCanonicalName() + ".original", domain);
 	}
 
 	/**
@@ -63,9 +95,8 @@ public class FlowPoint {
 	/**
 	 * Marks the flow point as visited to be used by the fixed point algorithm
 	 * during analysis.
-	 * 
-	 * @param analyzed
-	 *            True if this flow point was analyzed.
+	 *
+	 * @param analyzed True if this flow point was analyzed.
 	 */
 	public void setAnalyzed(boolean analyzed) {
 		this.analyzed = analyzed;
@@ -73,7 +104,7 @@ public class FlowPoint {
 
 	/**
 	 * Gets the context of this flow point.
-	 * 
+	 *
 	 * @return The context of this flow point.
 	 */
 	public FlowPointContext getContext() {
@@ -82,7 +113,7 @@ public class FlowPoint {
 
 	/**
 	 * Gets the list of incoming edges.
-	 * 
+	 *
 	 * @return The list of this node's incoming edges.
 	 */
 	public FlowPointEdgeList getIncomingEdgeList() {
@@ -91,7 +122,7 @@ public class FlowPoint {
 
 	/**
 	 * Gets the list of outgoing edges.
-	 * 
+	 *
 	 * @return The list of this node's outgoing edges.
 	 */
 	public FlowPointEdgeList getOutgoingEdgeList() {
@@ -106,41 +137,31 @@ public class FlowPoint {
 	}
 
 	/**
-	 * Gets the unique ID of this flow point object.
-	 * 
-	 * @return The ID of this flow point.
-	 */
-	public int getID() {
-		return id;
-	}
-
-	/**
 	 * Get all flow points under this flow point. The list returned will also
 	 * include itself.
-	 * 
+	 *
 	 * @return A list of all flow points.
 	 */
 	public ArrayList<FlowPoint> getAllFlowPoints() {
 		ArrayList<FlowPoint> children = new ArrayList<FlowPoint>();
 		getAllFlowPointsImpl(children);
-		resetPrint();
+		resetVisited();
 		return children;
 	}
 
 	/**
 	 * Implementation of getAllFlowPoints(). This private method is used to hide
 	 * the parameter that is used by the recursion.
-	 * 
-	 * @param children
-	 *            The list that holds all flow points.
+	 *
+	 * @param children The list that holds all flow points.
 	 * @return The list that holds all flow points.
 	 */
 	private ArrayList<FlowPoint> getAllFlowPointsImpl(ArrayList<FlowPoint> children) {
-		if (printed)
+		if (visited)
 			return children;
 
 		children.add(this);
-		printed = true;
+		visited = true;
 		for (FlowPointEdge edge : getOutgoingEdgeList()) {
 			edge.getTarget().getAllFlowPointsImpl(children);
 		}
@@ -154,14 +175,14 @@ public class FlowPoint {
 	 */
 	public void print() {
 		printImpl();
-		resetPrint();
+		resetVisited();
 	}
 
 	/*
 	 * Implementation of print().
 	 */
 	private void printImpl() {
-		if (printed)
+		if (visited)
 			return;
 
 		// print parent followed by all its children flow points
@@ -170,7 +191,7 @@ public class FlowPoint {
 			System.out.printf("%s, ", edge.getTarget());
 		}
 		System.out.println("}");
-		printed = true;
+		visited = true;
 
 		// recursive print for children
 		for (FlowPointEdge edge : getOutgoingEdgeList()) {
@@ -179,15 +200,15 @@ public class FlowPoint {
 	}
 
 	/*
-	 * Sets the boolean printed to false for all flow points under this instance
+	 * Sets the boolean visited to false for all flow points under this instance
 	 * of flow point.
 	 */
-	private void resetPrint() {
-		printed = false;
+	private void resetVisited() {
+		visited = false;
 		for (FlowPointEdge edge : getOutgoingEdgeList()) {
 			FlowPoint target = edge.getTarget();
-			if (target.printed)
-				target.resetPrint();
+			if (target.visited)
+				target.resetVisited();
 		}
 	}
 

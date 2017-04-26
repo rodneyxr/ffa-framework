@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Downloads/string-2.1/lib/automaton.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/string-2.1/lib/log4j-1.2.14.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/string-2.1/lib/polyglot.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/string-2.1/lib/soot.jar!/" />
+      <root url="jar://$USER_HOME$/Downloads/string-2.1/lib/junit-4.6.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -17,6 +17,7 @@ public abstract class Analysis<T extends AnalysisDomain<T>> {
 	}
 
 	public T onAfter(T domain, FlowPointContext context) throws AnalysisException {
+		domain.lastFlowPoint = context.getFlowPoint();
 		return domain;
 	}
 
