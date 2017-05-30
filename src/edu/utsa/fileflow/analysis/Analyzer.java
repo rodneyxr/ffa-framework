@@ -108,10 +108,10 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
                     analysis.touch(inputDomain, fpctx);
                 else if (fpctx.getText().startsWith("mkdir"))
                     analysis.mkdir(inputDomain, fpctx);
-                else if (fpctx.getText().startsWith("rm"))
-                    analysis.remove(inputDomain, fpctx);
                 else if (fpctx.getText().startsWith("rmr"))
                     analysis.removeRecursive(inputDomain, fpctx);
+                else if (fpctx.getText().startsWith("rm"))
+                    analysis.remove(inputDomain, fpctx);
                 else if (fpctx.getText().startsWith("cp"))
                     analysis.copy(inputDomain, fpctx);
                 break;
