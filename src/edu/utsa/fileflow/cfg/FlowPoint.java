@@ -102,6 +102,14 @@ public class FlowPoint {
 		this.analyzed = analyzed;
 	}
 
+	/*
+	 * Resets this and all flow points under this flow point.
+	 */
+	public void reset() {
+		resetAnalyzed();
+		resetVisited();
+	}
+
 	/**
 	 * Gets the context of this flow point.
 	 *
@@ -209,6 +217,19 @@ public class FlowPoint {
 			FlowPoint target = edge.getTarget();
 			if (target.visited)
 				target.resetVisited();
+		}
+	}
+
+	/*
+	 * Sets the boolean analyzed to false for all flow points under this instance
+	 * of flow point.
+	 */
+	private void resetAnalyzed() {
+		analyzed = false;
+		for (FlowPointEdge edge : getOutgoingEdgeList()) {
+			FlowPoint target = edge.getTarget();
+			if (target.analyzed)
+				target.resetAnalyzed();
 		}
 	}
 

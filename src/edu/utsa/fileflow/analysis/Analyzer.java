@@ -67,6 +67,9 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
         else
             System.out.println("Analysis Warning: Analysis did not reach PROG_EXIT.");
 
+        // reset cfg flow points for next analysis
+        cfg.reset();
+
         return exitDomain;
     }
 
