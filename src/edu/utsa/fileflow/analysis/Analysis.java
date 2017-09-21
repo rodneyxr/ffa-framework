@@ -41,6 +41,10 @@ public abstract class Analysis<T extends AnalysisDomain<T>> {
 		return domain;
 	}
 
+	public T assertFunc(T domain, FlowPointContext context) throws AnalysisException {
+		return domain;
+	}
+
 	public T enterProg(T domain, FlowPointContext context) throws AnalysisException {
 		return domain;
 	}
@@ -62,6 +66,10 @@ public abstract class Analysis<T extends AnalysisDomain<T>> {
 	}
 
 	public T enterElseIfStat(T domain, FlowPointContext context) throws AnalysisException {
+		return domain;
+	}
+
+	public T enterElseStat(T domain, FlowPointContext context) throws AnalysisException {
 		return domain;
 	}
 

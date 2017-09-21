@@ -89,7 +89,7 @@ public class GraphvizGenerator {
 	 *            relative to the dot directory.
 	 */
 	public static void saveDOTToFile(String dot, String filepath) {
-		dot = "@startuml\n" + dot + "@enduml";
+		dot = "@startuml\n" + dot + "\n@enduml";
 		// clean the filepath and make sure it is a file
 		filepath = filepath.trim();
 		if (filepath.endsWith("/") || filepath.endsWith("\\"))
