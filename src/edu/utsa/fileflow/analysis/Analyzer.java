@@ -10,6 +10,7 @@ import java.util.Stack;
 public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 
 	public static boolean VERBOSE = true;
+	public static boolean CONTINUE_ON_ERROR = false;
 
 	private D domain;
 	private A analysis;
@@ -98,59 +99,66 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
 
 		D inputDomain = originalDomain.clone();
 
-		// call this method before visiting the flow point
-		analysis.onBefore(inputDomain, fpctx);
+		try {
+			// call this method before visiting the flow point
+			analysis.onBefore(inputDomain, fpctx);
 
-		// visit the node depending on its type
-		switch (type) {
-			case ProgEnter:
-				analysis.enterProg(inputDomain, fpctx);
-				break;
-			case ProgExit:
-				exitDomain = analysis.exitProg(inputDomain, fpctx);
-				break;
-			case FunctionCall:
-				if (fpctx.getText().startsWith("touch"))
-					analysis.touch(inputDomain, fpctx);
-				else if (fpctx.getText().startsWith("mkdir"))
-					analysis.mkdir(inputDomain, fpctx);
-				else if (fpctx.getText().startsWith("rmr"))
-					analysis.removeRecursive(inputDomain, fpctx);
-				else if (fpctx.getText().startsWith("rm"))
-					analysis.remove(inputDomain, fpctx);
-				else if (fpctx.getText().startsWith("cp"))
-					analysis.copy(inputDomain, fpctx);
-				else if (fpctx.getText().startsWith("assert"))
-					analysis.assertFunc(inputDomain, fpctx);
-				break;
-			case WhileStatement:
-				analysis.enterWhileStatement(inputDomain, fpctx);
-				break;
-			case IfStat:
-				// TODO: implement exitIfStat
-				analysis.enterIfStat(inputDomain, fpctx);
-				break;
-			case ElseIfStat:
-				analysis.enterElseIfStat(inputDomain, fpctx);
-				break;
-			case ElseStat:
-				analysis.enterElseStat(inputDomain, fpctx);
-				break;
-			case Assignment:
-				analysis.enterAssignment(inputDomain, fpctx);
-				break;
-			case FlowPoint:
-				if (fpctx.getText().equals("EXIT_WHILE")) {
-					// TODO: make exitWhile enum
-					analysis.exitWhileStatement(inputDomain, fpctx);
-				}
-				break;
-			default:
-				throw new AnalysisException(getClass().getSimpleName() + ".java: Not implemented: " + target);
+			// visit the node depending on its type
+			switch (type) {
+				case ProgEnter:
+					analysis.enterProg(inputDomain, fpctx);
+					break;
+				case ProgExit:
+					exitDomain = analysis.exitProg(inputDomain, fpctx);
+					break;
+				case FunctionCall:
+					if (fpctx.getText().startsWith("touch"))
+						analysis.touch(inputDomain, fpctx);
+					else if (fpctx.getText().startsWith("mkdir"))
+						analysis.mkdir(inputDomain, fpctx);
+					else if (fpctx.getText().startsWith("rmr"))
+						analysis.removeRecursive(inputDomain, fpctx);
+					else if (fpctx.getText().startsWith("rm"))
+						analysis.remove(inputDomain, fpctx);
+					else if (fpctx.getText().startsWith("cp"))
+						analysis.copy(inputDomain, fpctx);
+					else if (fpctx.getText().startsWith("assert"))
+						analysis.assertFunc(inputDomain, fpctx);
+					break;
+				case WhileStatement:
+					analysis.enterWhileStatement(inputDomain, fpctx);
+					break;
+				case IfStat:
+					// TODO: implement exitIfStat
+					analysis.enterIfStat(inputDomain, fpctx);
+					break;
+				case ElseIfStat:
+					analysis.enterElseIfStat(inputDomain, fpctx);
+					break;
+				case ElseStat:
+					analysis.enterElseStat(inputDomain, fpctx);
+					break;
+				case Assignment:
+					analysis.enterAssignment(inputDomain, fpctx);
+					break;
+				case FlowPoint:
+					if (fpctx.getText().equals("EXIT_WHILE")) {
+						// TODO: make exitWhile enum
+						analysis.exitWhileStatement(inputDomain, fpctx);
+					}
+					break;
+				default:
+					throw new AnalysisException(getClass().getSimpleName() + ".java: Not implemented: " + target);
+			}
+			// call this method after visiting the flow point
+			analysis.onAfter(inputDomain, fpctx);
+		} catch (AnalysisException ae) {
+			if (CONTINUE_ON_ERROR) {
+				System.out.println(ae.getMessage());
+			} else {
+				throw ae;
+			}
 		}
-
-		// call this method after visiting the flow point
-		analysis.onAfter(inputDomain, fpctx);
 
 		return inputDomain;
 	}
