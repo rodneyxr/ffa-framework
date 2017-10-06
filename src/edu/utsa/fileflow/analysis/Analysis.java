@@ -6,7 +6,6 @@ import edu.utsa.fileflow.cfg.FlowPointContext;
 public abstract class Analysis<T extends AnalysisDomain<T>> {
 
 	public T onBegin(T domain, FlowPoint flowPoint) throws AnalysisException {
-		domain.firstFlowPoint = flowPoint;
 		return domain;
 	}
 
