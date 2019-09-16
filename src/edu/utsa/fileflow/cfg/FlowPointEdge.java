@@ -1,7 +1,7 @@
 package edu.utsa.fileflow.cfg;
 
 /**
- * This class represents an edge in a {@link ControlFlowGraph}. This edge
+ * This class represents an edge in a ControlFlowGraph. This edge
  * should serve as a directed edge to connect two {@link FlowPoint} objects.
  * 
  * @author Rodney Rodriguez
