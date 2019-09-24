@@ -34,15 +34,15 @@ public abstract class Analysis<T extends AnalysisDomain<T>> {
 		return domain;
 	}
 
-	public T cd(T domain, FlowPointContext context) throws AnalysisException {
-		return domain;
-	}
-
 	public T remove(T domain, FlowPointContext context) throws AnalysisException {
 		return domain;
 	}
 
 	public T removeRecursive(T domain, FlowPointContext context) throws AnalysisException {
+		return domain;
+	}
+
+	public T changeDirectory(T domain, FlowPointContext context) throws AnalysisException {
 		return domain;
 	}
 

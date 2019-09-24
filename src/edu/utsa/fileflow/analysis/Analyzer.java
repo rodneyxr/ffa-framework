@@ -123,7 +123,7 @@ public class Analyzer<D extends AnalysisDomain<D>, A extends Analysis<D>> {
                     else if (fpctx.getText().startsWith("cp"))
                         analysis.copy(inputDomain, fpctx);
                     else if (fpctx.getText().startsWith("cd"))
-                        analysis.cd(inputDomain, fpctx);
+                        analysis.changeDirectory(inputDomain, fpctx);
                     else if (fpctx.getText().startsWith("assert"))
                         analysis.assertFunc(inputDomain, fpctx);
                     break;
