@@ -9,6 +9,7 @@ import edu.utsa.fileflow.cfg.FlowPoint;
 import edu.utsa.fileflow.cfg.FlowPointEdge;
 
 public class GraphvizGenerator {
+	public static boolean SAVE_AS_UML;
 
 	// Example:
 	// digraph G {
@@ -89,7 +90,9 @@ public class GraphvizGenerator {
 	 *            relative to the dot directory.
 	 */
 	public static void saveDOTToFile(String dot, String filepath) {
-		dot = "@startuml\n" + dot + "\n@enduml";
+		if (SAVE_AS_UML) {
+			dot = "@startuml\n" + dot + "\n@enduml";
+		}
 		// clean the filepath and make sure it is a file
 		filepath = filepath.trim();
 		if (filepath.endsWith("/") || filepath.endsWith("\\"))
