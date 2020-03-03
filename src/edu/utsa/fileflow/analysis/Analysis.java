@@ -42,6 +42,10 @@ public abstract class Analysis<T extends AnalysisDomain<T>> {
 		return domain;
 	}
 
+	public T changeDirectory(T domain, FlowPointContext context) throws AnalysisException {
+		return domain;
+	}
+
 	public T assertFunc(T domain, FlowPointContext context) throws AnalysisException {
 		return domain;
 	}
