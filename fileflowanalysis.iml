@@ -11,7 +11,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="lib-ffa" level="project" />
+    <orderEntry type="library" exported="" name="lib-ffa" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
