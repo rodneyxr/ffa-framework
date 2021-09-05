@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="string">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../analysis/lib/string.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
