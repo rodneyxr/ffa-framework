@@ -17,7 +17,7 @@ repositories {
 dependencies {
     // https://mvnrepository.com/artifact/org.antlr/antlr4-runtime
     implementation("org.antlr:antlr4-runtime:4.5")
-    implementation("com.github.rodneyxr:ffa-grammar:gradle-SNAPSHOT")
+    implementation("com.github.rodneyxr:ffa-grammar:main-SNAPSHOT")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
 }
